@@ -28,6 +28,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+
+            ->colors([
+                'primary' => '#d87943',
+                'secondary' => "#5f8787",
+            ])
             ->login()
             // ->brandLogo(fn() => view('filament.logo'))->brandLogoHeight('18px')
             ->brandName('InfluHub')
@@ -36,9 +41,7 @@ class AdminPanelProvider extends PanelProvider
             // ->emailVerification()
             // ->emailChangeVerification()
             ->profile()
-            ->colors([
-                'primary' => Color::Rose,
-            ])
+
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -62,7 +65,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
+            ])->viteTheme('resources/css/filament/admin/theme.css')
         ;
     }
 }
