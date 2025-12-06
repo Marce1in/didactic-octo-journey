@@ -1,6 +1,6 @@
 <x-filament-panels::page>
 
-    <div class="h-90vh">
+    <div class="h-[85vh]">
         <livewire:wirechat />
     </div>
 
