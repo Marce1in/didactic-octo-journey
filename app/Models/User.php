@@ -30,7 +30,8 @@ class User extends Authenticatable implements WirechatUser
         'name',
         'email',
         'password',
-        'role'
+        'role',
+        'avatar_url',
     ];
 
     /**

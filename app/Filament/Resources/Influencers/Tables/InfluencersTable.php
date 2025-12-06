@@ -15,10 +15,9 @@ class InfluencersTable
     {
         return $table
             ->columns([
-                ImageColumn::make('avatar')
+                ImageColumn::make('avatar_url')
                     ->label('')
-                    ->circular()
-                    ->default('https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fogimg.infoglobo.com.br%2Feconomia%2F25035438-701-611%2FFT1086A%2F92729986.jpg&f=1&nofb=1&ipt=251fab699105e037d167e46c1f5264a920953b961a9d7f902f7706593b8f7c79'),
+                    ->circular(),
                 TextColumn::make('name')->label('Nome')
                     ->searchable(),
                 TextColumn::make('agency.name')->label('Agência')->default('___')
