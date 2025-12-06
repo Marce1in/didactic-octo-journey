@@ -15,10 +15,9 @@ class AgenciesTable
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('name')->label('Nome')
                     ->searchable(),
-                TextColumn::make('name')
-                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

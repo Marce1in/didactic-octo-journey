@@ -15,12 +15,20 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class AgencyResource extends Resource
 {
     protected static ?string $model = User::class;
+    protected static ?string $modelLabel = 'Agency';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('role', UserRoles::Agency);
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -29,7 +37,7 @@ class AgencyResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return auth()->user()?->role === UserRoles::Influencer ?? false;
+        return Auth::user()?->role === UserRoles::Company ?? false;
     }
 
     public static function table(Table $table): Table
