@@ -25,8 +25,8 @@ class CompanyResource extends Resource
 
     protected static ?string $modelLabel = 'Empresa';
 
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     public static function getEloquentQuery(): Builder
     {
