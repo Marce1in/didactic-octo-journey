@@ -10,11 +10,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Wirechat\Wirechat\Contracts\WirechatUser;
+use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 
-class User extends Authenticatable
+class User extends Authenticatable implements WirechatUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, InteractsWithWirechat;
 
 
 
@@ -45,6 +47,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(User::class, 'agency_id');
     }
+
+    /**
+     * Decide if this user may access the given panel.
+     * Here, only users with verified emails are allowed.
+     */
+    public function canAccessWirechatPanel(Panel $panel): bool
+    {
+        return $this->hasVerifiedEmail();
+    }
+
+    /**
+     * Control whether this user is allowed to create 1-to-1 chats.
+     */
+    public function canCreateChats(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Control whether this user can create group conversations.
+     */
+    public function canCreateGroups(): bool
+    {
+        return true;
+    }
+
 
     protected $hidden = [
         'password',
