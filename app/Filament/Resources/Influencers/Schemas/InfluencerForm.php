@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Influencers\Schemas;
 
+use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
 class InfluencerForm
@@ -10,7 +11,8 @@ class InfluencerForm
     {
         return $schema
             ->components([
-                //
+                TextInput::make('name')
+                    ->required(),
             ]);
     }
 }

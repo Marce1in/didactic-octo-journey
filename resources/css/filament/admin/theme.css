@@ -1,5 +1,4 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
