@@ -16,7 +16,7 @@ class InfluencersTable
             ->columns([
                 TextColumn::make('name')->label('Nome')
                     ->searchable(),
-                TextColumn::make('agency.name')->label('Agência')->default('nao implementado')
+                TextColumn::make('agency.name')->label('Agência')->default('___')
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()

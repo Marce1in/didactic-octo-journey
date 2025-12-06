@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 class AgencyResource extends Resource
 {
     protected static ?string $model = User::class;
-    protected static ?string $modelLabel = 'Agency';
+    protected static ?string $modelLabel = 'Agências';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 

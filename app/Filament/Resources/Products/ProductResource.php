@@ -22,6 +22,8 @@ class ProductResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
+    protected static ?string $modelLabel = 'Produtos';
+
     public static function form(Schema $schema): Schema
     {
         return ProductForm::configure($schema);
@@ -34,9 +36,7 @@ class ProductResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function canViewAny(): bool

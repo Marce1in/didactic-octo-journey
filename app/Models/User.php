@@ -36,6 +36,15 @@ class User extends Authenticatable
      * @var list<string>
      */
 
+    public function agency()
+    {
+        return $this->belongsTo(User::class, 'agency_id');
+    }
+
+    public function influencers()
+    {
+        return $this->hasMany(User::class, 'agency_id');
+    }
 
     protected $hidden = [
         'password',

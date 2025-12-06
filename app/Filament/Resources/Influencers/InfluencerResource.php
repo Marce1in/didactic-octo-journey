@@ -16,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class InfluencerResource extends Resource
@@ -33,7 +34,7 @@ class InfluencerResource extends Resource
     public static function canViewAny(): bool
     {
         $role = Auth::user()?->role;
-        return $role === UserRoles::Company || $role === UserRoles::Agency ?? false;
+        return $role === UserRoles::Company || $role === UserRoles::Agency;
     }
 
     public static function form(Schema $schema): Schema
@@ -53,12 +54,22 @@ class InfluencerResource extends Resource
         ];
     }
 
+    public static function canCreate(): bool
+    {
+        return Auth::user()?->role === UserRoles::Agency;
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return Auth::user()?->role === UserRoles::Agency && $record->agency_id === Auth::user()->id;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => ListInfluencers::route('/'),
-            //  'create' => CreateInfluencer::route('/create'),
-            //  'edit' => EditInfluencer::route('/{record}/edit'),
+            'create' => CreateInfluencer::route('/create'),
+            'edit' => EditInfluencer::route('/{record}/edit'),
         ];
     }
 }
