@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\AgencyCampaigns\Tables;
+namespace App\Filament\Resources\InfluencerCampaigns\Tables;
 
 use App\CampaignStatus;
 use Filament\Actions\ActionGroup;
@@ -14,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
-class AgencyCampaignsTable
+class InfluencerCampaignsTable
 {
     public static function configure(Table $table): Table
     {
@@ -24,8 +24,7 @@ class AgencyCampaignsTable
                     ->searchable(),
                 TextColumn::make('product.name')->label('Produto')
                     ->searchable(),
-                TextColumn::make('influencer.name')->label('Influenciador')
-                    ->searchable(),
+
                 TextColumn::make('company.name')->label('Empresa')
                     ->searchable(),
 
@@ -51,10 +50,7 @@ class AgencyCampaignsTable
                 //
             ])
             ->recordActions([
-                ActionGroup::make([
-                    ApproveCampaignAction::make(),
-                    RejectCampaignAction::make(),
-                ])->visible(fn(Model $record) => $record->status === CampaignStatus::PendingApproval),
+                //
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([
