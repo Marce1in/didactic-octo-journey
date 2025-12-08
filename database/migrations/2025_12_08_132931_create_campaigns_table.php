@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained();
             $table->foreignId('influencer_id')->constrained('users');
             $table->foreignId('company_id')->constrained('users');
-            $table->enum('status', ['pending_approval', 'active', 'finished'])->default('pending_approval');
+            $table->enum('status', ['pending_approval', 'active', 'finished', 'cancelled'])->default('pending_approval');
             $table->timestamps();
         });
     }

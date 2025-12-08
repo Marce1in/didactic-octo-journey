@@ -2,11 +2,15 @@
 
 namespace App\Filament\Resources\AgencyCampaigns\Tables;
 
+use Filament\Actions\ActionGroup;
+use Filament\Actions\ApproveCampaignAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\RejectCampaignAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\App;
 
 class AgencyCampaignsTable
 {
@@ -24,7 +28,14 @@ class AgencyCampaignsTable
                     ->searchable(),
 
                 TextColumn::make('status')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(fn(string $state): string => match ($state) {
+                        'pending_approval' => 'Aprovação Pendente',
+                        'active' => 'Ativa',
+                        'finished' => 'Concluído',
+                        'cancelled' => 'Cancelada',
+                        default => $state,
+                    }),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -38,7 +49,10 @@ class AgencyCampaignsTable
                 //
             ])
             ->recordActions([
-                // EditAction::make(),
+                ActionGroup::make([
+                    ApproveCampaignAction::make(),
+                    RejectCampaignAction::make(),
+                ]),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([
