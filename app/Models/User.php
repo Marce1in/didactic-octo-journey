@@ -62,12 +62,12 @@ class User extends Authenticatable implements WirechatUser
 
     public function agency()
     {
-        return $this->belongsTo(User::class, 'agency_id');
+        return $this->belongsTo(User::class, 'agency_id')->where('role', UserRoles::Agency);
     }
 
     public function influencers()
     {
-        return $this->hasMany(User::class, 'agency_id');
+        return $this->hasMany(User::class, 'agency_id')->where('role', UserRoles::Influencer);
     }
 
     /**

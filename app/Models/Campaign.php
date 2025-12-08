@@ -12,6 +12,7 @@ class Campaign extends Model
         'product_id',
         'company_id',
         'influencer_id',
+        'agency_id',
         'status'
     ];
 
@@ -23,6 +24,11 @@ class Campaign extends Model
     public function company(): BelongsTo
     {
         return $this->belongsTo(User::class, 'company_id');
+    }
+
+    public function agency(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'agency_id');
     }
 
     public function influencer(): BelongsTo
