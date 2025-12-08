@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\CampaignStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -14,6 +15,10 @@ class Campaign extends Model
         'influencer_id',
         'agency_id',
         'status'
+    ];
+
+    protected $casts = [
+        'status' => CampaignStatus::class,
     ];
 
     public function product(): BelongsTo
