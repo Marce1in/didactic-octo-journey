@@ -2,17 +2,25 @@
 
 namespace App\Providers\Filament;
 
+use App\Models\User;
+use App\UserRoles;
+use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
+use DutchCodingCompany\FilamentSocialite\Provider;
+use Filament\Forms\Components\Placeholder;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Assets\Font;
 use Filament\Support\Assets\Js;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentAsset;
+use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -42,7 +50,7 @@ class AdminPanelProvider extends PanelProvider
                 'secondary' => "#5f8787",
             ])
             ->login()
-            ->brandLogo(asset('assets/logo.png'))
+            // ->brandLogo(asset('assets/logo.png'))
             // ->brandLogo(fn() => view('filament.logo'))->brandLogoHeight('18px')
             ->brandName('InfluHub')
             ->registration()
@@ -50,7 +58,6 @@ class AdminPanelProvider extends PanelProvider
             // ->emailVerification()
             // ->emailChangeVerification()
             ->profile()
-
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -63,6 +70,16 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->renderHook(PanelsRenderHook::HEAD_END, fn(): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
             ->renderHook(PanelsRenderHook::BODY_END, fn(): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
+            ->renderHook(
+                PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
+                fn(): string => Blade::render(<<<'BLADE'
+                    <div x-data="{ role: @entangle('data.role') }">
+                        <div x-show="role === 'influencer'">
+                            <x-filament-socialite::buttons />
+                        </div>
+                    </div>
+                BLADE)
+            )
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -77,6 +94,17 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])->viteTheme('resources/css/filament/admin/theme.css')
-        ;
+            ->plugins([
+                FilamentSocialitePlugin::make()
+                    ->providers([
+                        Provider::make('instagram')
+                            ->label('Instagram')
+                            ->icon('fab-instagram')
+                            ->color('#C13584')
+                            ->outlined(false)
+                            ->stateless(false)
+                    ])
+                    ->registration(true)
+            ]);
     }
 }

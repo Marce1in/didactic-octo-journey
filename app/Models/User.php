@@ -41,7 +41,7 @@ class User extends Authenticatable implements WirechatUser
      */
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $this->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
 
