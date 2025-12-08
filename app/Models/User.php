@@ -9,6 +9,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Wirechat\Wirechat\Contracts\WirechatUser;
 use Wirechat\Wirechat\Panel;
@@ -31,7 +32,11 @@ class User extends Authenticatable implements WirechatUser
         'email',
         'password',
         'role',
-        'avatar_url',
+        'avatar',
+        // Para influenciadores
+        'agency_id',
+        // Para agencias e empresas
+        'description',
     ];
 
     /**
@@ -39,9 +44,19 @@ class User extends Authenticatable implements WirechatUser
      *
      * @var list<string>
      */
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (!$this->avatar) {
+            return null;
+        }
+
+        return asset('storage/' . $this->avatar);
+    }
+
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return $this->avatar_url ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $this->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
 
