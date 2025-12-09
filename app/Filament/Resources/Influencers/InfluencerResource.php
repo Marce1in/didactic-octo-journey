@@ -26,9 +26,10 @@ class InfluencerResource extends Resource
     protected static ?string $modelLabel = 'Influencer';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
+
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('role', UserRoles::Influencer);
+        return parent::getEloquentQuery()->where('role', UserRoles::Influencer)->where('agency_id', Auth::id());
     }
 
     public static function canViewAny(): bool

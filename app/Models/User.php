@@ -36,6 +36,7 @@ class User extends Authenticatable implements WirechatUser
         'avatar',
         // Para influenciadores
         'agency_id',
+        'association_status',
         // Para agencias e empresas
         'description',
     ];
