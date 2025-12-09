@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Product;
 use App\Models\User;
 use Filament\Support\Colors\Color;
 use Illuminate\Database\Seeder;
@@ -77,6 +78,21 @@ class DatabaseSeeder extends Seeder
                 'email_verified_at' => now(),
             ]);
         }
+
+
+        // -------------------------------------------------------
+        // Products
+        // -------------------------------------------------------
+        $companies->each(function ($company) {
+            foreach (range(1, 5) as $i) {
+                Product::create([
+                    'name' => "Product {$i}",
+                    'description' => "Description for product {$i} from {$company->name}.",
+                    'price' => rand(10, 500),
+                    'company_id' => $company->id,
+                ]);
+            }
+        });
 
         // -------------------------------------------------------
         // -------------------------------------------------------

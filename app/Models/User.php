@@ -77,6 +77,11 @@ class User extends Authenticatable implements WirechatUser
         return $this->hasMany(User::class, 'agency_id')->where('role', UserRoles::Influencer);
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
     /**
      * Decide if this user may access the given panel.
      * Here, only users with verified emails are allowed.
