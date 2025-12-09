@@ -3,7 +3,9 @@
 namespace App\Filament\Resources\Products\Tables;
 
 use Dom\Text;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
@@ -40,7 +42,10 @@ class ProductsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
