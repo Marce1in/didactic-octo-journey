@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Companies\Tables;
 
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ChatAction;
 use Filament\Actions\DeleteBulkAction;
@@ -36,6 +37,12 @@ class CompaniesTable
             ])
             ->recordActions([
                 ChatAction::make(),
+                Action::make('viewCampaigns')
+                    ->label('Campanhas')
+                    ->icon('heroicon-o-presentation-chart-line')
+                    ->url(fn($record) => route('filament.admin.resources.campaigns.index', [
+                        'search' => $record->name,
+                    ])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

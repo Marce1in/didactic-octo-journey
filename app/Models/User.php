@@ -7,6 +7,7 @@ namespace App\Models;
 use App\UserRoles;
 use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
@@ -59,6 +60,12 @@ class User extends Authenticatable implements WirechatUser
         return $this->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
+    public function campaigns()
+    {
+        return Campaign::where('agency_id', $this->id)
+            ->orWhere('company_id', $this->id)
+            ->orWhere('influencer_id', $this->id);
+    }
 
     public function agency()
     {
