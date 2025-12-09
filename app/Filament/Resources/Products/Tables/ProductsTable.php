@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
+use Dom\Text;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -21,10 +22,16 @@ class ProductsTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('price')
+                    ->money('BRL', true)
+                    ->sortable(),
+                TextColumn::make('description')
+                    ->limit(30),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
