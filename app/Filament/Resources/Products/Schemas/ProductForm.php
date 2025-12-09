@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Products\Schemas;
 
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -19,9 +20,8 @@ class ProductForm
                     ->inputMode('decimal')
                     ->step('0.01')
                     ->required(),
-                Textarea::make('description')
-                    ->rows(4)
-                    ->nullable(),
+                MarkdownEditor::make('description')
+                    ->nullable()->columnSpan(2),
             ]);
     }
 }
