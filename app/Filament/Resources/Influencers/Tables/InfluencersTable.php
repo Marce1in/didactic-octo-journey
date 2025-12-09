@@ -3,10 +3,12 @@
 namespace App\Filament\Resources\Influencers\Tables;
 
 use App\UserRoles;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ChatAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables\Columns\ImageColumn;
@@ -45,6 +47,13 @@ class InfluencersTable
                 // EditAction::make(),
                 ChatAction::make()->visible(fn($record): bool => Auth::user()->role === UserRoles::Company),
 
+                Action::make('Aprovar Vínculo')->label('Aprovar')->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')->action(fn($record) => $record->update(['association_status' => 'approved']))->successNotification(
+                    Notification::make()
+                        ->success()
+                        ->title('Influenciador vinculado')
+                        ->body('Vínculo com influenciador criado com sucesso.')
+                        ->send()
+                ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
