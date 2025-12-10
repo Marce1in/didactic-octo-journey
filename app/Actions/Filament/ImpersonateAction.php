@@ -8,25 +8,27 @@ use Filament\Support\Facades\FilamentIcon;
 use Filament\Support\Icons\Heroicon;
 use Filament\Actions\View\ActionsIconAlias;
 
-class ChatAction extends Action
+class ImpersonateAction extends Action
 {
     protected ?Closure $redirectUrlUsing = null;
 
     public static function getDefaultName(): ?string
     {
-        return 'chat';
+        return 'impersonate';
     }
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->label(__('Chat'));
+        $this->label(__('Impersonar'));
 
         $this->defaultColor('primary');
 
-        $this->tableIcon(Heroicon::OutlinedChatBubbleLeftEllipsis);
+        $this->icon(Heroicon::OutlinedArrowRightStartOnRectangle);
     }
+
+    // public function action(): void {}
 
     public function redirectUrlUsing(?Closure $callback): static
     {
