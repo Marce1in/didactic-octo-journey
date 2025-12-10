@@ -9,64 +9,51 @@ $hasEmojiPicker= $this->panel()->hasEmojiPicker();
 
 @if($hasEmojiPicker)
 @assets
-    <style>
+<style>
+    emoji-picker {
+        width: 100% !important;
+        height: 100%;
+    }
+
+    /* Emoji picker configuration */
+    emoji-picker {
+        --background: none !important;
+        --border-radius: 12px;
+        --input-border-color: rgb(229 229 229);
+        --input-padding: 0.45rem;
+        --outline-color: none;
+        --outline-size: 1px;
+        --num-columns: 8;
+        /* Mobile-first default */
+        --emoji-padding: 0.7rem;
+        --emoji-size: 1.5rem;
+        /* Smaller size for mobile */
+        --border-color: none;
+        --indicator-color: #9ca3af;
+    }
+
+
+    @media screen and (min-width: 600px) {
         emoji-picker {
-            width: 100% !important;
-            height: 100%;
+            --num-columns: 10;
+            /* Increase columns for larger screens */
+            --emoji-size: 1.8rem;
+            /* Larger size for desktop */
         }
+    }
 
-        /* Emoji picker configuration */
+    @media screen and (min-width: 900px) {
         emoji-picker {
-            --background: none !important;
-            --border-radius: 12px;
-            --input-border-color: rgb(229 229 229);
-            --input-padding: 0.45rem;
-            --outline-color: none;
-            --outline-size: 1px;
-            --num-columns: 8;
-            /* Mobile-first default */
-            --emoji-padding: 0.7rem;
-            --emoji-size: 1.5rem;
-            /* Smaller size for mobile */
-            --border-color: none;
-            --indicator-color: #9ca3af;
+            --num-columns: 16;
+            /* Increase columns for larger screens */
+            --emoji-size: 1.9rem;
+            /* Larger size for desktop */
         }
+    }
 
-
-        @media screen and (min-width: 600px) {
-            emoji-picker {
-                --num-columns: 10;
-                /* Increase columns for larger screens */
-                --emoji-size: 1.8rem;
-                /* Larger size for desktop */
-            }
-        }
-
-        @media screen and (min-width: 900px) {
-            emoji-picker {
-                --num-columns: 16;
-                /* Increase columns for larger screens */
-                --emoji-size: 1.9rem;
-                /* Larger size for desktop */
-            }
-        }
-        /* Dark mode using prefers-color-scheme */
-        @media (prefers-color-scheme: dark) {
-            emoji-picker {
-                --background: none !important;
-                --input-border-color: var(--wc-dark-border);
-                --outline-color: none;
-                --outline-size: 1px;
-                --border-color: none;
-                --input-font-color: white;
-                --indicator-color: var(--wc-dark-accent);
-                --button-hover-background: var(--wc-dark-accent);
-            }
-        }
-
-
-        /* Ensure dark mode takes precedence */
-        .dark emoji-picker {
+    /* Dark mode using prefers-color-scheme */
+    @media (prefers-color-scheme: dark) {
+        emoji-picker {
             --background: none !important;
             --input-border-color: var(--wc-dark-border);
             --outline-color: none;
@@ -76,7 +63,21 @@ $hasEmojiPicker= $this->panel()->hasEmojiPicker();
             --indicator-color: var(--wc-dark-accent);
             --button-hover-background: var(--wc-dark-accent);
         }
-    </style>
+    }
+
+
+    /* Ensure dark mode takes precedence */
+    .dark emoji-picker {
+        --background: none !important;
+        --input-border-color: var(--wc-dark-border);
+        --outline-color: none;
+        --outline-size: 1px;
+        --border-color: none;
+        --input-font-color: white;
+        --indicator-color: var(--wc-dark-accent);
+        --button-hover-background: var(--wc-dark-accent);
+    }
+</style>
 
 @endassets
 @endif
@@ -100,7 +101,7 @@ $hasEmojiPicker= $this->panel()->hasEmojiPicker();
     }
 }"
 
- x-init="setTimeout(() => {
+    x-init="setTimeout(() => {
 
         requestAnimationFrame(() => {
             initializing = false;
@@ -142,15 +143,15 @@ $hasEmojiPicker= $this->panel()->hasEmojiPicker();
     @script
 
     <script>
-      {{-- These are handing in the public/wirechat/js/sw.js--}}
-        window.addEventListener('load', () => {
-            if (navigator.serviceWorker.controller) {
-                navigator.serviceWorker.controller.postMessage({
-                    type: 'REGISTER_CHAT',
-                    tag: '{{$this->panel()->getId()}}-wirechat-tab'
-                });
-            }
-        });
+    {{-- These are handing in the public/wirechat/js/sw.js--}}
+    window.addEventListener('load', () => {
+    if (navigator.serviceWorker.controller) {
+    navigator.serviceWorker.controller.postMessage({
+    type: 'REGISTER_CHAT',
+    tag: '{{$this->panel()->getId()}}-wirechat-tab'
+    });
+    }
+    });
 
     </script>
     @endscript

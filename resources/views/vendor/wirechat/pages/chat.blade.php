@@ -7,7 +7,7 @@
         <livewire:wirechat.chats :panel="$panel" />
     </div>
 
-    <main class="  grid  w-full  grow  h-full min-h-min relative overflow-y-auto" style="contain:content">
+    <main class="  grid  w-full  grow  bg-yellow-300  h-full min-h-min relative overflow-y-auto" style="contain:content">
         <livewire:wirechat.chat :panel="$panel" conversation="{{request()->conversation}}" />
     </main>
 
