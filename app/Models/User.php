@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Wirechat\Wirechat\Contracts\WirechatUser;
 use Wirechat\Wirechat\Panel;
@@ -19,7 +20,7 @@ use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 class User extends Authenticatable implements WirechatUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, InteractsWithWirechat;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, InteractsWithWirechat, Impersonate;
 
 
 

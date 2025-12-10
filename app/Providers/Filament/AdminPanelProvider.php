@@ -102,9 +102,10 @@ class AdminPanelProvider extends PanelProvider
                             ->icon('fab-instagram')
                             ->color('#C13584')
                             ->outlined(false)
-                            ->stateless(false)
+                            ->stateless(false),
                     ])
-                    ->registration(true)
+                    ->registration(true),
+
             ]);
     }
 }
