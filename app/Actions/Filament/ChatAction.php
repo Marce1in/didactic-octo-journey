@@ -21,11 +21,11 @@ class ChatAction extends Action
     {
         parent::setUp();
 
-        $this->label(__('filament-actions::chat.label'));
+        $this->label(__('Chat'));
 
         $this->defaultColor('primary');
 
-        $this->tableIcon(FilamentIcon::resolve(ActionsIconAlias::EDIT_ACTION) ?? Heroicon::ChatBubbleLeftRight);
+        $this->tableIcon(Heroicon::OutlinedChatBubbleLeftEllipsis);
     }
 
     public function redirectUrlUsing(?Closure $callback): static
