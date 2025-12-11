@@ -14,7 +14,7 @@ class Campaign extends Model
         'company_id',
         'influencer_id',
         'agency_id',
-        'status'
+        'status',
     ];
 
     protected $casts = [

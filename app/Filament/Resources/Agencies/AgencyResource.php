@@ -7,7 +7,6 @@ use App\Filament\Resources\Agencies\Pages\EditAgency;
 use App\Filament\Resources\Agencies\Pages\ListAgencies;
 use App\Filament\Resources\Agencies\Schemas\AgencyForm;
 use App\Filament\Resources\Agencies\Tables\AgenciesTable;
-use App\Models\Agency;
 use App\Models\User;
 use App\UserRoles;
 use BackedEnum;
@@ -21,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 class AgencyResource extends Resource
 {
     protected static ?string $model = User::class;
+
     protected static ?string $modelLabel = 'Agências';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;

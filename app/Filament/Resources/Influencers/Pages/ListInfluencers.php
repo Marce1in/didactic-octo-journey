@@ -26,7 +26,7 @@ class ListInfluencers extends ListRecords
             }),
             'Pedidos de Vínculo' => Tab::make()->modifyQueryUsing(function ($query) {
                 $query->where('association_status', 'pending');
-            })
+            }),
         ];
     }
 }

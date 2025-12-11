@@ -2,8 +2,6 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
-use App\Actions\Filament\ImpersonateAction;
-use App\AssociationStatus;
 use App\UserRoles;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -56,12 +54,12 @@ class UsersTable
                         }
 
                         return match ($state) {
-                            'pending'  => 'Pendente',
+                            'pending' => 'Pendente',
                             'approved' => 'Aprovado',
                             'rejected' => 'Rejeitado',
-                            default    => '-',
+                            default => '-',
                         };
-                    })
+                    }),
 
             ])
             ->filters([
@@ -72,7 +70,7 @@ class UsersTable
                     Impersonate::make(),
                     EditAction::make(),
                     DeleteAction::make(),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

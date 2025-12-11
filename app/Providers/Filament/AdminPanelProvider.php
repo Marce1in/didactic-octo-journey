@@ -2,25 +2,15 @@
 
 namespace App\Providers\Filament;
 
-use App\Models\User;
-use App\UserRoles;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use DutchCodingCompany\FilamentSocialite\Provider;
-use Filament\Forms\Components\Placeholder;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Support\Assets\Font;
-use Filament\Support\Assets\Js;
-use Filament\Support\Colors\Color;
-use Filament\Support\Facades\FilamentAsset;
-use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -31,13 +21,10 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Wirechat\Wirechat\Facades\Wirechat;
 
 class AdminPanelProvider extends PanelProvider
 {
-
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -47,7 +34,7 @@ class AdminPanelProvider extends PanelProvider
 
             ->colors([
                 'primary' => '#d87943',
-                'secondary' => "#5f8787",
+                'secondary' => '#5f8787',
             ])
             ->login()
             // ->brandLogo(asset('assets/logo.png'))
@@ -68,11 +55,11 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
-            ->renderHook(PanelsRenderHook::HEAD_END, fn(): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
-            ->renderHook(PanelsRenderHook::BODY_END, fn(): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
+            ->renderHook(PanelsRenderHook::BODY_END, fn (): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
-                fn(): string => Blade::render(<<<'BLADE'
+                fn (): string => Blade::render(<<<'BLADE'
                     <div x-data="{ role: @entangle('data.role') }">
                         <div x-show="role === 'influencer'">
                             <x-filament-socialite::buttons />

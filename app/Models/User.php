@@ -5,13 +5,11 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 use App\UserRoles;
-use Filament\Models\Contracts\FilamentUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Wirechat\Wirechat\Contracts\WirechatUser;
@@ -21,9 +19,7 @@ use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 class User extends Authenticatable implements WirechatUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable, InteractsWithWirechat, Impersonate;
-
-
+    use HasFactory, Impersonate, InteractsWithWirechat, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -48,17 +44,14 @@ class User extends Authenticatable implements WirechatUser
      *
      * @var list<string>
      */
-
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return null;
         }
 
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
-
-
 
     public function campaigns()
     {
@@ -77,7 +70,6 @@ class User extends Authenticatable implements WirechatUser
         return $this->hasMany(User::class, 'agency_id')->where('role', UserRoles::Influencer);
     }
 
-
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
@@ -89,7 +81,7 @@ class User extends Authenticatable implements WirechatUser
      */
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name);
     }
 
     public function canAccessWirechatPanel(Panel $panel): bool
@@ -112,7 +104,6 @@ class User extends Authenticatable implements WirechatUser
     {
         return Auth::user()->role !== UserRoles::Influencer;
     }
-
 
     protected $hidden = [
         'password',

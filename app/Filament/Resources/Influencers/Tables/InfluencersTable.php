@@ -9,8 +9,6 @@ use Filament\Actions\ChatAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
-use Filament\Schemas\Components\Tabs;
-use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -45,9 +43,9 @@ class InfluencersTable
             ])
             ->recordActions([
                 // EditAction::make(),
-                ChatAction::make()->visible(fn($record): bool => Auth::user()->role === UserRoles::Company),
+                ChatAction::make()->visible(fn ($record): bool => Auth::user()->role === UserRoles::Company),
 
-                Action::make('Aprovar Vínculo')->label('Aprovar')->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')->action(fn($record) => $record->update(['association_status' => 'approved']))->successNotification(
+                Action::make('Aprovar Vínculo')->label('Aprovar')->visible(fn ($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')->action(fn ($record) => $record->update(['association_status' => 'approved']))->successNotification(
                     Notification::make()
                         ->success()
                         ->title('Influenciador vinculado')

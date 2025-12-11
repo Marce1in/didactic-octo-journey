@@ -7,7 +7,6 @@ use App\Filament\Resources\InfluencerCampaigns\Pages\EditInfluencerCampaign;
 use App\Filament\Resources\InfluencerCampaigns\Pages\ListInfluencerCampaigns;
 use App\Filament\Resources\InfluencerCampaigns\Schemas\InfluencerCampaignForm;
 use App\Filament\Resources\InfluencerCampaigns\Tables\InfluencerCampaignsTable;
-use App\Models\InfluencerCampaign;
 use App\Models\Campaign;
 use App\UserRoles;
 use BackedEnum;
@@ -22,7 +21,9 @@ use Illuminate\Support\Facades\Auth;
 class InfluencerCampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
+
     protected static ?string $modelLabel = 'Minhas Campanhas';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
 
     public static function form(Schema $schema): Schema
@@ -61,7 +62,6 @@ class InfluencerCampaignResource extends Resource
     {
         return false;
     }
-
 
     public static function getEloquentQuery(): Builder
     {

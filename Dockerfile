@@ -1,0 +1,24 @@
+FROM dunglas/frankenphp:1.9.0-php8.4.11
+
+RUN apt-get update && apt-get install -y \
+    curl git unzip \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+RUN install-php-extensions \
+    @composer pcntl pdo_pgsql pgsql intl zip
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci --omit=dev
+
+COPY . .
+
+RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
+
+RUN npm run build
+
+ENV SKIP_WAYFINDER=true
+
+CMD ["composer", "run", "dev"]

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Product;
 use App\Models\User;
 use App\UserRoles;
-use Filament\Support\Colors\Color;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +16,10 @@ class DatabaseSeeder extends Seeder
     {
         Storage::disk('public')->makeDirectory('avatars');
 
-
         $createAvatar = function () {
-            $filename = Str::random(20) . '.jpg';
+            $filename = Str::random(20).'.jpg';
 
-            $url = 'https://picsum.photos/300/300?random=' . Str::random(10);
+            $url = 'https://picsum.photos/300/300?random='.Str::random(10);
 
             $imageData = file_get_contents($url);
 
@@ -30,20 +28,17 @@ class DatabaseSeeder extends Seeder
             return "avatars/{$filename}";
         };
 
-
         // -------------------------------------------------------
         // ADMIN
         // -------------------------------------------------------
         User::create([
             'name' => 'Admin',
-            'email' => "admin@gmail.com",
-            'avatar' => $createAvatar("Admin"),
+            'email' => 'admin@gmail.com',
+            'avatar' => $createAvatar('Admin'),
             'password' => Hash::make('senha123'),
             'role' => UserRoles::Admin,
             'email_verified_at' => now(),
         ]);
-
-
 
         // -------------------------------------------------------
         // COMPANIES
@@ -94,14 +89,13 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-
         // -------------------------------------------------------
         // Products
         // -------------------------------------------------------
         $companies->each(function ($company) {
             foreach (range(1, 5) as $i) {
                 Product::create([
-                    'name' => fake()->colorName() . " " . fake()->streetName,
+                    'name' => fake()->colorName().' '.fake()->streetName,
                     'description' => "Description for product {$i} from {$company->name}.",
                     'price' => rand(10, 500),
                     'company_id' => $company->id,
@@ -114,7 +108,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Empresa A',
             'email' => 'empresa@gmail.com',
-            'avatar' => $createAvatar("Empresa A"),
+            'avatar' => $createAvatar('Empresa A'),
             'password' => Hash::make('senha123'),
             'role' => 'company',
             'email_verified_at' => now(),
@@ -123,7 +117,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Agência A',
             'email' => 'agencia@gmail.com',
-            'avatar' => $createAvatar("Agência A"),
+            'avatar' => $createAvatar('Agência A'),
             'password' => Hash::make('senha123'),
             'role' => 'agency',
             'email_verified_at' => now(),
@@ -132,7 +126,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Influencer A1',
             'email' => 'influencer@gmail.com',
-            'avatar' => $createAvatar("Influencer A1"),
+            'avatar' => $createAvatar('Influencer A1'),
             'password' => Hash::make('senha123'),
             'role' => 'influencer',
             'agency_id' => 2,
@@ -142,7 +136,7 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Influencer A2',
             'email' => 'influencera2@gmail.com',
-            'avatar' => $createAvatar("Influencer A2"),
+            'avatar' => $createAvatar('Influencer A2'),
             'password' => Hash::make('senha123'),
             'role' => 'influencer',
             'agency_id' => 2,

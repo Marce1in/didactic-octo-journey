@@ -2,14 +2,14 @@
 
 namespace App\Filament\Resources\Campaigns\Schemas;
 
+use App\Models\User;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Schema;
-use App\Models\User;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 
 class CampaignForm
@@ -28,8 +28,7 @@ class CampaignForm
                         ->relationship(
                             'product',
                             'name',
-                            fn($query) =>
-                            $query->where('company_id', Auth::id())
+                            fn ($query) => $query->where('company_id', Auth::id())
                         )
                         ->label('Produto')
                         ->required(),
@@ -53,16 +52,15 @@ class CampaignForm
                     Select::make('influencer_id')
                         ->label('Influencer')
                         ->options(
-                            fn(Get $get) =>
-                            User::where('role', 'influencer')
+                            fn (Get $get) => User::where('role', 'influencer')
                                 ->where('agency_id', $get('agency_id'))
                                 ->pluck('name', 'id')
                         )
                         ->searchable()
                         ->required()
-                        ->hidden(fn(Get $get) => !$get('agency_id')) // Hide until agency is selected
-                        ->disabled(fn(Get $get) => !$get('agency_id')), // Disable until agency is selected
-                ])
+                        ->hidden(fn (Get $get) => ! $get('agency_id')) // Hide until agency is selected
+                        ->disabled(fn (Get $get) => ! $get('agency_id')), // Disable until agency is selected
+                ]),
             ]);
     }
 }

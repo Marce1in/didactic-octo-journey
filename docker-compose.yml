@@ -1,0 +1,24 @@
+services:
+  app:
+    image: amaralthesage/influhub:latest
+    container_name: influhub-app
+    command: php artisan octane:start --host=influhub.sathon.com.br --port=443 --https --admin-port=2019
+
+    pull_policy: always
+
+    post_start:
+      - command: php artisan optimize
+    pre_stop:
+      - command: php artisan octane:stop
+
+    ports:
+      - '443:443'
+    env_file:
+      - .env
+
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:8000/up']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

@@ -5,9 +5,8 @@ namespace App\Filament\Resources\Companies;
 use App\Filament\Resources\Companies\Pages\CreateCompany;
 use App\Filament\Resources\Companies\Pages\EditCompany;
 use App\Filament\Resources\Companies\Pages\ListCompanies;
-use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Filament\Resources\Companies\Schemas\CompanyForm;
-use App\Models\Company;
+use App\Filament\Resources\Companies\Tables\CompaniesTable;
 use App\Models\User;
 use App\UserRoles;
 use BackedEnum;
@@ -26,7 +25,6 @@ class CompanyResource extends Resource
     protected static ?string $modelLabel = 'Empresa';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
-
 
     public static function getEloquentQuery(): Builder
     {
@@ -55,7 +53,6 @@ class CompanyResource extends Resource
         return Auth::user()->role === UserRoles::Agency;
     }
 
-
     public static function canCreate(): bool
     {
         return false;
@@ -65,6 +62,7 @@ class CompanyResource extends Resource
     {
         return false;
     }
+
     public static function canEdit(Model $record): bool
     {
         return false;

@@ -26,7 +26,7 @@ return [
             'authEndpoint' => '/broadcasting/auth',
             'disableStats' => true,
             'encrypted' => true,
-            'forceTLS' => false, //enable in production
+            'forceTLS' => false, // enable in production
         ],
 
     ],
@@ -104,7 +104,6 @@ return [
     'file_generation' => [
         'flags' => [],
     ],
-
 
     /*
     |--------------------------------------------------------------------------

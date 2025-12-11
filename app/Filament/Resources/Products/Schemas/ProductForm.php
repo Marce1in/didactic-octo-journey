@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 

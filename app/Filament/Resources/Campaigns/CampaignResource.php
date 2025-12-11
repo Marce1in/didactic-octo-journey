@@ -20,7 +20,9 @@ use Illuminate\Support\Facades\Auth;
 class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
+
     protected static ?string $modelLabel = 'Campanhas';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
 
     public static function form(Schema $schema): Schema

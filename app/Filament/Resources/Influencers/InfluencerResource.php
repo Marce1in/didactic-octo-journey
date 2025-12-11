@@ -7,7 +7,6 @@ use App\Filament\Resources\Influencers\Pages\EditInfluencer;
 use App\Filament\Resources\Influencers\Pages\ListInfluencers;
 use App\Filament\Resources\Influencers\Schemas\InfluencerForm;
 use App\Filament\Resources\Influencers\Tables\InfluencersTable;
-use App\Models\Influencer;
 use App\Models\User;
 use App\UserRoles;
 use BackedEnum;
@@ -24,8 +23,8 @@ class InfluencerResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $modelLabel = 'Influencer';
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
     public static function getEloquentQuery(): Builder
     {
@@ -35,6 +34,7 @@ class InfluencerResource extends Resource
     public static function canViewAny(): bool
     {
         $role = Auth::user()?->role;
+
         return $role === UserRoles::Company || $role === UserRoles::Agency;
     }
 
