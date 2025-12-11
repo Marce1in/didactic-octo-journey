@@ -15,5 +15,6 @@ class CreateProduct extends CreateRecord
 
         return parent::handleRecordCreation($data);
     }
+
     protected static string $resource = ProductResource::class;
 }

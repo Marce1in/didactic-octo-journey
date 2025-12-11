@@ -7,7 +7,6 @@ use App\Filament\Resources\AgencyCampaigns\Pages\EditAgencyCampaign;
 use App\Filament\Resources\AgencyCampaigns\Pages\ListAgencyCampaigns;
 use App\Filament\Resources\AgencyCampaigns\Schemas\AgencyCampaignForm;
 use App\Filament\Resources\AgencyCampaigns\Tables\AgencyCampaignsTable;
-use App\Models\AgencyCampaign;
 use App\Models\Campaign;
 use App\UserRoles;
 use BackedEnum;
@@ -22,7 +21,9 @@ use Illuminate\Support\Facades\Auth;
 class AgencyCampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
+
     protected static ?string $modelLabel = 'Nossas Campanhas';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
 
     public static function form(Schema $schema): Schema
@@ -61,7 +62,6 @@ class AgencyCampaignResource extends Resource
     {
         return false;
     }
-
 
     public static function getEloquentQuery(): Builder
     {

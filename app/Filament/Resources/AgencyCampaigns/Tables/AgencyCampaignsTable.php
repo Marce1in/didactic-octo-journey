@@ -7,12 +7,10 @@ use Filament\Actions\ActionGroup;
 use Filament\Actions\ApproveCampaignAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Actions\RejectCampaignAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
 
 class AgencyCampaignsTable
 {
@@ -31,7 +29,7 @@ class AgencyCampaignsTable
 
                 TextColumn::make('status')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PendingApproval => 'Aprovação Pendente',
                         CampaignStatus::Active => 'Ativa',
                         CampaignStatus::Finished => 'Concluída',
@@ -54,7 +52,7 @@ class AgencyCampaignsTable
                 ActionGroup::make([
                     ApproveCampaignAction::make(),
                     RejectCampaignAction::make(),
-                ])->visible(fn(Model $record) => $record->status === CampaignStatus::PendingApproval),
+                ])->visible(fn (Model $record) => $record->status === CampaignStatus::PendingApproval),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([

@@ -5,6 +5,9 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    css: {
+        transformer: 'postcss',
+    },
     plugins: [
         laravel({
             input: [

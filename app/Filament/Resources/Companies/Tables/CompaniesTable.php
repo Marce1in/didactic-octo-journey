@@ -6,10 +6,6 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\ChatAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Schemas\Components\Image;
-use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -41,11 +37,10 @@ class CompaniesTable
                 Action::make('viewCampaigns')
                     ->label('Campanhas')
                     ->icon('heroicon-o-presentation-chart-line')
-                    ->url(fn($record) => route('filament.admin.resources.agency-campaigns.index', [
+                    ->url(fn ($record) => route('filament.admin.resources.agency-campaigns.index', [
                         'search' => $record->name,
                     ]))->visible(
-                        fn(Model $record) =>
-                        $record->campaigns()
+                        fn (Model $record) => $record->campaigns()
                             ->where('agency_id', Auth::id())
                             ->exists()
                     ),

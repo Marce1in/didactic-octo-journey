@@ -65,6 +65,7 @@ return [
             'model' => env('AUTH_MODEL', App\Models\User::class),
         ],
 
+        Lab404\Impersonate\ImpersonateServiceProvider::class,
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
