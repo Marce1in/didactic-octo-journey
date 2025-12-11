@@ -22,3 +22,4 @@ RUN npm run build
 ENV SKIP_WAYFINDER=true
 
 CMD ["composer", "run", "dev"]
+  

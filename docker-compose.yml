@@ -2,7 +2,7 @@ services:
   app:
     image: amaralthesage/influhub:latest
     container_name: influhub-app
-    command: php artisan octane:start --host=influhub.sathon.com.br --port=443 --https --admin-port=2019
+    command: php artisan octane:start --host=http://localhost:8000 --port=443 --https --admin-port=2019
 
     pull_policy: always
 
