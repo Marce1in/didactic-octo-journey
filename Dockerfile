@@ -15,11 +15,12 @@ RUN npm ci --omit=dev
 
 COPY . .
 
+ENV SKIP_WAYFINDER=true
+
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
 RUN npm run build
 
-ENV SKIP_WAYFINDER=true
 
 CMD ["composer", "run", "dev"]
   
