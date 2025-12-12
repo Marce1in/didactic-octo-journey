@@ -11,13 +11,10 @@ RUN install-php-extensions \
 WORKDIR /app
 
 COPY package*.json ./
-ENV SKIP_WAYFINDER=true
 
-
-RUN npm ci --omit=dev
+RUN npm ci
 
 COPY . .
-
 
 RUN composer install --no-interaction --no-dev --prefer-dist --optimize-autoloader
 
