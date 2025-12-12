@@ -38,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             // ->brandLogo(asset('assets/logo.png'))
             // ->brandLogo(fn() => view('filament.logo'))->brandLogoHeight('18px')
-            ->brandName('TESTEEEE')
+            ->brandName('HubInflu')
             ->registration()
             ->passwordReset()
             // ->emailVerification()
