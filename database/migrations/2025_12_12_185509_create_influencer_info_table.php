@@ -14,12 +14,20 @@ return new class extends Migration
         Schema::table('influencer_info', function (Blueprint $table) {
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('agency_id')->nullable()->constrained('users')->nullOnDelete();
+
             $table->enum('association_status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->integer('n_followers');
+
             $table->string('instagram');
             $table->string('twitter');
             $table->string('facebook');
             $table->string('youtube');
+            $table->string('tiktok');
+
+            $table->integer('instagram_followers');
+            $table->integer('twitter_followers');
+            $table->integer('facebook_followers');
+            $table->integer('youtube_followers');
+            $table->integer('tiktok_followers');
         });
     }
 

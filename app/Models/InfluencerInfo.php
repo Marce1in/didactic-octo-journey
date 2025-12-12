@@ -11,11 +11,16 @@ class InfluencerInfo extends Model
         'user_id',
         'agency_id',
         'association_status',
-        'n_followers',
         'instagram',
         'twitter',
         'facebook',
-        'youtube'
+        'youtube',
+        'tiktok',
+        'instagram_followers',
+        'twitter_followers',
+        'facebook_followers',
+        'youtube_followers',
+        'tiktok_followers',
     ];
 
     public function agency()
