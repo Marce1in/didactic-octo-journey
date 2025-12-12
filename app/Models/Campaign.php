@@ -15,12 +15,14 @@ class Campaign extends Model
         'influencer_id',
         'agency_id',
         'budget',
-        'status',
-        'agency_cut'
+        'agency_cut',
+        'status_agency',
+        'status_influencer',
     ];
 
     protected $casts = [
-        'status' => CampaignStatus::class,
+        'status_agency' => CampaignStatus::class,
+        'status_influencer' => CampaignStatus::class,
     ];
 
     public function product(): BelongsTo
