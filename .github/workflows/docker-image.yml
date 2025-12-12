@@ -27,15 +27,15 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/influhub:latest
 
-      - name: Copy docker-compose to server
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          port: ${{ secrets.SSH_PORT }}
-          key: ${{ secrets.SSH_KEY }}
-          source: "docker-compose.yml"
-          target: "~/influhub/"
+    #  - name: Copy docker-compose to server
+     #   uses: appleboy/scp-action@v0.1.7
+     #   with:
+    #      host: ${{ secrets.SSH_HOST }}
+   #       username: ${{ secrets.SSH_USER }}
+   #       port: ${{ secrets.SSH_PORT }}
+   #       key: ${{ secrets.SSH_KEY }}
+   #       source: "docker-compose.yml"
+   #       target: "~/influhub/"
 
       - name: Deploy on server
         uses: appleboy/ssh-action@v1.1.0
@@ -45,7 +45,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd ~/influhub
             echo "Pulling updated container..."
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/influhub:latest
 
