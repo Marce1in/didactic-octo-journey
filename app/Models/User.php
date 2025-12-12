@@ -50,7 +50,7 @@ class User extends Authenticatable implements WirechatUser
             return null;
         }
 
-        return asset('storage/'.$this->avatar);
+        return asset('storage/' . $this->avatar);
     }
 
     public function campaigns()
@@ -81,7 +81,7 @@ class User extends Authenticatable implements WirechatUser
      */
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
     public function canAccessWirechatPanel(Panel $panel): bool

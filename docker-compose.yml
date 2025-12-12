@@ -2,17 +2,17 @@ services:
   app:
     image: amaralthesage/influhub:latest
     container_name: influhub-app
-    command: php artisan octane:start --host=http://localhost:8000 --port=443 --https --admin-port=2019
+    command: sh -c "php artisan optimize && php artisan octane:start"
 
     pull_policy: always
 
-    post_start:
-      - command: php artisan optimize
     pre_stop:
       - command: php artisan octane:stop
 
     ports:
-      - '443:443'
+      - '8000:8000'
+      - '5432:5432'
+
     env_file:
       - .env
 

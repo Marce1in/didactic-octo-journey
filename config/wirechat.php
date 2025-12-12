@@ -1,37 +1,7 @@
-
 <?php
 
-use App\Models\User;
-
 return [
-    'broadcasting' => [
-        'driver' => env('WIRECHAT_BROADCAST_DRIVER', 'reverb'),
-    ],
 
-    'notifications' => [
-
-        /*
-        |--------------------------------------------------------------------------
-        | Enable Notifications
-        |--------------------------------------------------------------------------
-        |
-        | Enable or disable notifications globally for Wirechat.
-        |
-        */
-        'enabled' => true,
-
-        /*
-        |--------------------------------------------------------------------------
-        | Notification Sound
-        |--------------------------------------------------------------------------
-        |
-        | The sound to play for notifications. This should correspond to a valid
-        | sound file in the public sounds directory.
-        |
-        */
-        'sound' => 'default',
-
-    ],
     /*
     |--------------------------------------------------------------------------
     | Use UUIDs for Conversations
@@ -46,7 +16,7 @@ return [
     | migrations generate UUID-based keys or unsigned big integers.
     |
     */
-    'uses_uuid_for_conversations' => true,
+    'uses_uuid_for_conversations' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -59,10 +29,6 @@ return [
     |
     */
     'table_prefix' => 'wirechat_',
-
-    'models' => [
-        'user' => User::class,
-    ],
 
     /*
      |--------------------------------------------------------------------------

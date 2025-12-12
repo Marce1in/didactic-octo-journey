@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Companies\Tables;
 
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\ChatAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -33,14 +32,14 @@ class CompaniesTable
                 //
             ])
             ->recordActions([
-                ChatAction::make(),
+                #   ChatAction::make(),
                 Action::make('viewCampaigns')
                     ->label('Campanhas')
                     ->icon('heroicon-o-presentation-chart-line')
-                    ->url(fn ($record) => route('filament.admin.resources.agency-campaigns.index', [
+                    ->url(fn($record) => route('filament.admin.resources.agency-campaigns.index', [
                         'search' => $record->name,
                     ]))->visible(
-                        fn (Model $record) => $record->campaigns()
+                        fn(Model $record) => $record->campaigns()
                             ->where('agency_id', Auth::id())
                             ->exists()
                     ),
