@@ -31,7 +31,6 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('dashboard')
-
             ->colors([
                 'primary' => '#d87943',
                 'secondary' => '#5f8787',
@@ -39,7 +38,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             // ->brandLogo(asset('assets/logo.png'))
             // ->brandLogo(fn() => view('filament.logo'))->brandLogoHeight('18px')
-            ->brandName('InfluHub')
+            ->brandName('TESTEEEE')
             ->registration()
             ->passwordReset()
             // ->emailVerification()
@@ -55,11 +54,11 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
-            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
-            ->renderHook(PanelsRenderHook::BODY_END, fn (): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn(): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
+            ->renderHook(PanelsRenderHook::BODY_END, fn(): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
-                fn (): string => Blade::render(<<<'BLADE'
+                fn(): string => Blade::render(<<<'BLADE'
                     <div x-data="{ role: @entangle('data.role') }">
                         <div x-show="role === 'influencer'">
                             <x-filament-socialite::buttons />
