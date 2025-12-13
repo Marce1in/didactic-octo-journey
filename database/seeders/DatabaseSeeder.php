@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\InfluencerInfo;
 use App\Models\Product;
 use App\Models\User;
 use App\UserRoles;
@@ -17,9 +18,9 @@ class DatabaseSeeder extends Seeder
         Storage::disk('public')->makeDirectory('avatars');
 
         $createAvatar = function () {
-            $filename = Str::random(20).'.jpg';
+            $filename = Str::random(20) . '.jpg';
 
-            $url = 'https://picsum.photos/300/300?random='.Str::random(10);
+            $url = 'https://picsum.photos/300/300?random=' . Str::random(10);
 
             $imageData = file_get_contents($url);
 
@@ -34,7 +35,8 @@ class DatabaseSeeder extends Seeder
         User::create([
             'name' => 'Admin',
             'email' => 'admin@gmail.com',
-            'avatar' => $createAvatar('Admin'),
+            'bio' => 'admin role during development',
+            'avatar' => $createAvatar(),
             'password' => Hash::make('senha123'),
             'role' => UserRoles::Admin,
             'email_verified_at' => now(),
@@ -49,7 +51,8 @@ class DatabaseSeeder extends Seeder
                 User::create([
                     'name' => fake()->company(),
                     'email' => "company$i@gmail.com",
-                    'avatar' => $createAvatar("Company $i"),
+                    'bio' => fake()->paragraph(),
+                    'avatar' => $createAvatar(),
                     'password' => Hash::make('senha123'),
                     'role' => 'company',
                     'email_verified_at' => now(),
@@ -66,7 +69,8 @@ class DatabaseSeeder extends Seeder
                 User::create([
                     'name' => fake()->company(),
                     'email' => "agency$i@gmail.com",
-                    'avatar' => $createAvatar("Agency $i"),
+                    'bio' => fake()->paragraph(),
+                    'avatar' => $createAvatar(),
                     'password' => Hash::make('senha123'),
                     'role' => 'agency',
                     'email_verified_at' => now(),
@@ -77,16 +81,26 @@ class DatabaseSeeder extends Seeder
         // -------------------------------------------------------
         // INFLUENCERS
         // -------------------------------------------------------
+        $influencers = collect();
         foreach (range(1, 30) as $i) {
-            User::create([
+            $user = User::create([
                 'name' => fake()->name(),
                 'email' => "influencer$i@gmail.com",
-                'avatar' => $createAvatar("Influencer $i"),
+                'bio' => fake()->paragraph(),
+                'avatar' => $createAvatar(),
                 'password' => Hash::make('senha123'),
                 'role' => 'influencer',
-                'agency_id' => $agencies->random()->id,
                 'email_verified_at' => now(),
             ]);
+
+            InfluencerInfo::create([
+                'user_id' => $user->id,
+                'agency_id' => $agencies->random()->id,
+                'instagram' => fake()->userName(),
+                'instagram_followers' => rand(1000, 100000),
+                'association_status' => collect(['approved', 'pending'])->random(),
+            ]);
+            $influencers->push($user);
         }
 
         // -------------------------------------------------------
@@ -95,7 +109,7 @@ class DatabaseSeeder extends Seeder
         $companies->each(function ($company) {
             foreach (range(1, 5) as $i) {
                 Product::create([
-                    'name' => fake()->colorName().' '.fake()->streetName,
+                    'name' => fake()->colorName() . ' ' . fake()->streetName,
                     'description' => "Description for product {$i} from {$company->name}.",
                     'price' => rand(10, 500),
                     'company_id' => $company->id,
@@ -104,43 +118,56 @@ class DatabaseSeeder extends Seeder
         });
 
         // -------------------------------------------------------
+        // MANUAL TEST USERS
         // -------------------------------------------------------
         User::create([
             'name' => 'Empresa A',
             'email' => 'empresa@gmail.com',
-            'avatar' => $createAvatar('Empresa A'),
+            'avatar' => $createAvatar(),
+            'bio' => fake()->paragraph(),
             'password' => Hash::make('senha123'),
             'role' => 'company',
             'email_verified_at' => now(),
         ]);
 
-        User::create([
+        $agenciaA = User::create([
             'name' => 'Agência A',
             'email' => 'agencia@gmail.com',
-            'avatar' => $createAvatar('Agência A'),
+            'avatar' => $createAvatar(),
+            'bio' => fake()->paragraph(),
             'password' => Hash::make('senha123'),
             'role' => 'agency',
             'email_verified_at' => now(),
         ]);
 
-        User::create([
+        $influencerA1 = User::create([
             'name' => 'Influencer A1',
             'email' => 'influencer@gmail.com',
-            'avatar' => $createAvatar('Influencer A1'),
+            'avatar' => $createAvatar(),
+            'bio' => fake()->paragraph(),
             'password' => Hash::make('senha123'),
             'role' => 'influencer',
-            'agency_id' => 2,
             'email_verified_at' => now(),
         ]);
+        InfluencerInfo::create([
+            'user_id' => $influencerA1->id,
+            'agency_id' => $agenciaA->id,
+            'association_status' => 'approved',
+        ]);
 
-        User::create([
+        $influencerA2 = User::create([
             'name' => 'Influencer A2',
             'email' => 'influencera2@gmail.com',
-            'avatar' => $createAvatar('Influencer A2'),
+            'avatar' => $createAvatar(),
+            'bio' => fake()->paragraph(),
             'password' => Hash::make('senha123'),
             'role' => 'influencer',
-            'agency_id' => 2,
             'email_verified_at' => now(),
+        ]);
+        InfluencerInfo::create([
+            'user_id' => $influencerA2->id,
+            'agency_id' => $agenciaA->id,
+            'association_status' => 'pending',
         ]);
     }
 }
