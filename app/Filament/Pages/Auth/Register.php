@@ -11,6 +11,7 @@ use Filament\Auth\Events\Registered;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Notifications\VerifyEmail;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -179,6 +180,15 @@ class Register extends SimplePage
         return $schema
             ->components([
 
+                FileUpload::make('avatar_url')
+                    ->label('Avatar')
+                    ->disk('public')->alignCenter()
+                    ->directory('avatars')
+                    ->image()
+                    ->avatar()
+                    ->circleCropper()
+                    ->imageEditor()
+                    ->imagePreviewHeight('100'),
 
                 $this->getNameFormComponent(),
                 Textarea::make('bio')->rows(5)->placeholder('Sou Youtuber e Streamer na área da tecnologia...')->required(),
