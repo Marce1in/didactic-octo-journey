@@ -33,8 +33,9 @@ class User extends Authenticatable implements WirechatUser
         'password',
         'role',
         'avatar',
-        'description',
+        'bio',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.

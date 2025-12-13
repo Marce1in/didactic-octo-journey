@@ -59,6 +59,8 @@ class EditProfile extends Page
 
     protected static bool $isDiscovered = false;
 
+    protected array $influencerData;
+
     protected string $view;
 
     public function getLayout(): string
@@ -102,6 +104,10 @@ class EditProfile extends Page
 
         if (! $user instanceof Model) {
             throw new LogicException('The authenticated user object must be an Eloquent model to allow the profile page to update it.');
+        }
+
+        if ($user->role === UserRoles::Influencer) {
+            return $user->load('influencer_info');
         }
 
         return $user;
@@ -149,8 +155,7 @@ class EditProfile extends Page
 
         $user = $this->getUser();
 
-        if ($user->role === 'influencer' && $user->influencer_info) {
-
+        if ($user->role === UserRoles::Influencer && $user->influencer_info) {
             $data['influencer_data'] = $user->influencer_info->toArray();
         }
 
@@ -163,6 +168,12 @@ class EditProfile extends Page
      */
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        // Save the relationship data to a temporary class property
+        $this->influencerData = $data['influencer_data'] ?? [];
+
+        // REMOVE the container key so that Filament doesn't try to save it to the User model
+        unset($data['influencer_data']);
+
         return $data;
     }
 
@@ -226,6 +237,7 @@ class EditProfile extends Page
         }
 
         $record->update($data);
+        $record->influencer_info()->updateOrCreate(['user_id' => $record->id], $this->influencerData);
 
         return $record;
     }
