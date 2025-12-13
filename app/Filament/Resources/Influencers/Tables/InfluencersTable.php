@@ -52,7 +52,6 @@ class InfluencersTable
                 //
             ])
             ->recordActions([
-
                 Action::make('Aprovar Vínculo')
                     ->label('Aprovar')
                     ->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')

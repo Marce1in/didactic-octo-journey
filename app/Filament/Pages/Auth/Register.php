@@ -3,6 +3,8 @@
 namespace Filament\Auth\Pages;
 
 use App\Models\InfluencerInfo;
+use App\Models\User;
+use App\UserRoles;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -174,6 +176,14 @@ class Register extends SimplePage
             ->statePath('data');
     }
 
+
+
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // ACTUAL FORM
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -212,6 +222,21 @@ class Register extends SimplePage
                             ]),
 
                             Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
+                                Select::make('agency_id')
+                                    ->label('Agência Vinculada')->columnSpan(2)
+                                    ->helperText('Selecione a agência responsável pelo seu perfil.')
+                                    ->searchable()
+                                    ->preload()
+                                    ->getSearchResultsUsing(
+                                        fn(string $search): array => User::query()
+                                            ->where('role', UserRoles::Agency)
+                                            ->where('name', 'like', "%{$search}%")
+                                            ->limit(50)
+                                            ->pluck('name', 'id')
+                                            ->toArray()
+                                    )
+                                    ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
+
                                 Group::make()->schema([
                                     TextInput::make('instagram')->hiddenLabel()->placeholder('@ do Instagram'),
                                     TextInput::make('twitter')->hiddenLabel()->placeholder('@ do Twitter'),
@@ -241,6 +266,11 @@ class Register extends SimplePage
             ]);
     }
 
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+    // 
+    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
 
 
     protected function getNameFormComponent(): Component
