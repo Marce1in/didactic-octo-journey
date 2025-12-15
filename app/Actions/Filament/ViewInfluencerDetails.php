@@ -131,8 +131,7 @@ class ViewInfluencerDetails
                             ->numeric()
                             ->placeholder('-'),
                     ])
-                    ->columns(2)
-                    ->visible(fn($record) => $record->role === 'influencer'),
+                    ->columns(2),
 
                 Section::make('Estatísticas Gerais')
                     ->schema([
