@@ -34,6 +34,10 @@ class InfluencersTable
 
     public static function configure(Table $table): Table
     {
+        $table->recordAction('viewInfluencerDetails');
+
+        $table->recordActions([ViewInfluencerDetails::make()]);
+
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
@@ -70,7 +74,7 @@ class InfluencersTable
                             ->title('Influenciador vinculado')
                             ->body('Vínculo com influenciador criado com sucesso.')
                     ),
-                ViewInfluencerDetails::make()
+                //  ViewInfluencerDetails::make()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

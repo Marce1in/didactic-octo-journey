@@ -23,7 +23,7 @@ class ViewInfluencerDetails
                 Section::make('Informações do Influencer')
                     ->schema([
                         Group::make()->columns(2)->schema([
-                            ImageEntry::make('avatar')
+                            ImageEntry::make('avatar_url')
                                 ->label('Avatar')
                                 ->circular()
                                 ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name))

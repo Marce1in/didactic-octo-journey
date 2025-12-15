@@ -16,6 +16,10 @@ class AgenciesTable
 {
     public static function configure(Table $table): Table
     {
+        $table->recordAction('viewAgencyDetails');
+
+        $table->recordActions([ViewAgencyDetails::make()]);
+
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
@@ -44,7 +48,7 @@ class AgenciesTable
                             ->where('company_id', Auth::id())
                             ->exists()
                     ),
-                ViewAgencyDetails::make()
+                // ViewAgencyDetails::make()
                 //  ChatAction::make(),
             ])
             ->toolbarActions([

@@ -16,6 +16,10 @@ class CompaniesTable
 {
     public static function configure(Table $table): Table
     {
+        $table->recordAction('viewCompanyDetails');
+
+        $table->recordActions([ViewCompanyDetails::make()]);
+
         return $table
             ->columns([
                 ImageColumn::make('avatar_url')
@@ -45,7 +49,7 @@ class CompaniesTable
                             ->exists()
                     ),
 
-                ViewCompanyDetails::make()
+                //ViewCompanyDetails::make()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
