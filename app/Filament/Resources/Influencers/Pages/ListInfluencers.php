@@ -20,7 +20,6 @@ class ListInfluencers extends ListRecords
         ];
     }
 
-
     public function getTabs(): array
     {
         return [

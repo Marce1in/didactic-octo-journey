@@ -31,7 +31,6 @@ use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\Width;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Auth\SessionGuard;
@@ -75,8 +74,6 @@ class Register extends SimplePage
         $this->callHook('afterFill');
     }
 
-
-
     public function register(): ?RegistrationResponse
     {
         try {
@@ -109,7 +106,6 @@ class Register extends SimplePage
                 ]);
             }
 
-
             $this->form->model($user)->saveRelationships();
 
             $this->callHook('afterRegister');
@@ -127,6 +123,7 @@ class Register extends SimplePage
 
         return app(RegistrationResponse::class);
     }
+
     protected function getRateLimitedNotification(TooManyRequestsException $exception): ?Notification
     {
         return Notification::make()
@@ -177,8 +174,6 @@ class Register extends SimplePage
             ->statePath('data');
     }
 
-
-
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
     // FORM
@@ -214,8 +209,6 @@ class Register extends SimplePage
                         ->required()
                         ->live(),
 
-
-
                     Section::make('Canais de Mídia Social')
                         ->description('Informe o @ do seu perfil e número de seguidores em cada plataforma.')
                         ->schema([
@@ -227,15 +220,13 @@ class Register extends SimplePage
                                         ->mapWithKeys(function ($category) {
                                             return [
                                                 $category->title => $category->subcategories
-                                                    ->filter(fn($subcategory) => $subcategory->title !== null)
+                                                    ->filter(fn ($subcategory) => $subcategory->title !== null)
                                                     ->pluck('title', 'id')
                                                     ->toArray(),
                                             ];
                                         })
                                         ->toArray()
                                 ),
-
-
 
                             Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
                                 Select::make('agency_id')
@@ -244,14 +235,14 @@ class Register extends SimplePage
                                     ->searchable()
                                     ->preload()
                                     ->getSearchResultsUsing(
-                                        fn(string $search): array => User::query()
+                                        fn (string $search): array => User::query()
                                             ->where('role', UserRoles::Agency)
                                             ->where('name', 'ilike', "%{$search}%")
                                             ->limit(50)
                                             ->pluck('name', 'id')
                                             ->toArray()
                                     )
-                                    ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
+                                    ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name),
 
                                 Group::make()->columns(2)->schema([
                                     TextEntry::make('handle_label')->label('@ do Perfil'),
@@ -275,24 +266,21 @@ class Register extends SimplePage
                                 ]),
                             ]),
                         ])
-                        ->visible(fn(Get $get): bool => $get('role') === 'influencer'),
+                        ->visible(fn (Get $get): bool => $get('role') === 'influencer'),
                 ]),
-
 
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
-
 
             ]);
     }
 
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
-    // 
+    //
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
-
 
     protected function getNameFormComponent(): Component
     {
@@ -322,7 +310,7 @@ class Register extends SimplePage
             ->required()
             ->rule(Password::default())
             ->showAllValidationMessages()
-            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'));
     }
@@ -363,12 +351,12 @@ class Register extends SimplePage
         return $this->userModel = $provider->getModel();
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return __('filament-panels::auth/pages/register.title');
     }
 
-    public function getHeading(): string | Htmlable | null
+    public function getHeading(): string|Htmlable|null
     {
         return __('filament-panels::auth/pages/register.heading');
     }
@@ -404,13 +392,13 @@ class Register extends SimplePage
         return $data;
     }
 
-    public function getSubheading(): string | Htmlable | null
+    public function getSubheading(): string|Htmlable|null
     {
         if (! filament()->hasLogin()) {
             return null;
         }
 
-        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before') . ' ' . $this->loginAction->toHtml());
+        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before').' '.$this->loginAction->toHtml());
     }
 
     public function content(Schema $schema): Schema

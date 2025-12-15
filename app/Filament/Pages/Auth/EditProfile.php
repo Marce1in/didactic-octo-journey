@@ -3,6 +3,7 @@
 namespace Filament\Auth\Pages;
 
 use App\Models\Category;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\UserRoles;
 use Filament\Actions\Action;
@@ -29,7 +30,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Alignment;
-use Filament\Support\Enums\Width;
 use Filament\Support\Exceptions\Halt;
 use Filament\Support\Facades\FilamentView;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -37,6 +37,7 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
@@ -63,6 +64,7 @@ class EditProfile extends Page
     protected static bool $isDiscovered = false;
 
     protected array $influencerData;
+
 
     protected string $view;
 
@@ -101,7 +103,7 @@ class EditProfile extends Page
         $this->fillForm();
     }
 
-    public function getUser(): Authenticatable & Model
+    public function getUser(): Authenticatable&Model
     {
         $user = Filament::auth()->user();
 
@@ -110,7 +112,7 @@ class EditProfile extends Page
         }
 
         if ($user->role === UserRoles::Influencer) {
-            return $user->load('influencer_info');
+            return $user->load(['influencer_info', 'subcategories']);
         }
 
         return $user;
@@ -118,11 +120,13 @@ class EditProfile extends Page
 
     protected function fillForm(): void
     {
+
         $data = $this->getUser()->attributesToArray();
 
         $this->callHook('beforeFill');
 
         $data = $this->mutateFormDataBeforeFill($data);
+
 
         $this->form->fill($data);
 
@@ -161,6 +165,9 @@ class EditProfile extends Page
         if ($user->role === UserRoles::Influencer && $user->influencer_info) {
             $data['influencer_data'] = $user->influencer_info->toArray();
         }
+        if ($user->role === UserRoles::Influencer && $user->influencer_info) {
+            $data['subcategories'] = $user->subcategories->pluck('id')->toArray();
+        }
 
         return $data;
     }
@@ -171,10 +178,12 @@ class EditProfile extends Page
      */
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        // Save the relationship data to a temporary class property
+
+
+
+
         $this->influencerData = $data['influencer_data'] ?? [];
 
-        // REMOVE the container key so that Filament doesn't try to save it to the User model
         unset($data['influencer_data']);
 
         return $data;
@@ -231,8 +240,12 @@ class EditProfile extends Page
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleRecordUpdate(Model $record, array $data): Model
+    protected function handleRecordUpdate(User $record, array $data): Model
     {
+        $record->subcategories()->sync(
+            $data['subcategories'] ?? []
+        );
+
         if (Filament::hasEmailChangeVerification() && array_key_exists('email', $data)) {
             $this->sendEmailChangeVerification($record, $data['email']);
 
@@ -376,13 +389,11 @@ class EditProfile extends Page
             ->statePath('data');
     }
 
-
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
     // FORM
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
-
 
     public function form(Schema $schema): Schema
     {
@@ -403,16 +414,17 @@ class EditProfile extends Page
                 $this->getNameFormComponent(),
                 Textarea::make('bio')->rows(5)->placeholder('Sou Youtuber e Streamer na área da tecnologia...')->required(),
 
-
-
                 Section::make()->schema([
 
                     Section::make('Canais de Mídia Social')
                         ->description('Atualize o @ do seu perfil e número de seguidores em cada plataforma.')
                         ->schema([
+
+
                             Select::make('subcategories')
                                 ->multiple()
                                 ->label('Categoria')
+                                ->dehydrated(true)
                                 ->options(
                                     Category::with('subcategories')->get()
                                         ->mapWithKeys(function ($category) {
@@ -425,6 +437,7 @@ class EditProfile extends Page
                                         })
                                         ->toArray()
                                 ),
+
 
 
                             Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
@@ -442,10 +455,6 @@ class EditProfile extends Page
                                             ->toArray()
                                     )
                                     ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
-
-
-
-
 
                                 Group::make()->columns(2)->schema([
                                     TextEntry::make('handle_label')->label('@ do Perfil'),
@@ -468,25 +477,21 @@ class EditProfile extends Page
                                     TextInput::make('facebook_followers')->hiddenLabel()->numeric(),
                                 ]),
                             ]),
-                        ])
+                        ]),
                 ])
                     ->visible(fn(): bool => Auth::user()->role === UserRoles::Influencer),
-
 
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
 
-
             ]);
     }
 
-
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
-
 
     /**
      * @return array<Action | ActionGroup>
@@ -517,12 +522,12 @@ class EditProfile extends Page
         return false;
     }
 
-    public function getFormActionsAlignment(): string | Alignment
+    public function getFormActionsAlignment(): string|Alignment
     {
         return Alignment::Start;
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         return static::getLabel();
     }

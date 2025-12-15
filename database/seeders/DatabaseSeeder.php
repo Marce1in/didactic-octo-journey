@@ -113,14 +113,13 @@ class DatabaseSeeder extends Seeder
         $companies->each(function ($company) {
             foreach (range(1, 5) as $i) {
                 Product::create([
-                    'name' => fake()->colorName() . ' ' . fake()->streetName,
+                    'name' => fake()->colorName().' '.fake()->streetName,
                     'description' => "Description for product {$i} from {$company->name}.",
                     'price' => rand(10, 500),
                     'company_id' => $company->id,
                 ]);
             }
         });
-
 
         // -------------------------------------------------------
         // Categoriesssssssss
@@ -180,8 +179,6 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
-
-
 
         // -------------------------------------------------------
         // MANUAL TEST USERS

@@ -36,7 +36,6 @@ class User extends Authenticatable implements WirechatUser
         'bio',
     ];
 
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -44,11 +43,16 @@ class User extends Authenticatable implements WirechatUser
      */
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return null;
         }
 
         return asset('storage/' . $this->avatar);
+    }
+
+    public function subcategories()
+    {
+        return $this->belongsToMany(Subcategory::class);
     }
 
     public function campaigns()
@@ -62,8 +66,6 @@ class User extends Authenticatable implements WirechatUser
     {
         return $this->hasOne(InfluencerInfo::class);
     }
-
-
 
     public function influencers()
     {
