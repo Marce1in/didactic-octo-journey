@@ -14,9 +14,11 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Section;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class InfluencersTable
@@ -47,6 +49,16 @@ class InfluencersTable
                     ->searchable(),
                 TextColumn::make('influencer_info.agency.name')->label('Agência')->default('___')
                     ->searchable(),
+
+                TextColumn::make('first_category')
+                    ->label('Categoria')
+                    ->state(function (Model $record) {
+                        return $record->subcategories->first()?->category?->title;
+                    })
+                    ->badge()
+                    ->tooltip(function (Model $record): string {
+                        return $record->subcategories->pluck('title')->join(', ');
+                    }),
 
                 TextColumn::make('created_at')
                     ->dateTime()
