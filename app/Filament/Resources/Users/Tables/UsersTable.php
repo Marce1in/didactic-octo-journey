@@ -10,6 +10,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
@@ -21,7 +22,8 @@ class UsersTable
             ->columns([
                 TextColumn::make('role')
                     ->badge()
-                    ->searchable()->sortable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('email')
@@ -51,7 +53,6 @@ class UsersTable
                         ->numeric()
                         ->sortable(),
                     TextColumn::make('influencer_info.association_status')->label('Associação')
-                        ->searchable()
                         ->formatStateUsing(function ($state, $record): string {
                             if ($record?->role !== UserRoles::Influencer) {
                                 return '-';
@@ -68,7 +69,13 @@ class UsersTable
 
             ])
             ->filters([
-                //
+                SelectFilter::make('role')
+                    ->options([
+                        'admin' => 'Admin',
+                        'company' => 'Company',
+                        'agency' => 'Agency',
+                        'influencer' => 'Influencer',
+                    ])
             ])
             ->recordActions([
                 ActionGroup::make([

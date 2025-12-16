@@ -57,7 +57,7 @@ class CampaignAnnouncementsTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->visible(fn($record) => Auth::id() === $record->agency_id),
+                // EditAction::make()->visible(fn($record) => Auth::id() === $record->agency_id),
 
                 Action::make('propose')
                     ->label('Me Interesso')
