@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('campaigns', function (Blueprint $table) {
+        Schema::create('campaign_announcements', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->decimal('agency_cut', 5, 2)->after('name');
+            $table->decimal('budget', 14, 2);
             $table->foreignId('product_id')->constrained();
-            $table->foreignId('influencer_id')->nullable()->constrained('users');
             $table->foreignId('company_id')->constrained('users');
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->enum('status', ['pending_approval', 'active', 'finished', 'cancelled'])->default('pending_approval');
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('campaigns');
+        Schema::dropIfExists('campaign_announcement');
     }
 };

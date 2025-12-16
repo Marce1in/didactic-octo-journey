@@ -46,7 +46,7 @@ class User extends Authenticatable implements HasAvatar, WirechatUser
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return asset('storage/'.$this->avatar);
+        return asset('storage/' . $this->avatar);
     }
 
     public function getAvatarUrlAttribute(): ?string
@@ -55,7 +55,7 @@ class User extends Authenticatable implements HasAvatar, WirechatUser
             return null;
         }
 
-        return asset('storage/'.$this->avatar);
+        return asset('storage/' . $this->avatar);
     }
 
     public function subcategories()
@@ -65,7 +65,7 @@ class User extends Authenticatable implements HasAvatar, WirechatUser
 
     public function campaigns()
     {
-        return Campaign::where('agency_id', $this->id)
+        return OngoingCampaign::where('agency_id', $this->id)
             ->orWhere('company_id', $this->id)
             ->orWhere('influencer_id', $this->id);
     }
@@ -98,7 +98,7 @@ class User extends Authenticatable implements HasAvatar, WirechatUser
      */
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name);
+        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
     }
 
     public function canAccessWirechatPanel(Panel $panel): bool

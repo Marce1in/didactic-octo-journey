@@ -7,7 +7,7 @@ use App\Filament\Resources\Campaigns\Pages\EditCampaign;
 use App\Filament\Resources\Campaigns\Pages\ListCampaigns;
 use App\Filament\Resources\Campaigns\Schemas\CampaignForm;
 use App\Filament\Resources\Campaigns\Tables\CampaignsTable;
-use App\Models\Campaign;
+use App\Models\OngoingCampaign;
 use App\UserRoles;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Gate;
 
 class CampaignResource extends Resource
 {
-    protected static ?string $model = Campaign::class;
+    protected static ?string $model = OngoingCampaign::class;
 
     protected static ?string $modelLabel = 'Campanhas';
 

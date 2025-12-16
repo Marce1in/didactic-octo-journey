@@ -4,8 +4,10 @@ namespace App\Filament\Pages\Auth;
 
 use App\Models\Category;
 use App\Models\InfluencerInfo;
+use App\Models\Subcategory;
 use App\Models\User;
 use App\UserRoles;
+use Closure;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -47,7 +49,7 @@ use Filament\Auth\Pages\Register as BaseRegister;
  * @property-read Action $loginAction
  * @property-read Schema $form
  */
-class Register extends BaseRegister
+class Register extends SimplePage
 {
     use CanUseDatabaseTransactions;
     use WithRateLimiting;
@@ -186,103 +188,110 @@ class Register extends BaseRegister
     // -----------------------------------------------------------------------------------------------------------
     // FORM
     // -----------------------------------------------------------------------------------------------------------
-    // -----------------------------------------------------------------------------------------------------------
+    // ----------------------------------------------------------------------------------------------------------- 
 
     public function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
+        return $schema->components([
+            FileUpload::make('avatar')
+                ->label('Avatar')
+                ->disk('public')
+                ->directory('avatars')
+                ->alignCenter()
+                ->image()
+                ->avatar()
+                ->circleCropper()
+                ->imageEditor()
+                ->imagePreviewHeight('100'),
 
-                FileUpload::make('avatar')
-                    ->label('Avatar')
-                    ->disk('public')
-                    ->directory('avatars')
-                    ->alignCenter()
-                    ->image()
-                    ->avatar()
-                    ->circleCropper()
-                    ->imageEditor()
-                    ->imagePreviewHeight('100'),
+            $this->getNameFormComponent(),
+            Textarea::make('bio')->rows(5)->placeholder('Sou Youtuber e Streamer na área da tecnologia...')->required(),
 
-                $this->getNameFormComponent(),
-                Textarea::make('bio')->rows(5)->placeholder('Sou Youtuber e Streamer na área da tecnologia...')->required(),
+            Section::make()->schema([
+                Select::make('role')
+                    ->options([
+                        'influencer' => 'Influenciador',
+                        'company' => 'Empresa',
+                        'agency' => 'Agency',
+                    ])
+                    ->required()
+                    ->live(),
 
-                Section::make()->schema([
-                    Select::make('role')
-                        ->options([
-                            'influencer' => 'Influenciador',
-                            'company' => 'Empresa',
-                            'agency' => 'Agency',
-                        ])
-                        ->required()
-                        ->live(),
+                Section::make('Canais de Mídia Social')
+                    ->description('Informe o @ do seu perfil e número de seguidores em cada plataforma.')
+                    ->schema([
 
-                    Section::make('Canais de Mídia Social')
-                        ->description('Informe o @ do seu perfil e número de seguidores em cada plataforma.')
-                        ->schema([
+                        Select::make('subcategories')
+                            ->multiple()
+                            ->label('Categoria')
+                            ->options(
+                                Category::with('subcategories')->get()
+                                    ->mapWithKeys(function ($category) {
+                                        return [
+                                            $category->title => $category->subcategories
+                                                ->filter(fn($subcategory) => $subcategory->title !== null)
+                                                ->pluck('title', 'id')
+                                                ->toArray(),
+                                        ];
+                                    })
+                                    ->toArray()
+                            )->rules([
+                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                                    $categories = Subcategory::whereIn('id', $value)
+                                        ->distinct('category_id')
+                                        ->count('category_id');
 
-                            Select::make('subcategories')
-                                ->multiple()
-                                ->label('Categoria')
-                                ->options(
-                                    Category::with('subcategories')->get()
-                                        ->mapWithKeys(function ($category) {
-                                            return [
-                                                $category->title => $category->subcategories
-                                                    ->filter(fn($subcategory) => $subcategory->title !== null)
-                                                    ->pluck('title', 'id')
-                                                    ->toArray(),
-                                            ];
-                                        })
-                                        ->toArray()
-                                ),
-
-                            Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
-                                Select::make('agency_id')
-                                    ->label('Agência Vinculada')->columnSpan(2)
-                                    ->helperText('Selecione a agência responsável pelo seu perfil.')
-                                    ->searchable()
-                                    ->preload()
-                                    ->getSearchResultsUsing(
-                                        fn(string $search): array => User::query()
-                                            ->where('role', UserRoles::Agency)
-                                            ->where('name', 'ilike', "%{$search}%")
-                                            ->limit(50)
-                                            ->pluck('name', 'id')
-                                            ->toArray()
-                                    )
-                                    ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
-
-                                Group::make()->columns(2)->schema([
-                                    TextEntry::make('handle_label')->label('@ do Perfil'),
-                                    TextEntry::make('followers_label')->label('Seguidores'),
-                                ])->columnSpan(2),
-
-                                Group::make()->schema([
-                                    TextInput::make('instagram')->hiddenLabel()->placeholder('@ do Instagram'),
-                                    TextInput::make('twitter')->hiddenLabel()->placeholder('@ do Twitter'),
-                                    TextInput::make('youtube')->hiddenLabel()->placeholder('@ do Youtube'),
-                                    TextInput::make('tiktok')->hiddenLabel()->placeholder('@ do TikTok'),
-                                    TextInput::make('facebook')->hiddenLabel()->placeholder('@ do Facebook'),
-                                ]),
-
-                                Group::make()->schema([
-                                    TextInput::make('instagram_followers')->hiddenLabel()->numeric(),
-                                    TextInput::make('twitter_followers')->hiddenLabel()->numeric(),
-                                    TextInput::make('youtube_followers')->hiddenLabel()->numeric(),
-                                    TextInput::make('tiktok_followers')->hiddenLabel()->numeric(),
-                                    TextInput::make('facebook_followers')->hiddenLabel()->numeric(),
-                                ]),
+                                    if ($categories > 1) {
+                                        $fail('Selecione subcategorias de apenas uma categoria.');
+                                    }
+                                },
                             ]),
-                        ])
-                        ->visible(fn(Get $get): bool => $get('role') === 'influencer'),
-                ]),
 
-                $this->getEmailFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
+                        Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
+                            Select::make('agency_id')
+                                ->label('Agência Vinculada')->columnSpan(2)
+                                ->helperText('Selecione a agência responsável pelo seu perfil.')
+                                ->searchable()
+                                ->preload()
+                                ->getSearchResultsUsing(
+                                    fn(string $search): array => User::query()
+                                        ->where('role', UserRoles::Agency)
+                                        ->where('name', 'ilike', "%{$search}%")
+                                        ->limit(50)
+                                        ->pluck('name', 'id')
+                                        ->toArray()
+                                )
+                                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
 
-            ]);
+                            Group::make()->columns(2)->schema([
+                                TextEntry::make('handle_label')->label('@ do Perfil'),
+                                TextEntry::make('followers_label')->label('Seguidores'),
+                            ])->columnSpan(2),
+
+                            Group::make()->schema([
+                                TextInput::make('instagram')->hiddenLabel()->placeholder('@ do Instagram'),
+                                TextInput::make('twitter')->hiddenLabel()->placeholder('@ do Twitter'),
+                                TextInput::make('youtube')->hiddenLabel()->placeholder('@ do Youtube'),
+                                TextInput::make('tiktok')->hiddenLabel()->placeholder('@ do TikTok'),
+                                TextInput::make('facebook')->hiddenLabel()->placeholder('@ do Facebook'),
+                            ]),
+
+                            Group::make()->schema([
+                                TextInput::make('instagram_followers')->hiddenLabel()->numeric(),
+                                TextInput::make('twitter_followers')->hiddenLabel()->numeric(),
+                                TextInput::make('youtube_followers')->hiddenLabel()->numeric(),
+                                TextInput::make('tiktok_followers')->hiddenLabel()->numeric(),
+                                TextInput::make('facebook_followers')->hiddenLabel()->numeric(),
+                            ]),
+                        ]),
+                    ])
+                    ->visible(fn(Get $get): bool => $get('role') === 'influencer'),
+            ]),
+
+            $this->getEmailFormComponent(),
+            $this->getPasswordFormComponent(),
+            $this->getPasswordConfirmationFormComponent(),
+        ]);
     }
 
     // -----------------------------------------------------------------------------------------------------------

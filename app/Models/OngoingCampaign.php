@@ -5,8 +5,9 @@ namespace App\Models;
 use App\CampaignStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
-class Campaign extends Model
+class OngoingCampaign extends Model
 {
     protected $fillable = [
         'name',
@@ -17,6 +18,7 @@ class Campaign extends Model
         'budget',
         'agency_cut',
         'status_agency',
+        'category_id',
         'status_influencer',
     ];
 
@@ -24,6 +26,11 @@ class Campaign extends Model
         'status_agency' => CampaignStatus::class,
         'status_influencer' => CampaignStatus::class,
     ];
+
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
     public function product(): BelongsTo
     {

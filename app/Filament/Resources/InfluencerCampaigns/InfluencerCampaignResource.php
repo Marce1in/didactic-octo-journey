@@ -7,7 +7,7 @@ use App\Filament\Resources\InfluencerCampaigns\Pages\EditInfluencerCampaign;
 use App\Filament\Resources\InfluencerCampaigns\Pages\ListInfluencerCampaigns;
 use App\Filament\Resources\InfluencerCampaigns\Schemas\InfluencerCampaignForm;
 use App\Filament\Resources\InfluencerCampaigns\Tables\InfluencerCampaignsTable;
-use App\Models\Campaign;
+use App\Models\OngoingCampaign;
 use App\UserRoles;
 use BackedEnum;
 use Filament\Resources\Resource;
@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Gate;
 
 class InfluencerCampaignResource extends Resource
 {
-    protected static ?string $model = Campaign::class;
+    protected static ?string $model = OngoingCampaign::class;
 
     protected static ?string $modelLabel = 'Minhas Campanhas';
 

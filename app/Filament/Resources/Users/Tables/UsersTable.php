@@ -8,6 +8,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use STS\FilamentImpersonate\Actions\Impersonate;
@@ -43,23 +44,27 @@ class UsersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('agency.name')->label('Agência')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('association_status')
-                    ->searchable()
-                    ->formatStateUsing(function ($state, $record): string {
-                        if ($record?->role !== UserRoles::Influencer) {
-                            return '-';
-                        }
 
-                        return match ($state) {
-                            'pending' => 'Pendente',
-                            'approved' => 'Aprovado',
-                            'rejected' => 'Rejeitado',
-                            default => '-',
-                        };
-                    }),
+                ColumnGroup::make('Influencers', [
+
+                    TextColumn::make('influencer_info.agency.name')->label('Agência')
+                        ->numeric()
+                        ->sortable(),
+                    TextColumn::make('influencer_info.association_status')->label('Associação')
+                        ->searchable()
+                        ->formatStateUsing(function ($state, $record): string {
+                            if ($record?->role !== UserRoles::Influencer) {
+                                return '-';
+                            }
+
+                            return match ($state) {
+                                'pending' => 'Pendente',
+                                'approved' => 'Aprovado',
+                                'rejected' => 'Rejeitado',
+                                default => '-',
+                            };
+                        }),
+                ])
 
             ])
             ->filters([

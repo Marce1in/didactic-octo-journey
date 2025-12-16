@@ -29,16 +29,33 @@ class CampaignForm
                         ->relationship(
                             'product',
                             'name',
-                            fn ($query) => $query->where('company_id', Auth::id())
+                            fn($query) => $query->where('company_id', Auth::id())
                         )
                         ->label('Produto')
                         ->required(),
+
+                    Select::make('category_id')
+                        ->relationship(
+                            'category',
+                            'title',
+                        )
+                        ->label('Categoria')
+                        ->required(),
+
+                    TextInput::make('budget')
+                        ->label('Orçamento')
+                        ->numeric()
+                        ->prefix('R$')
+                        ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
+                        ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                        ->placeholder('0,00')
                 ]),
 
                 Hidden::make('company_id')
                     ->default(Auth::id()),
 
                 Section::make()->schema([
+                    TextInput::make('agency_cut')->label('Parcela da Agência')->numeric()->required()->prefix('%')->inputMode('decimal')->maxLength(5)->placeholder('30,00'),
 
                     Select::make('agency_id')
                         ->label('Agência')
@@ -47,22 +64,20 @@ class CampaignForm
                                 ->pluck('name', 'id')
                         )
                         ->searchable()
-                        ->required()
                         ->live(),
 
                     Select::make('influencer_id')
                         ->label('Influencer')
                         ->options(
-                            fn (Get $get) => User::where('role', 'influencer')
+                            fn(Get $get) => User::where('role', 'influencer')
                                 ->whereHas('influencer_info', function ($query) use ($get) {
                                     $query->where('agency_id', $get('agency_id'));
                                 })
                                 ->pluck('name', 'id')
                         )
                         ->searchable()
-                        ->required()
-                        ->hidden(fn (Get $get) => ! $get('agency_id'))
-                        ->disabled(fn (Get $get) => ! $get('agency_id')),
+                        ->hidden(fn(Get $get) => ! $get('agency_id'))
+                        ->disabled(fn(Get $get) => ! $get('agency_id')),
                 ]),
             ]);
     }
