@@ -41,15 +41,15 @@ class CompaniesTable
                 Action::make('viewCampaigns')
                     ->label('Campanhas')
                     ->icon('heroicon-o-presentation-chart-line')
-                    ->url(fn($record) => route('filament.admin.resources.agency-campaigns.index', [
+                    ->url(fn ($record) => route('filament.admin.resources.agency-campaigns.index', [
                         'search' => $record->name,
                     ]))->visible(
-                        fn(Model $record) => $record->campaigns()
+                        fn (Model $record) => $record->campaigns()
                             ->where('agency_id', Auth::id())
                             ->exists()
                     ),
 
-                //ViewCompanyDetails::make()
+                // ViewCompanyDetails::make()
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

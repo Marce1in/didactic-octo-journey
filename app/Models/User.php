@@ -18,7 +18,7 @@ use Wirechat\Wirechat\Contracts\WirechatUser;
 use Wirechat\Wirechat\Panel;
 use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 
-class User extends Authenticatable implements WirechatUser, HasAvatar
+class User extends Authenticatable implements HasAvatar, WirechatUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Impersonate, InteractsWithWirechat, Notifiable, TwoFactorAuthenticatable;
@@ -44,19 +44,18 @@ class User extends Authenticatable implements WirechatUser, HasAvatar
      *
      * @var list<string>
      */
-
     public function getFilamentAvatarUrl(): ?string
     {
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
 
     public function getAvatarUrlAttribute(): ?string
     {
-        if (!$this->avatar) {
+        if (! $this->avatar) {
             return null;
         }
 
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
 
     public function subcategories()
@@ -99,7 +98,7 @@ class User extends Authenticatable implements WirechatUser, HasAvatar
      */
     public function getWirechatAvatarUrlAttribute(): string
     {
-        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name='.urlencode($this->name);
     }
 
     public function canAccessWirechatPanel(Panel $panel): bool

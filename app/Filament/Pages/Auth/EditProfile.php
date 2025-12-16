@@ -1,9 +1,9 @@
 <?php
 
-namespace Filament\Auth\Pages;
+namespace App\Filament\Pages\Auth;
 
+use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use App\Models\Category;
-use App\Models\Subcategory;
 use App\Models\User;
 use App\UserRoles;
 use Filament\Actions\Action;
@@ -37,7 +37,6 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Route;
@@ -50,7 +49,7 @@ use Throwable;
 /**
  * @property-read Schema $form
  */
-class EditProfile extends Page
+class EditProfile extends BaseEditProfile
 {
     use Concerns\CanUseDatabaseTransactions;
     use Concerns\HasMaxWidth;
@@ -64,7 +63,6 @@ class EditProfile extends Page
     protected static bool $isDiscovered = false;
 
     protected array $influencerData;
-
 
     protected string $view;
 
@@ -126,7 +124,6 @@ class EditProfile extends Page
         $this->callHook('beforeFill');
 
         $data = $this->mutateFormDataBeforeFill($data);
-
 
         $this->form->fill($data);
 
@@ -237,7 +234,7 @@ class EditProfile extends Page
     /**
      * @param  array<string, mixed>  $data
      */
-    protected function handleRecordUpdate(User $record, array $data): Model
+    protected function handleRecordUpdate(Model $record, mixed $data): Model
     {
         $record->subcategories()->sync(
             $data['subcategories'] ?? []
@@ -254,6 +251,7 @@ class EditProfile extends Page
 
         return $record;
     }
+
 
     protected function sendEmailChangeVerification(Model $record, string $newEmail): void
     {
@@ -417,7 +415,6 @@ class EditProfile extends Page
                         ->description('Atualize o @ do seu perfil e número de seguidores em cada plataforma.')
                         ->schema([
 
-
                             Select::make('subcategories')
                                 ->multiple()
                                 ->label('Categoria')
@@ -434,8 +431,6 @@ class EditProfile extends Page
                                         })
                                         ->toArray()
                                 ),
-
-
 
                             Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
                                 Select::make('agency_id')

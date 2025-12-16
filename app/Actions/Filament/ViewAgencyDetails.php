@@ -2,16 +2,13 @@
 
 namespace App\Actions\Filament;
 
-use App\UserRoles;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
-
-use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-
 
 class ViewAgencyDetails
 {
@@ -28,7 +25,7 @@ class ViewAgencyDetails
                             ImageEntry::make('avatar')
                                 ->label('Avatar')
                                 ->circular()
-                                ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name))
+                                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name))
                                 ->columnSpanFull(),
                             TextEntry::make('name')
                                 ->label('Nome'),
@@ -53,9 +50,9 @@ class ViewAgencyDetails
                                 ->color('primary')
                                 ->url(function ($record) {
                                     return route('filament.admin.resources.influencers.index', [
-                                        'search' => $record->name
+                                        'search' => $record->name,
                                     ]);
-                                })
+                                }),
                         ])->columnSpanFull(),
                     ])
                     ->columns(2),

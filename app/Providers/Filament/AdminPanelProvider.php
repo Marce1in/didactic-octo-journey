@@ -2,9 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
 use DutchCodingCompany\FilamentSocialite\Provider;
-use Filament\Auth\Pages\EditProfile;
 use Filament\Auth\Pages\Register;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -56,11 +56,11 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
-            ->renderHook(PanelsRenderHook::HEAD_END, fn (): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
-            ->renderHook(PanelsRenderHook::BODY_END, fn (): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
+            ->renderHook(PanelsRenderHook::HEAD_END, fn(): string => Auth::check() ? Blade::render('@wirechatStyles') : '')
+            ->renderHook(PanelsRenderHook::BODY_END, fn(): string => Auth::check() ? Blade::render('@wirechatAssets') : '')
             ->renderHook(
                 PanelsRenderHook::AUTH_REGISTER_FORM_AFTER,
-                fn (): string => Blade::render(<<<'BLADE'
+                fn(): string => Blade::render(<<<'BLADE'
                     <div x-data="{ role: @entangle('data.role') }">
                         <div x-show="role === 'influencer'">
                             <x-filament-socialite::buttons />

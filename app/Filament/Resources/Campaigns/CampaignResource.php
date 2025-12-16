@@ -18,8 +18,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-
-
 class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;

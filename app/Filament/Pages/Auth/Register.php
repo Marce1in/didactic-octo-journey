@@ -1,6 +1,6 @@
 <?php
 
-namespace Filament\Auth\Pages;
+namespace App\Filament\Pages\Auth;
 
 use App\Models\Category;
 use App\Models\InfluencerInfo;
@@ -41,12 +41,13 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Password;
 use LogicException;
+use Filament\Auth\Pages\Register as BaseRegister;
 
 /**
  * @property-read Action $loginAction
  * @property-read Schema $form
  */
-class Register extends SimplePage
+class Register extends BaseRegister
 {
     use CanUseDatabaseTransactions;
     use WithRateLimiting;
@@ -70,7 +71,6 @@ class Register extends SimplePage
         $this->callHook('beforeFill');
 
         $this->form->fill();
-
 
         $this->callHook('afterFill');
     }
@@ -107,15 +107,12 @@ class Register extends SimplePage
                 ]);
             }
 
-
-
             $this->form->model($user)->saveRelationships();
 
             $this->callHook('afterRegister');
 
             return $user;
         });
-
 
         $data = $this->form->getState();
 
@@ -224,7 +221,6 @@ class Register extends SimplePage
                         ->description('Informe o @ do seu perfil e número de seguidores em cada plataforma.')
                         ->schema([
 
-
                             Select::make('subcategories')
                                 ->multiple()
                                 ->label('Categoria')
@@ -240,7 +236,6 @@ class Register extends SimplePage
                                         })
                                         ->toArray()
                                 ),
-
 
                             Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
                                 Select::make('agency_id')

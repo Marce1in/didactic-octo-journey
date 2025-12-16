@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
         Storage::disk('public')->makeDirectory('avatars');
 
         $createAvatar = function () {
-            $filename = Str::random(20) . '.jpg';
+            $filename = Str::random(20).'.jpg';
 
-            $url = 'https://picsum.photos/300/300?random=' . Str::random(10);
+            $url = 'https://picsum.photos/300/300?random='.Str::random(10);
 
             $imageData = file_get_contents($url);
 
@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
         $companies->each(function ($company) {
             foreach (range(1, 5) as $i) {
                 Product::create([
-                    'name' => fake()->colorName() . ' ' . fake()->streetName,
+                    'name' => fake()->colorName().' '.fake()->streetName,
                     'description' => "Description for product {$i} from {$company->name}.",
                     'price' => rand(10, 500),
                     'company_id' => $company->id,
