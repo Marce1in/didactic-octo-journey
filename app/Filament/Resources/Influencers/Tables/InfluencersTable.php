@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Influencers\Tables;
 
 use App\Actions\Filament\ViewInfluencerDetails;
+use App\Models\Category;
 use App\Models\User;
 use App\UserRoles;
 use Filament\Actions\Action;
@@ -11,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -51,6 +53,8 @@ class InfluencersTable
                         return $record->subcategories->first()?->category?->title;
                     })
                     ->badge()
+                    ->sortable()
+                    ->searchable()
                     ->tooltip(function (Model $record): string {
                         return $record->subcategories->pluck('title')->join(', ');
                     }),
@@ -66,12 +70,15 @@ class InfluencersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('subcategory.0.category')
+                    ->options([
+                        Category::query()->pluck('title', 'id')->toArray()
+                    ])
             ])
             ->recordActions([
                 Action::make('Aprovar Vínculo')
                     ->label('Aprovar')
-                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
+                    ->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
                     ->action(function ($record) {
                         $record->influencer_info->update(['association_status' => 'approved']);
                     })

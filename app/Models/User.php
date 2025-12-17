@@ -18,10 +18,10 @@ use Wirechat\Wirechat\Contracts\WirechatUser;
 use Wirechat\Wirechat\Panel;
 use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 
-class User extends Authenticatable implements HasAvatar, WirechatUser
+class User extends Authenticatable implements HasAvatar
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Impersonate, InteractsWithWirechat, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Impersonate, Notifiable, TwoFactorAuthenticatable;
 
     /**
      * The attributes that are mass assignable.
@@ -96,15 +96,6 @@ class User extends Authenticatable implements HasAvatar, WirechatUser
      * Decide if this user may access the given panel.
      * Here, only users with verified emails are allowed.
      */
-    public function getWirechatAvatarUrlAttribute(): string
-    {
-        return $this->getAvatarUrlAttribute() ?? 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
-    }
-
-    public function canAccessWirechatPanel(Panel $panel): bool
-    {
-        return $this->hasVerifiedEmail();
-    }
 
     /**
      * Control whether this user is allowed to create 1-to-1 chats.
