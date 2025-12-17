@@ -5,16 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Chat;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class ChatController extends Controller
 {
     public function index()
     {
-        return Auth::user()
+        $allChats = Auth::user()
             ->chats()
-            ->with('users')
+            ->with(['users', 'messages'])
             ->latest()
             ->get();
+
+        return Inertia::render('chat/Chats', ['allChats' => $allChats]);
     }
 
     public function store(Request $request)
@@ -46,6 +49,14 @@ class ChatController extends Controller
             403
         );
 
-        return $chat->load(['users', 'messages.sender']);
+        $chat = $chat->load(['users', 'messages.sender']);
+
+        $allChats = Auth::user()
+            ->chats()
+            ->with(['users', 'messages'])
+            ->latest()
+            ->get();
+
+        return Inertia::render('chat/Chats', ['chat' => $chat, 'allChats' => $allChats]);
     }
 }

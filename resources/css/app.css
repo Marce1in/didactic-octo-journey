@@ -1,11 +1,8 @@
 @import 'tailwindcss';
-@import '../../vendor/wirechat/wirechat/resources/css/app.css';
 @import 'tw-animate-css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../vendor/wirechat/wirechat/resources/views/**/*.blade.php';
-@source '../../vendor/wirechat/wirechat/src/Livewire/**/*.php';
 
 @custom-variant dark (&:is(.dark *));
 

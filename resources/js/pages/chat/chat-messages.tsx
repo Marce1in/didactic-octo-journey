@@ -2,6 +2,7 @@ import type React from 'react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import { usePage } from '@inertiajs/react';
 import { Download, FileText, Maximize2, X } from 'lucide-react';
 import { useState } from 'react';
 import type { Attachment, Message, User } from './types';
@@ -17,12 +18,20 @@ export function ChatMessages({
     users,
     messagesEndRef,
 }: ChatMessagesProps) {
+    console.log(users);
+
+    const { auth } = usePage().props as any;
+    const currentUserId = String(auth.user.id);
+
     const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-    const getUser = (userId: string) => users.find((u) => u.id === userId);
+    const getUser = (user_id: string | number) =>
+        users.find((u) => String(u.id) === String(user_id));
 
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('en-US', {
+    const formatTime = (date: Date | string) => {
+        const d = typeof date === 'string' ? new Date(date) : date;
+
+        return d.toLocaleTimeString('en-US', {
             hour: 'numeric',
             minute: '2-digit',
         });
@@ -34,7 +43,7 @@ export function ChatMessages({
                 <button
                     key={attachment.id}
                     onClick={() => setLightboxImage(attachment.url)}
-                    className="hover:ring-primary/50 group relative max-w-xs overflow-hidden rounded-xl transition-all hover:ring-2"
+                    className="group relative max-w-xs overflow-hidden rounded-xl transition-all hover:ring-2 hover:ring-primary/50"
                 >
                     <img
                         src={attachment.url || '/placeholder.svg'}
@@ -44,7 +53,7 @@ export function ChatMessages({
                     <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
                         <Maximize2 className="h-6 w-6 text-white opacity-0 transition-opacity group-hover:opacity-100" />
                     </div>
-                    <div className="bg-linear-to-t absolute bottom-0 left-0 right-0 from-black/60 to-transparent px-3 py-2">
+                    <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/60 to-transparent px-3 py-2">
                         <p className="truncate text-xs text-white/90">
                             {attachment.name}
                         </p>
@@ -59,21 +68,21 @@ export function ChatMessages({
         return (
             <div
                 key={attachment.id}
-                className="bg-secondary hover:bg-secondary/80 flex max-w-xs items-center gap-3 rounded-xl p-3 transition-colors"
+                className="flex max-w-xs items-center gap-3 rounded-xl bg-secondary p-3 transition-colors hover:bg-secondary/80"
             >
-                <div className="bg-primary/10 rounded-lg p-2">
-                    <FileText className="text-primary h-5 w-5" />
+                <div className="rounded-lg bg-primary/10 p-2">
+                    <FileText className="h-5 w-5 text-primary" />
                 </div>
                 <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">
                         {attachment.name}
                     </p>
-                    <p className="text-muted-foreground text-xs">
+                    <p className="text-xs text-muted-foreground">
                         {attachment.size}
                     </p>
                 </div>
-                <button className="hover:bg-background/50 rounded-lg p-2 transition-colors">
-                    <Download className="text-muted-foreground h-4 w-4" />
+                <button className="rounded-lg p-2 transition-colors hover:bg-background/50">
+                    <Download className="h-4 w-4 text-muted-foreground" />
                 </button>
             </div>
         );
@@ -83,11 +92,14 @@ export function ChatMessages({
         <>
             <div className="flex-1 space-y-4 overflow-y-auto p-4">
                 {messages.map((message, index) => {
-                    const user = getUser(message.userId);
-                    const isCurrentUser = message.userId === '1';
+                    const user = getUser(message.user_id);
+                    const isCurrentUser =
+                        String(message.user_id) === currentUserId;
+
                     const showAvatar =
                         index === 0 ||
-                        messages[index - 1].userId !== message.userId;
+                        String(messages[index - 1].user_id) !==
+                            String(message.user_id);
 
                     return (
                         <div
@@ -100,11 +112,14 @@ export function ChatMessages({
                             {showAvatar ? (
                                 <Avatar className="h-10 w-10 shrink-0">
                                     <AvatarImage
-                                        src={user?.avatar || '/placeholder.svg'}
+                                        src={
+                                            user?.avatar_url ||
+                                            '/placeholder.svg'
+                                        }
                                         alt={user?.name}
                                     />
                                     <AvatarFallback>
-                                        {user?.name?.[0]}
+                                        {user?.name ?? 'Conta Excluída'}
                                     </AvatarFallback>
                                 </Avatar>
                             ) : (
@@ -127,10 +142,10 @@ export function ChatMessages({
                                         )}
                                     >
                                         <span className="text-sm font-semibold">
-                                            {user?.name}
+                                            {user?.name ?? 'Unknown'}
                                         </span>
-                                        <span className="text-muted-foreground text-xs">
-                                            {formatTime(message.timestamp)}
+                                        <span className="text-xs text-muted-foreground">
+                                            {formatTime(message.created_at)}
                                         </span>
                                     </div>
                                 )}
@@ -140,29 +155,28 @@ export function ChatMessages({
                                         className={cn(
                                             'rounded-2xl px-4 py-2.5 text-sm leading-relaxed',
                                             isCurrentUser
-                                                ? 'bg-primary text-primary-foreground rounded-br-md'
-                                                : 'bg-secondary text-secondary-foreground rounded-bl-md',
+                                                ? 'rounded-br-md bg-primary text-primary-foreground'
+                                                : 'rounded-bl-md bg-secondary text-secondary-foreground',
                                         )}
                                     >
                                         {message.content}
                                     </div>
                                 )}
 
-                                {message.attachments &&
-                                    message.attachments.length > 0 && (
-                                        <div
-                                            className={cn(
-                                                'mt-2 flex flex-wrap gap-2',
-                                                isCurrentUser
-                                                    ? 'justify-end'
-                                                    : 'justify-start',
-                                            )}
-                                        >
-                                            {message.attachments.map(
-                                                renderAttachment,
-                                            )}
-                                        </div>
-                                    )}
+                                {message.attachments?.length > 0 && (
+                                    <div
+                                        className={cn(
+                                            'mt-2 flex flex-wrap gap-2',
+                                            isCurrentUser
+                                                ? 'justify-end'
+                                                : 'justify-start',
+                                        )}
+                                    >
+                                        {message.attachments.map(
+                                            renderAttachment,
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     );
@@ -170,20 +184,19 @@ export function ChatMessages({
                 <div ref={messagesEndRef} />
             </div>
 
-            {/* Lightbox */}
             {lightboxImage && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4"
                     onClick={() => setLightboxImage(null)}
                 >
                     <button
-                        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
+                        className="absolute top-4 right-4 rounded-full bg-white/10 p-2 transition-colors hover:bg-white/20"
                         onClick={() => setLightboxImage(null)}
                     >
                         <X className="h-6 w-6 text-white" />
                     </button>
                     <img
-                        src={lightboxImage || '/placeholder.svg'}
+                        src={lightboxImage}
                         alt="Preview"
                         className="max-h-full max-w-full rounded-lg object-contain"
                     />

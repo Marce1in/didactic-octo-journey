@@ -87,7 +87,7 @@ class User extends Authenticatable implements HasAvatar
         return $this->hasMany(Product::class);
     }
 
-
+    protected $appends = ['avatar_url']; // Makes it accessible in react
 
     // --------------------------
     //  Filament Stuff

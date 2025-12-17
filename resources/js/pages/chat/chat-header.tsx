@@ -1,11 +1,9 @@
-'use client';
-
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Menu, MoreVertical } from 'lucide-react';
-import type { Conversation } from './types';
+import { ChevronRight } from 'lucide-react';
+import type { ChatType } from './types';
 
 interface ChatHeaderProps {
-    conversation: Conversation;
+    conversation: ChatType;
     onToggleSidebar: () => void;
     sidebarOpen: boolean;
     onHeaderClick: () => void;
@@ -17,41 +15,36 @@ export function ChatHeader({
     sidebarOpen,
     onHeaderClick,
 }: ChatHeaderProps) {
-    const onlineCount = conversation.members.filter(
-        (u) => u.status === 'online',
-    ).length;
-
     return (
-        <header className="bg-card border-border flex items-center justify-between border-b px-4 py-3">
+        <header
+            className="m-2 flex cursor-pointer items-center justify-between rounded-sm border-b border-border bg-card px-3 py-2 hover:bg-secondary/20"
+            onClick={onHeaderClick}
+        >
             <div className="flex items-center gap-3">
                 {!sidebarOpen && (
                     <button
-                        onClick={onToggleSidebar}
-                        className="hover:bg-secondary mr-2 rounded-lg p-2 transition-colors"
+                        className="mr-2 aspect-square rounded-full p-1 transition-colors hover:bg-secondary/30"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            onToggleSidebar();
+                        }}
                     >
-                        <Menu className="text-muted-foreground h-5 w-5" />
+                        <ChevronRight className="ml-0.5 h-6 w-6 text-muted-foreground" />
                     </button>
                 )}
-                <button
-                    onClick={onHeaderClick}
-                    className="hover:bg-secondary/50 -mx-2 -my-1 flex items-center gap-3 rounded-lg px-2 py-1 transition-colors"
-                >
-                    <Avatar className="h-10 w-10">
+                <button className="-mx-2 -my-1 flex items-center gap-3 rounded-lg px-2 py-1 transition-colors">
+                    {/* <Avatar className="h-10 w-10">
                         <AvatarImage
                             src={conversation.avatar || '/placeholder.svg'}
                         />
                         <AvatarFallback>{conversation.name[0]}</AvatarFallback>
-                    </Avatar>
+                    </Avatar> */}
                     <div className="text-left">
-                        <h2 className="text-foreground font-semibold">
+                        <h2 className="font-semibold text-foreground">
                             {conversation.name}
                         </h2>
-                        <p className="text-muted-foreground text-xs">
-                            {conversation.isGroup
-                                ? `${conversation.members.length} members, ${onlineCount} online`
-                                : conversation.members[1]?.status === 'online'
-                                  ? 'online'
-                                  : 'last seen recently'}
+                        <p className="text-xs text-muted-foreground">
+                            {`${conversation.users.length} members`}
                         </p>
                     </div>
                 </button>
@@ -59,22 +52,19 @@ export function ChatHeader({
 
             <div className="flex items-center gap-1">
                 <div className="mr-3 flex -space-x-2">
-                    {conversation.members.slice(0, 4).map((user) => (
+                    {conversation.users.slice(0, 4).map((user) => (
                         <Avatar
                             key={user.id}
-                            className="border-card h-8 w-8 border-2"
+                            className="h-8 w-8 border-2 border-card"
                         >
                             <AvatarImage
-                                src={user.avatar || '/placeholder.svg'}
+                                src={user.avatar_url || '/placeholder.svg'}
                                 alt={user.name}
                             />
-                            <AvatarFallback>{user.name[0]}</AvatarFallback>
+                            <AvatarFallback>{user.name}</AvatarFallback>
                         </Avatar>
                     ))}
                 </div>
-                <button className="hover:bg-secondary rounded-lg p-2 transition-colors">
-                    <MoreVertical className="text-muted-foreground h-5 w-5" />
-                </button>
             </div>
         </header>
     );

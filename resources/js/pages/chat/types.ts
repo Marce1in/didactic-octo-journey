@@ -1,32 +1,27 @@
-export interface User {
-  id: string
-  name: string
-  avatar: string
-  status: "online" | "away" | "offline"
-}
+import { User } from '@/types';
 
 export interface Attachment {
-  id: string
-  type: "image" | "file"
-  name: string
-  url: string
-  size: string
+    id: string;
+    type: 'image' | 'file';
+    name: string;
+    url: string;
+    size: string;
 }
 
 export interface Message {
-  id: string
-  userId: string
-  content?: string
-  timestamp: Date
-  attachments?: Attachment[]
+    id: string;
+    user_id: string;
+    content?: string;
+    created_at: Date;
+    attachments?: Attachment[];
 }
 
-export interface Conversation {
-  id: string
-  name: string
-  description: string
-  createdAt: Date
-  isGroup: boolean
-  avatar: string
-  members: User[]
+export interface ChatType {
+    id: string;
+    name: string;
+    description: string;
+    created_at: Date;
+    image: string;
+    users: User[];
+    messages: Message[];
 }
