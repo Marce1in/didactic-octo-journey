@@ -43,7 +43,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Password;
 use LogicException;
-use Filament\Auth\Pages\Register as BaseRegister;
 
 /**
  * @property-read Action $loginAction
@@ -188,7 +187,7 @@ class Register extends SimplePage
     // -----------------------------------------------------------------------------------------------------------
     // FORM
     // -----------------------------------------------------------------------------------------------------------
-    // ----------------------------------------------------------------------------------------------------------- 
+    // -----------------------------------------------------------------------------------------------------------
 
     public function form(Schema $schema): Schema
     {
@@ -229,14 +228,14 @@ class Register extends SimplePage
                                     ->mapWithKeys(function ($category) {
                                         return [
                                             $category->title => $category->subcategories
-                                                ->filter(fn($subcategory) => $subcategory->title !== null)
+                                                ->filter(fn ($subcategory) => $subcategory->title !== null)
                                                 ->pluck('title', 'id')
                                                 ->toArray(),
                                         ];
                                     })
                                     ->toArray()
                             )->rules([
-                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                                fn (): Closure => function (string $attribute, $value, Closure $fail) {
                                     $categories = Subcategory::whereIn('id', $value)
                                         ->distinct('category_id')
                                         ->count('category_id');
@@ -254,14 +253,14 @@ class Register extends SimplePage
                                 ->searchable()
                                 ->preload()
                                 ->getSearchResultsUsing(
-                                    fn(string $search): array => User::query()
+                                    fn (string $search): array => User::query()
                                         ->where('role', UserRoles::Agency)
                                         ->where('name', 'ilike', "%{$search}%")
                                         ->limit(50)
                                         ->pluck('name', 'id')
                                         ->toArray()
                                 )
-                                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
+                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name),
 
                             Group::make()->columns(2)->schema([
                                 TextEntry::make('handle_label')->label('@ do Perfil'),
@@ -285,7 +284,7 @@ class Register extends SimplePage
                             ]),
                         ]),
                     ])
-                    ->visible(fn(Get $get): bool => $get('role') === 'influencer'),
+                    ->visible(fn (Get $get): bool => $get('role') === 'influencer'),
             ]),
 
             $this->getEmailFormComponent(),
@@ -328,7 +327,7 @@ class Register extends SimplePage
             ->required()
             ->rule(Password::default())
             ->showAllValidationMessages()
-            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'));
     }
@@ -417,7 +416,7 @@ class Register extends SimplePage
             return null;
         }
 
-        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before') . ' ' . $this->loginAction->toHtml());
+        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before').' '.$this->loginAction->toHtml());
     }
 
     public function content(Schema $schema): Schema

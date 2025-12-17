@@ -28,11 +28,9 @@ class CampaignAnnouncementResource extends Resource
 
     protected static ?string $modelLabel = 'Anúncios';
 
-
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-
 
         if (Gate::allows('is_company')) {
             return $query->where('company_id', Auth::id());
@@ -68,15 +66,13 @@ class CampaignAnnouncementResource extends Resource
         return Gate::allows('is_company') && $record->company_id === Auth::id();
     }
 
-
-
     public static function getPages(): array
     {
 
         return [
             'index' => ListCampaignAnnouncements::route('/'),
             'create' => CreateCampaignAnnouncement::route('/create'),
-            //'view' => ViewCampaignAnnouncement::route('/{record}'),
+            // 'view' => ViewCampaignAnnouncement::route('/{record}'),
             'edit' => EditCampaignAnnouncement::route('/{record}/edit'),
         ];
     }

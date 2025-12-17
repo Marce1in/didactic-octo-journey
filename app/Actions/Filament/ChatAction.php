@@ -4,7 +4,6 @@ namespace App\Actions\Filament;
 
 use Closure;
 use Filament\Actions\Action;
-use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
 
 class ChatAction extends Action
@@ -25,8 +24,6 @@ class ChatAction extends Action
         $this->label(__('Chat'));
 
         $this->defaultColor('secondary');
-
-
 
         $this->tableIcon(icon: Heroicon::OutlinedChatBubbleLeftEllipsis);
     }

@@ -47,7 +47,6 @@ class UsersTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-
                 ColumnGroup::make('Influencers', [
 
                     TextColumn::make('influencer_info.agency.name')->label('Agência')
@@ -66,7 +65,7 @@ class UsersTable
                                 default => '-',
                             };
                         }),
-                ])
+                ]),
 
             ])
             ->filters([
@@ -76,7 +75,7 @@ class UsersTable
                         'company' => 'Company',
                         'agency' => 'Agency',
                         'influencer' => 'Influencer',
-                    ])
+                    ]),
             ])
             ->recordActions([
                 ActionGroup::make([

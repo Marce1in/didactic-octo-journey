@@ -25,7 +25,7 @@ class ViewCompanyDetails
                             ImageEntry::make('avatar_url')
                                 ->label('Avatar')
                                 ->circular()
-                                ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name))
+                                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name))
                                 ->columnSpanFull(),
                             TextEntry::make('name')
                                 ->label('Nome'),

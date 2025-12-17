@@ -29,7 +29,7 @@ class CampaignAnnouncementForm
                         ->relationship(
                             'product',
                             'name',
-                            fn($query) => $query->where('company_id', Auth::id())
+                            fn ($query) => $query->where('company_id', Auth::id())
                         )
                         ->label('Produto')
                         ->required()->createOptionForm([
@@ -38,8 +38,8 @@ class CampaignAnnouncementForm
                             TextInput::make('price')
                                 ->numeric()
                                 ->inputMode('decimal')->prefix('R$')
-                                ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
-                                ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                                ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
+                                ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
                                 ->placeholder('0,00')
                                 ->step('0.01')
                                 ->required(),
@@ -48,8 +48,7 @@ class CampaignAnnouncementForm
                             Hidden::make('company_id')->default(Auth::id()),
                         ])
                         ->createOptionAction(
-                            fn($action) =>
-                            $action->modalHeading('Criar Produto')
+                            fn ($action) => $action->modalHeading('Criar Produto')
                         ),
 
                     Select::make('category_id')
@@ -64,9 +63,9 @@ class CampaignAnnouncementForm
                         ->label('Orçamento')
                         ->numeric()
                         ->prefix('R$')
-                        ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
-                        ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
-                        ->placeholder('0,00')
+                        ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
+                        ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                        ->placeholder('0,00'),
                 ]),
 
                 Hidden::make('company_id')

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages\Auth;
 
-use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use App\Models\Category;
 use App\Models\User;
 use App\UserRoles;
@@ -11,6 +10,7 @@ use Filament\Actions\ActionGroup;
 use Filament\Auth\MultiFactor\Contracts\MultiFactorAuthenticationProvider;
 use Filament\Auth\Notifications\NoticeOfEmailChangeRequest;
 use Filament\Auth\Notifications\VerifyEmailChange;
+use Filament\Auth\Pages\EditProfile as BaseEditProfile;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -19,7 +19,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Pages\Concerns;
-use Filament\Pages\Page;
 use Filament\Panel;
 use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Component;
@@ -135,7 +134,7 @@ class EditProfile extends BaseEditProfile
         if (filled(static::getCluster())) {
             Route::name(static::prependClusterRouteBaseName($panel, ''))
                 ->prefix(static::prependClusterSlug($panel, ''))
-                ->group(fn() => static::routes($panel));
+                ->group(fn () => static::routes($panel));
 
             return;
         }
@@ -147,7 +146,7 @@ class EditProfile extends BaseEditProfile
     {
         $panel ??= Filament::getCurrentOrDefaultPanel();
 
-        return $panel->generateRouteName('auth.' . static::getRelativeRouteName($panel));
+        return $panel->generateRouteName('auth.'.static::getRelativeRouteName($panel));
     }
 
     /**
@@ -217,7 +216,7 @@ class EditProfile extends BaseEditProfile
 
         if (request()->hasSession() && array_key_exists('password', $data)) {
             request()->session()->put([
-                'password_hash_' . Filament::getAuthGuard() => $data['password'],
+                'password_hash_'.Filament::getAuthGuard() => $data['password'],
             ]);
         }
 
@@ -251,7 +250,6 @@ class EditProfile extends BaseEditProfile
 
         return $record;
     }
-
 
     protected function sendEmailChangeVerification(Model $record, string $newEmail): void
     {
@@ -341,8 +339,8 @@ class EditProfile extends BaseEditProfile
             ->rule(Password::default())
             ->showAllValidationMessages()
             ->autocomplete('new-password')
-            ->dehydrated(fn($state): bool => filled($state))
-            ->dehydrateStateUsing(fn($state): string => Hash::make($state))
+            ->dehydrated(fn ($state): bool => filled($state))
+            ->dehydrateStateUsing(fn ($state): string => Hash::make($state))
             ->live(debounce: 500)
             ->same('passwordConfirmation');
     }
@@ -356,7 +354,7 @@ class EditProfile extends BaseEditProfile
             ->autocomplete('new-password')
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->visible(fn(Get $get): bool => filled($get('password')))
+            ->visible(fn (Get $get): bool => filled($get('password')))
             ->dehydrated(false);
     }
 
@@ -371,7 +369,7 @@ class EditProfile extends BaseEditProfile
             ->currentPassword(guard: Filament::getAuthGuard())
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->visible(fn(Get $get): bool => filled($get('password')) || ($get('email') !== $this->getUser()->getAttributeValue('email')))
+            ->visible(fn (Get $get): bool => filled($get('password')) || ($get('email') !== $this->getUser()->getAttributeValue('email')))
             ->dehydrated(false);
     }
 
@@ -424,7 +422,7 @@ class EditProfile extends BaseEditProfile
                                         ->mapWithKeys(function ($category) {
                                             return [
                                                 $category->title => $category->subcategories
-                                                    ->filter(fn($subcategory) => $subcategory->title !== null)
+                                                    ->filter(fn ($subcategory) => $subcategory->title !== null)
                                                     ->pluck('title', 'id')
                                                     ->toArray(),
                                             ];
@@ -439,14 +437,14 @@ class EditProfile extends BaseEditProfile
                                     ->searchable()
                                     ->preload()
                                     ->getSearchResultsUsing(
-                                        fn(string $search): array => User::query()
+                                        fn (string $search): array => User::query()
                                             ->where('role', UserRoles::Agency)
                                             ->where('name', 'ilike', "%{$search}%")
                                             ->limit(50)
                                             ->pluck('name', 'id')
                                             ->toArray()
                                     )
-                                    ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
+                                    ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name),
 
                                 Group::make()->columns(2)->schema([
                                     TextEntry::make('handle_label')->label('@ do Perfil'),
@@ -471,7 +469,7 @@ class EditProfile extends BaseEditProfile
                             ]),
                         ]),
                 ])
-                    ->visible(fn(): bool => Auth::user()->role === UserRoles::Influencer),
+                    ->visible(fn (): bool => Auth::user()->role === UserRoles::Influencer),
 
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
@@ -545,8 +543,8 @@ class EditProfile extends BaseEditProfile
             ->label(__('filament-panels::auth/pages/edit-profile.actions.cancel.label'))
             ->alpineClickHandler(
                 FilamentView::hasSpaMode($url)
-                    ? 'document.referrer ? window.history.back() : Livewire.navigate(' . Js::from($url) . ')'
-                    : 'document.referrer ? window.history.back() : (window.location.href = ' . Js::from($url) . ')',
+                    ? 'document.referrer ? window.history.back() : Livewire.navigate('.Js::from($url).')'
+                    : 'document.referrer ? window.history.back() : (window.location.href = '.Js::from($url).')',
             )
             ->color('gray');
     }
@@ -597,8 +595,8 @@ class EditProfile extends BaseEditProfile
             ->divided()
             ->secondary()
             ->schema(collect(Filament::getMultiFactorAuthenticationProviders())
-                ->sort(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
-                ->map(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
+                ->sort(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
+                ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
                     ->statePath($multiFactorAuthenticationProvider->getId()))
                 ->all());
     }

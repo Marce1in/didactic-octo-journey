@@ -14,9 +14,6 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Fortify\TwoFactorAuthenticatable;
-use Wirechat\Wirechat\Contracts\WirechatUser;
-use Wirechat\Wirechat\Panel;
-use Wirechat\Wirechat\Traits\InteractsWithWirechat;
 
 class User extends Authenticatable implements HasAvatar
 {
@@ -46,7 +43,7 @@ class User extends Authenticatable implements HasAvatar
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
 
     public function getAvatarUrlAttribute(): ?string
@@ -55,7 +52,7 @@ class User extends Authenticatable implements HasAvatar
             return null;
         }
 
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
 
     public function subcategories()

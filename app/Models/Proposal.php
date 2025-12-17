@@ -9,7 +9,6 @@ class Proposal extends Model
 {
     protected $fillable = ['agency_id', 'campaign_announcement_id'];
 
-
     protected $with = ['agency'];
 
     public function agency(): BelongsTo
@@ -19,6 +18,6 @@ class Proposal extends Model
 
     public function announcement(): BelongsTo
     {
-        return $this->belongsTo(CampaignAnnouncement::class,         'campaign_announcement_id');
+        return $this->belongsTo(CampaignAnnouncement::class, 'campaign_announcement_id');
     }
 }

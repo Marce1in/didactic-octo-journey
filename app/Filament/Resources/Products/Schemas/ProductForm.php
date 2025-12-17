@@ -18,8 +18,8 @@ class ProductForm
                     ->numeric()
                     ->inputMode('decimal')
                     ->step('0.01')->prefix('R$')
-                    ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
-                    ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                    ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
+                    ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
                     ->placeholder('0,00')
                     ->required(),
                 MarkdownEditor::make('description')

@@ -72,13 +72,13 @@ class InfluencersTable
             ->filters([
                 SelectFilter::make('subcategory.0.category')
                     ->options([
-                        Category::query()->pluck('title', 'id')->toArray()
-                    ])
+                        Category::query()->pluck('title', 'id')->toArray(),
+                    ]),
             ])
             ->recordActions([
                 Action::make('Aprovar Vínculo')
                     ->label('Aprovar')
-                    ->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
                     ->action(function ($record) {
                         $record->influencer_info->update(['association_status' => 'approved']);
                     })

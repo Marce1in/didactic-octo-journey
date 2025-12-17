@@ -7,10 +7,7 @@ use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Actions;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
-use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Gate;
 
 class ViewProposal
 {
@@ -20,7 +17,7 @@ class ViewProposal
             ->label('Ver Proposta')
             ->slideOver()
             ->modalWidth('xl')
-            ->schema(fn($record) => [
+            ->schema(fn ($record) => [
                 Section::make('Informações da Agência')->schema([
                     ImageEntry::make('agency.avatar_url')->circular(),
                     TextEntry::make('agency.name')->label('Agência'),
@@ -38,10 +35,10 @@ class ViewProposal
                                 ]);
                             }),
                         ChatAction::make(),
-                        AcceptProposal::make()
+                        AcceptProposal::make(),
 
                     ])->columnSpanFull(),
-                ])
+                ]),
             ]);
     }
 }

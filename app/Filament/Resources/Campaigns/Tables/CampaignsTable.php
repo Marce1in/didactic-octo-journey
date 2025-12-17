@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Campaigns\Tables;
 
 use App\CampaignStatus;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -27,7 +26,7 @@ class CampaignsTable
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -36,7 +35,7 @@ class CampaignsTable
                     }),
                 TextColumn::make('status_influencer')->label('Aprovação do Influenciador')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',

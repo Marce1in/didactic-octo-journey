@@ -15,7 +15,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
-use Symfony\Component\Console\Color;
 
 class InfluencerCampaignsTable
 {
@@ -33,7 +32,7 @@ class InfluencerCampaignsTable
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -41,10 +40,9 @@ class InfluencerCampaignsTable
                         default => $state->value,
                     }),
 
-
                 TextColumn::make('status_influencer')->label('Aprovação do Influenciador')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -94,9 +92,8 @@ class InfluencerCampaignsTable
                                 ->send();
                         }),
                 ])->visible(
-                    fn(Model $record): bool =>
-                    Gate::allows('is_influencer') && $record->status_influencer === CampaignStatus::PENDING_APPROVAL
-                )
+                    fn (Model $record): bool => Gate::allows('is_influencer') && $record->status_influencer === CampaignStatus::PENDING_APPROVAL
+                ),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([

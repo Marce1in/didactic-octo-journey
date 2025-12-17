@@ -30,7 +30,7 @@ class CampaignForm
                         ->relationship(
                             'product',
                             'name',
-                            fn($query) => $query->where('company_id', Auth::id())
+                            fn ($query) => $query->where('company_id', Auth::id())
                         )
                         ->label('Produto')
                         ->required()
@@ -40,8 +40,8 @@ class CampaignForm
                             TextInput::make('price')
                                 ->numeric()
                                 ->inputMode('decimal')->prefix('R$')
-                                ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
-                                ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                                ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
+                                ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
                                 ->placeholder('0,00')
                                 ->step('0.01')
                                 ->required(),
@@ -50,8 +50,7 @@ class CampaignForm
                             Hidden::make('company_id')->default(Auth::id()),
                         ])
                         ->createOptionAction(
-                            fn($action) =>
-                            $action->modalHeading('Criar Produto')
+                            fn ($action) => $action->modalHeading('Criar Produto')
                         ),
 
                     Select::make('category_id')
@@ -66,9 +65,9 @@ class CampaignForm
                         ->label('Orçamento')
                         ->numeric()
                         ->prefix('R$')
-                        ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
-                        ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
-                        ->placeholder('0,00')
+                        ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
+                        ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                        ->placeholder('0,00'),
                 ]),
 
                 Hidden::make('company_id')
@@ -89,15 +88,15 @@ class CampaignForm
                     Select::make('influencer_id')
                         ->label('Influencer')
                         ->options(
-                            fn(Get $get) => User::where('role', 'influencer')
+                            fn (Get $get) => User::where('role', 'influencer')
                                 ->whereHas('influencer_info', function ($query) use ($get) {
                                     $query->where('agency_id', $get('agency_id'));
                                 })
                                 ->pluck('name', 'id')
                         )
                         ->searchable()
-                        ->hidden(fn(Get $get) => ! $get('agency_id'))
-                        ->disabled(fn(Get $get) => ! $get('agency_id')),
+                        ->hidden(fn (Get $get) => ! $get('agency_id'))
+                        ->disabled(fn (Get $get) => ! $get('agency_id')),
                 ]),
             ]);
     }

@@ -2,13 +2,12 @@
 
 namespace App\Actions\Filament;
 
-use App\Models\OngoingCampaign;
 use App\CampaignStatus;
+use App\Models\OngoingCampaign;
 use App\Models\Proposal;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -32,7 +31,6 @@ class AcceptProposal extends Action
         $this->modalDescription('Tem certeza de que deseja aceitar esta proposta? Isto iniciará a Campanha e a **proposta será excluída**.');
         $this->modalSubmitActionLabel('Aceitar')->color('primary');
 
-
         $this->successRedirectUrl(function (Proposal $record): string {
             $agencyName = $record->agency->name ?? '';
 
@@ -40,7 +38,6 @@ class AcceptProposal extends Action
                 'search' => $agencyName,
             ]);
         });
-
 
         $this->action(function (Proposal $record) {
             DB::beginTransaction();
@@ -75,7 +72,7 @@ class AcceptProposal extends Action
                     ->send();
             } catch (\Exception $e) {
                 DB::rollBack();
-                Log::error('Erro ao aceitar proposta: ' . $e->getMessage());
+                Log::error('Erro ao aceitar proposta: '.$e->getMessage());
                 Notification::make()
                     ->title('Erro ao Aceitar Proposta')
                     ->body('Ocorreu um erro ao iniciar a campanha. Tente novamente.')

@@ -6,10 +6,8 @@ use App\CampaignStatus;
 use App\Models\OngoingCampaign;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\ApproveCampaignAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\RejectCampaignAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
@@ -34,7 +32,7 @@ class AgencyCampaignsTable
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -44,7 +42,7 @@ class AgencyCampaignsTable
 
                 TextColumn::make('status_influencer')->label('')
                     ->searchable()->label('Aprovação do Influenciador')
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -59,7 +57,6 @@ class AgencyCampaignsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-
 
             ])
             ->filters([
@@ -97,9 +94,8 @@ class AgencyCampaignsTable
                                 ->send();
                         }),
                 ])->visible(
-                    fn(Model $record): bool =>
-                    Gate::allows('is_agency') && $record->status_agency === CampaignStatus::PENDING_APPROVAL
-                )
+                    fn (Model $record): bool => Gate::allows('is_agency') && $record->status_agency === CampaignStatus::PENDING_APPROVAL
+                ),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([
