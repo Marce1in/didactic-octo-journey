@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -7,10 +9,20 @@ Route::get('/', function () {
     return redirect('/dashboard');
 })->name('home');
 
+Route::middleware('auth')
+    ->prefix('/chats')
+    ->group(function () {
+        Route::get('/', [ChatController::class, 'index']);
+        Route::post('/', [ChatController::class, 'store']);
+        Route::get('/{chat}', [ChatController::class, 'show']);
+
+        Route::post('/{chat}/messages', [MessageController::class, 'store']);
+    });
+
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::get('dashboard', function () {
 //         return Inertia::render('dashboard');
 //     })->name('dashboard');
 // });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

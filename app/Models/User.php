@@ -41,18 +41,16 @@ class User extends Authenticatable implements HasAvatar
      *
      * @var list<string>
      */
-    public function getFilamentAvatarUrl(): ?string
+
+
+    public function chats()
     {
-        return asset('storage/'.$this->avatar);
+        return $this->belongsToMany(Chat::class);
     }
 
-    public function getAvatarUrlAttribute(): ?string
+    public function messages()
     {
-        if (! $this->avatar) {
-            return null;
-        }
-
-        return asset('storage/'.$this->avatar);
+        return $this->hasMany(Message::class);
     }
 
     public function subcategories()
@@ -88,6 +86,28 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->hasMany(Product::class);
     }
+
+
+
+    // --------------------------
+    //  Filament Stuff
+    // --------------------------
+
+    public function getFilamentAvatarUrl(): ?string
+    {
+        return asset('storage/' . $this->avatar);
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        if (! $this->avatar) {
+            return null;
+        }
+
+        return asset('storage/' . $this->avatar);
+    }
+
+
 
     /**
      * Decide if this user may access the given panel.
