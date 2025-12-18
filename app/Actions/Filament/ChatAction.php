@@ -14,7 +14,7 @@ class ChatAction extends Action
 {
     protected ?Closure $redirectUrlUsing = null;
 
-    public static function getDefaultChatName(): ?string
+    public static function getDefaultName(): ?string
     {
         return 'chat';
     }
