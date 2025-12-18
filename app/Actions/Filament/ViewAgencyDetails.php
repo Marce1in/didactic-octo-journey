@@ -25,7 +25,7 @@ class ViewAgencyDetails
                             ImageEntry::make('avatar')
                                 ->label('Avatar')
                                 ->circular()
-                                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name))
+                                ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name))
                                 ->columnSpanFull(),
                             TextEntry::make('name')
                                 ->label('Nome'),
@@ -53,6 +53,8 @@ class ViewAgencyDetails
                                         'search' => $record->name,
                                     ]);
                                 }),
+
+                            ChatAction::make()
                         ])->columnSpanFull(),
                     ])
                     ->columns(2),
