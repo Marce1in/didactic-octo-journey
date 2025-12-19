@@ -11,9 +11,12 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Colors\Color;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ColumnGroup;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class AgencyCampaignsTable
@@ -22,32 +25,56 @@ class AgencyCampaignsTable
     {
         return $table
             ->columns([
+
                 TextColumn::make('name')->label('Campanha')
                     ->searchable(),
+
                 TextColumn::make('product.name')->label('Produto')
                     ->searchable(),
 
-                TextColumn::make('company.name')->label('Empresa')
-                    ->searchable(),
+                ColumnGroup::make('Empresa', [
 
-                TextColumn::make('status_agency')->label('Aprovação da Agência')
-                    ->searchable()
-                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Rejeitada',
-                        default => $state->value,
-                    }),
+                    ImageColumn::make('company.avatar_url')->circular()->label('')
+                        ->searchable(),
 
-                TextColumn::make('status_influencer')->label('')
-                    ->searchable()->label('Aprovação do Influenciador')
-                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Rejeitada',
-                    }),
+                    TextColumn::make('company.name')->label('')
+                        ->searchable(),
+                ]),
+
+
+
+
+                ColumnGroup::make('Influencer', [
+
+                    ImageColumn::make('influencer.avatar_url')->circular()->label('')
+                        ->searchable(),
+
+                    TextColumn::make('influencer.name')->label('')
+                        ->searchable(),
+
+                ]),
+
+
+                ColumnGroup::make('Aprovação', [
+                    TextColumn::make('status_agency')->label('Agência')
+                        ->searchable()
+                        ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                            CampaignStatus::PENDING_APPROVAL => 'Pendente',
+                            CampaignStatus::APPROVED => 'Aprovada',
+                            CampaignStatus::FINISHED => 'Concluída',
+                            CampaignStatus::REJECTED => 'Rejeitada',
+                            default => $state->value,
+                        }),
+
+                    TextColumn::make('status_influencer')->label('')
+                        ->searchable()->label('Influenciador')
+                        ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
+                            CampaignStatus::PENDING_APPROVAL => 'Pendente',
+                            CampaignStatus::APPROVED => 'Aprovada',
+                            CampaignStatus::FINISHED => 'Concluída',
+                            CampaignStatus::REJECTED => 'Rejeitada',
+                        }),
+                ]),
 
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -74,9 +101,16 @@ class AgencyCampaignsTable
 
                             Notification::make()
                                 ->title('Status Atualizado')
-                                ->body('O status da agência foi definido como aprovado.')
-                                ->success()
-                                ->send();
+                                ->body('O status da agência foi definido como aprovado')
+                                ->success();
+
+
+                            $record->company->notify(
+                                Notification::make()
+                                    ->title('Campanha ' . $record->name . ' aprovada pela agência')
+                                    ->body('A agência ' . Auth::user()->name . ' aprovou sua campanha')
+                                    ->success()
+                            );
                         }),
 
                     Action::make('agency_reject')
@@ -92,9 +126,15 @@ class AgencyCampaignsTable
                                 ->title('Status Atualizado')
                                 ->body('O status da agência foi definido como rejeitado.')
                                 ->send();
+
+                            $record->company->notify(
+                                Notification::make()
+                                    ->title('Campanha ' . $record->name . ' rejeitada pela agência')
+                                    ->body('A agência ' . Auth::user()->name . ' rejeitou sua campanha')->danger()
+                            );
                         }),
                 ])->visible(
-                    fn (Model $record): bool => Gate::allows('is_agency') && $record->status_agency === CampaignStatus::PENDING_APPROVAL
+                    fn(Model $record): bool => Gate::allows('is_agency') && $record->status_agency === CampaignStatus::PENDING_APPROVAL
                 ),
             ])
             ->toolbarActions([

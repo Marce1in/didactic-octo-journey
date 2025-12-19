@@ -33,6 +33,7 @@ use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Auth\SessionGuard;
@@ -128,7 +129,7 @@ class Register extends SimplePage
         $agency = User::whereId($data['influencer_data']['agency_id'])->first();
 
         $agency->notify(
-            Notification::make()->title('Convite de associação de ' . $user->name)->body('Revise o pedido na página de associações.')->toDatabase()
+            Notification::make()->title('Convite de associação de ' . $user->name)->body('Revise o pedido na página de influenciadores.')->toDatabase()
         );
 
         event(new Registered($user));

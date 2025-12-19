@@ -47,7 +47,7 @@ class AcceptProposal extends Action
                 Notification::make()
                     ->title('Proposta de Campanha aceita por ' . Auth::user()->name)
                     ->body('A campanha foi iniciada com sucesso e está aguardando sua aprovação.')
-                    ->success()->toDatabase()
+                    ->toDatabase()
             );
 
             try {

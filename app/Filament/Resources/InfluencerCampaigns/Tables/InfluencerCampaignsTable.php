@@ -14,6 +14,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 class InfluencerCampaignsTable
@@ -32,7 +33,7 @@ class InfluencerCampaignsTable
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
                     ->searchable()
-                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -42,7 +43,7 @@ class InfluencerCampaignsTable
 
                 TextColumn::make('status_influencer')->label('Aprovação do Influenciador')
                     ->searchable()
-                    ->formatStateUsing(fn (CampaignStatus $state): string => match ($state) {
+                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
                         CampaignStatus::PENDING_APPROVAL => 'Pendente',
                         CampaignStatus::APPROVED => 'Aprovada',
                         CampaignStatus::FINISHED => 'Concluída',
@@ -76,6 +77,13 @@ class InfluencerCampaignsTable
                                 ->title('Status Atualizado')
                                 ->body('O status do influenciador foi definido como aprovado.')
                                 ->send();
+
+                            $record->company->notify(
+                                Notification::make()
+                                    ->title('Campanha ' . $record->name . ' aprovada pelo influenciador')
+                                    ->body('O influenciador ' . Auth::user()->name . ' aprovou sua campanha')
+                                    ->success()
+                            );
                         }),
 
                     Action::make('influencer_reject')
@@ -90,9 +98,15 @@ class InfluencerCampaignsTable
                                 ->title('Status Atualizado')
                                 ->body('O status do influenciador foi definido como rejeitado.')
                                 ->send();
+
+                            $record->company->notify(
+                                Notification::make()
+                                    ->title('Campanha ' . $record->name . ' rejeitada pelo influenciador')
+                                    ->body('O influenciador ' . Auth::user()->name . ' rejeitou sua campanha')->danger()
+                            );
                         }),
                 ])->visible(
-                    fn (Model $record): bool => Gate::allows('is_influencer') && $record->status_influencer === CampaignStatus::PENDING_APPROVAL
+                    fn(Model $record): bool => Gate::allows('is_influencer') && $record->status_influencer === CampaignStatus::PENDING_APPROVAL
                 ),
             ])
             ->toolbarActions([
