@@ -70,20 +70,21 @@ class InfluencerCampaignsTable
                         ->color(ColorsColor::Green)
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->action(function (OngoingCampaign $record) {
+
                             $record->status_influencer = CampaignStatus::APPROVED;
                             $record->save();
+
 
                             Notification::make()
                                 ->title('Status Atualizado')
                                 ->body('O status do influenciador foi definido como aprovado.')
                                 ->send();
 
-                            $record->company->notify(
-                                Notification::make()
-                                    ->title('Campanha ' . $record->name . ' aprovada pelo influenciador')
-                                    ->body('O influenciador ' . Auth::user()->name . ' aprovou sua campanha')
-                                    ->success()
-                            );
+                            Notification::make()
+                                ->title('Campanha ' . $record->name . ' aprovada pelo influenciador')
+                                ->body('O influenciador ' . Auth::user()->name . ' aprovou sua campanha')
+                                ->success()
+                                ->sendToDatabase($record->company);
                         }),
 
                     Action::make('influencer_reject')
@@ -102,7 +103,7 @@ class InfluencerCampaignsTable
                             $record->company->notify(
                                 Notification::make()
                                     ->title('Campanha ' . $record->name . ' rejeitada pelo influenciador')
-                                    ->body('O influenciador ' . Auth::user()->name . ' rejeitou sua campanha')->danger()
+                                    ->body('O influenciador ' . Auth::user()->name . ' rejeitou sua campanha')->danger()->toDatabase()
                             );
                         }),
                 ])->visible(

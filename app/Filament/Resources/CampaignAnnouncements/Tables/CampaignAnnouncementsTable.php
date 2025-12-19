@@ -92,7 +92,7 @@ class CampaignAnnouncementsTable
                             $record->company->notify(
                                 Notification::make()
                                     ->title('Proposta recebida para a campanha ' . $record->name)
-                                    ->body('A agência ' . Auth::user()->name . ' demonstrou interesse em sua campanha.')
+                                    ->body('A agência ' . Auth::user()->name . ' demonstrou interesse em sua campanha')
                                     ->toDatabase()
                             );
                         }

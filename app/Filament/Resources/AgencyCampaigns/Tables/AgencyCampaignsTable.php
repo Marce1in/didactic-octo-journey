@@ -109,7 +109,7 @@ class AgencyCampaignsTable
                                 Notification::make()
                                     ->title('Campanha ' . $record->name . ' aprovada pela agência')
                                     ->body('A agência ' . Auth::user()->name . ' aprovou sua campanha')
-                                    ->success()
+                                    ->success()->toDatabase()
                             );
                         }),
 
@@ -130,7 +130,7 @@ class AgencyCampaignsTable
                             $record->company->notify(
                                 Notification::make()
                                     ->title('Campanha ' . $record->name . ' rejeitada pela agência')
-                                    ->body('A agência ' . Auth::user()->name . ' rejeitou sua campanha')->danger()
+                                    ->body('A agência ' . Auth::user()->name . ' rejeitou sua campanha')->danger()->toDatabase()
                             );
                         }),
                 ])->visible(

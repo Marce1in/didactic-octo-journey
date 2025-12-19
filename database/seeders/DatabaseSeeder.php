@@ -182,7 +182,7 @@ class DatabaseSeeder extends Seeder
         // MANUAL TEST USERS
         // -------------------------------------------------------
         User::create([
-            'name' => 'Empresa A',
+            'name' => '1 Empresa',
             'email' => 'empresa@gmail.com',
             'avatar' => $createAvatar(),
             'bio' => fake()->paragraph(),
@@ -192,7 +192,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $agenciaA = User::create([
-            'name' => 'Agência A',
+            'name' => '1 Agência',
             'email' => 'agencia@gmail.com',
             'avatar' => $createAvatar(),
             'bio' => fake()->paragraph(),
@@ -202,7 +202,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $influencerA1 = User::create([
-            'name' => 'Influencer A1',
+            'name' => '1 Influencer',
             'email' => 'influencer@gmail.com',
             'avatar' => $createAvatar(),
             'bio' => fake()->paragraph(),
@@ -217,7 +217,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $influencerA2 = User::create([
-            'name' => 'Influencer A2',
+            'name' => '1 Influencer',
             'email' => 'influencera2@gmail.com',
             'avatar' => $createAvatar(),
             'bio' => fake()->paragraph(),
