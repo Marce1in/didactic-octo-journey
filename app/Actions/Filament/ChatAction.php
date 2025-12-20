@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Services\ChatService;
 use Closure;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
@@ -45,11 +46,10 @@ class ChatAction extends Action
                         $chat = ChatService::createChat([$record->id]);
 
                         if (is_array($chat) && isset($chat['error'])) {
-                            $this->sendNotification(
-                                title: 'Erro',
-                                body: $chat['error'],
-                                type: 'danger'
-                            );
+                            dd($chat['error']);
+
+                            Notification::make()->title('Erro')->body($chat['error'])->danger();
+                      
                             return;
                         }
 
