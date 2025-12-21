@@ -29,10 +29,10 @@ class CampaignAnnouncementsTable
                 TextColumn::make('name')->label('Campanha')
                     ->searchable()->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('agency_cut')->label('Parcela da Agência')
-                    ->numeric()
+                    ->numeric()->suffix('%')
                     ->sortable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('budget')->label('Orçamento')
-                    ->numeric()
+                    ->numeric()->prefix('R$ ')
                     ->sortable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('product.name')->label('Produto')
                     ->searchable()->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),

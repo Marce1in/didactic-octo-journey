@@ -43,9 +43,9 @@ class CampaignResource extends Resource
         ];
     }
 
-    public static function canViewAny(): bool
+    public static function canAccess(): bool
     {
-        return Gate::allows('is_company');
+        return false;
     }
 
     public static function getEloquentQuery(): Builder

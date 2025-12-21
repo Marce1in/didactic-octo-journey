@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use UnitEnum;
 
 class AgencyResource extends Resource
 {
@@ -24,6 +25,8 @@ class AgencyResource extends Resource
     protected static ?string $modelLabel = 'Agências';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingStorefront;
+
+    protected static string|UnitEnum|null $navigationGroup = 'grupo_nome';
 
     public static function getEloquentQuery(): Builder
     {

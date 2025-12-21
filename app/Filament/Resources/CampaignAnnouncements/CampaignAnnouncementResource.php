@@ -19,14 +19,17 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use UnitEnum;
 
 class CampaignAnnouncementResource extends Resource
 {
     protected static ?string $model = CampaignAnnouncement::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBellAlert;
+    protected static ?string $modelLabel = 'Campanhas';
 
-    protected static ?string $modelLabel = 'Anúncios';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
+
+    protected static string|UnitEnum|null $navigationGroup = 'grupo_nome';
 
     public static function getEloquentQuery(): Builder
     {

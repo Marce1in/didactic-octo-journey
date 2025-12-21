@@ -44,10 +44,12 @@ class InfluencerCampaignResource extends Resource
         ];
     }
 
-    public static function canViewAny(): bool
+    public static function canAccess(): bool
     {
-        return Gate::allows('is_influencer');
+        return false;
     }
+
+
 
     public static function canCreate(): bool
     {

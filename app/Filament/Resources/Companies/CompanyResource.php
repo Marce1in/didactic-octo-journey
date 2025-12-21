@@ -17,6 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Gate;
+use UnitEnum;
 
 class CompanyResource extends Resource
 {
@@ -25,6 +26,8 @@ class CompanyResource extends Resource
     protected static ?string $modelLabel = 'Empresa';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBuildingOffice2;
+
+    protected static string|UnitEnum|null $navigationGroup = 'grupo_nome';
 
     public static function getEloquentQuery(): Builder
     {

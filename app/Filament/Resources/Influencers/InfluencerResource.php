@@ -17,12 +17,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use UnitEnum;
 
 class InfluencerResource extends Resource
 {
     protected static ?string $model = User::class;
 
     protected static ?string $modelLabel = 'Influenciadores';
+
+    protected static string|UnitEnum|null $navigationGroup = 'grupo_nome';
 
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;

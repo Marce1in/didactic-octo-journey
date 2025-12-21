@@ -9,6 +9,7 @@ class CampaignAnnouncement extends Model
 {
     protected $fillable = [
         'name',
+        'description',
         'product_id',
         'company_id',
         'budget',

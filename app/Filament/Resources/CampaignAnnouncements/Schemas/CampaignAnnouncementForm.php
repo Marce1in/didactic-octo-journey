@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\CampaignAnnouncements\Schemas;
 
 use App\Models\User;
+use Brick\Money\Money;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Group;
@@ -29,7 +31,7 @@ class CampaignAnnouncementForm
                         ->relationship(
                             'product',
                             'name',
-                            fn ($query) => $query->where('company_id', Auth::id())
+                            fn($query) => $query->where('company_id', Auth::id())
                         )
                         ->label('Produto')
                         ->required()->createOptionForm([
@@ -38,8 +40,8 @@ class CampaignAnnouncementForm
                             TextInput::make('price')
                                 ->numeric()
                                 ->inputMode('decimal')->prefix('R$')
-                                ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
-                                ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
+                                ->formatStateUsing(fn($state) => number_format($state / 100, 2, ',', '.'))
+                                ->dehydrateStateUsing(fn($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
                                 ->placeholder('0,00')
                                 ->step('0.01')
                                 ->required(),
@@ -48,7 +50,7 @@ class CampaignAnnouncementForm
                             Hidden::make('company_id')->default(Auth::id()),
                         ])
                         ->createOptionAction(
-                            fn ($action) => $action->modalHeading('Criar Produto')
+                            fn($action) => $action->modalHeading('Criar Produto')
                         ),
 
                     Select::make('category_id')
@@ -59,13 +61,7 @@ class CampaignAnnouncementForm
                         ->label('Categoria')
                         ->required(),
 
-                    TextInput::make('budget')
-                        ->label('Orçamento')
-                        ->numeric()
-                        ->prefix('R$')
-                        ->formatStateUsing(fn ($state) => number_format($state / 100, 2, ',', '.'))
-                        ->dehydrateStateUsing(fn ($state) => (int) (str_replace(['.', ','], ['', '.'], $state) * 100))->required()
-                        ->placeholder('0,00'),
+
                 ]),
 
                 Hidden::make('company_id')
@@ -73,7 +69,7 @@ class CampaignAnnouncementForm
 
                 Section::make()->schema([
                     TextInput::make('agency_cut')
-                        ->label('Parcela da Agência')
+                        ->label('Porcentagem da Agência')
                         ->numeric()
                         ->required()
                         ->prefix('%')
@@ -83,28 +79,17 @@ class CampaignAnnouncementForm
                         ->step('0.01')
                         ->placeholder('30,00'),
 
-                    // Select::make('agency_id')
-                    //     ->label('Agência')
-                    //     ->options(
-                    //         User::where('role', 'agency')
-                    //             ->pluck('name', 'id')
-                    //     )
-                    //     ->searchable()
-                    //     ->live(),
+                    TextInput::make('budget')
+                        ->label('Orçamento')
+                        ->numeric()
+                        ->inputMode('decimal')
+                        ->prefix('R$')
+                        ->placeholder('0,00')
 
-                    // Select::make('influencer_id')
-                    //     ->label('Influencer')
-                    //     ->options(
-                    //         fn(Get $get) => User::where('role', 'influencer')
-                    //             ->whereHas('influencer_info', function ($query) use ($get) {
-                    //                 $query->where('agency_id', $get('agency_id'));
-                    //             })
-                    //             ->pluck('name', 'id')
-                    //     )
-                    //     ->searchable()
-                    //     ->hidden(fn(Get $get) => ! $get('agency_id'))
-                    //     ->disabled(fn(Get $get) => ! $get('agency_id')),
+
                 ]),
+
+                MarkdownEditor::make('description')->columnSpan(2)
             ]);
     }
 }

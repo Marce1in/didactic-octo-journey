@@ -44,10 +44,11 @@ class AgencyCampaignResource extends Resource
         ];
     }
 
-    public static function canViewAny(): bool
+    public static function canAccess(): bool
     {
-        return Gate::allows('is_agency');
+        return false;
     }
+
 
     public static function canCreate(): bool
     {
