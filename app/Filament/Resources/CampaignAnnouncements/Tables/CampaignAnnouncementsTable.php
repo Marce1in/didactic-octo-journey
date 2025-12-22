@@ -91,14 +91,18 @@ class CampaignAnnouncementsTable
                 // ]),
 
                 // ColumnGroup::make('Influenciador', [
-                ImageColumn::make('influencer.avatar_url')
+                ImageColumn::make('influencers.avatar_url')
+                    ->label('Influenciadores')
                     ->circular()
-                    ->label('Influenciador')
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    ->stacked()
+                    ->limit(3)
+                    ->tooltip('influencers.name')->tooltip(
+                        fn($record) =>
+                        $record->influencers
+                            ->pluck('name')
+                            ->join(', ')
 
-                TextColumn::make('influencer.name')
-                    ->label(' ')
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    )->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
                 // ]),
 
                 TextColumn::make('message')
@@ -142,13 +146,13 @@ class CampaignAnnouncementsTable
 
                     // APROVAÇÃO DO INFLUENCIADOR
 
-                    TextColumn::make('influencer_approval')
-                        ->label('Influenciador')->badge()
-                        ->color($colorByStatus)
-                        ->icon(fn() => Gate::allows('is_influencer') ? Heroicon::OutlinedCursorArrowRays : null)
-                        ->action(EditProposalAction::make()->disabled(Gate::denies('is_influencer')))
-                        ->formatStateUsing(fn($state): string => __("approval_status.$state"))
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    // TextColumn::make('influencer_approval')
+                    //     ->label('Influenciador')->badge()
+                    //     ->color($colorByStatus)
+                    //     ->icon(fn() => Gate::allows('is_influencer') ? Heroicon::OutlinedCursorArrowRays : null)
+                    //     ->action(EditProposalAction::make()->disabled(Gate::denies('is_influencer')))
+                    //     ->formatStateUsing(fn($state): string => __("approval_status.$state"))
+                    //     ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
                 ]),
 
 

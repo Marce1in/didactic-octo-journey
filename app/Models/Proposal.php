@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Proposal extends Model
@@ -13,7 +14,6 @@ class Proposal extends Model
         'campaign_announcement_id',
         'message',
         'proposed_agency_cut',
-        'influencer_id',
         'influencer_approval',
         'company_approval',
         'agency_approval',
@@ -32,8 +32,8 @@ class Proposal extends Model
         return $this->belongsTo(CampaignAnnouncement::class, 'campaign_announcement_id');
     }
 
-    public function influencer(): BelongsTo
+    public function influencers(): BelongsToMany
     {
-        return $this->belongsTo(User::class, 'influencer_id');
+        return $this->belongsToMany(User::class);
     }
 }

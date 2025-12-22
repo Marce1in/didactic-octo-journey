@@ -7,6 +7,7 @@ use App\UserRoles;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\ImageEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Actions;
@@ -116,23 +117,38 @@ class ViewProposal
                     ->columns(2),
 
 
-                Section::make('Influenciadores')->schema([
-                    ImageEntry::make('influencer.avatar_url')
-                        ->hiddenLabel()
-                        ->circular()
-                        ->imageSize(60),
+                Section::make('Influenciadores')
+                    ->schema([
+                        RepeatableEntry::make('influencers')->hiddenLabel()
+                            ->schema([
+                                ImageEntry::make('avatar_url')
+                                    ->hiddenLabel()
+                                    ->circular()
+                                    ->imageSize(60),
 
-                    Group::make()->schema([
-                        TextEntry::make('influencer.name')->weight(FontWeight::Bold)
-                            ->hiddenLabel(),
-                        TextEntry::make('influencer.email')
-                            ->hiddenLabel()->copyable()
-                    ])->columnSpan(3),
-                    TextEntry::make('influencer.role')->formatStateUsing(fn(UserRoles $state): string => __("roles.$state->value"))
-                        ->hiddenLabel()->badge()
+                                Group::make()
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->weight(FontWeight::Bold)
+                                            ->hiddenLabel(),
+
+                                        TextEntry::make('email')
+                                            ->hiddenLabel()
+                                            ->copyable(),
+                                    ])
+                                    ->columnSpan(3),
+
+                                TextEntry::make('role')
+                                    ->formatStateUsing(
+                                        fn(UserRoles $state): string => __("roles.$state->value")
+                                    )
+                                    ->hiddenLabel()
+                                    ->badge(),
+                            ])
+                            ->columns(5),
+                    ]),
 
 
-                ])->columns(5),
 
                 Actions::make([
                     // Action::make('viewAgency')
@@ -150,7 +166,7 @@ class ViewProposal
                     //         'search' => $record->influencer?->name,
                     //     ])),
 
-
+                    EditProposalAction::make(),
 
                     AcceptProposal::make(),
 

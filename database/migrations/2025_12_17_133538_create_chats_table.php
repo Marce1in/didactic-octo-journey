@@ -16,7 +16,9 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('image')->nullable()->after('description');
             $table->text('description')->nullable();
+            $table->foreignId('proposal_id')->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
+            $table->unique(['proposal_id']);
         });
     }
 

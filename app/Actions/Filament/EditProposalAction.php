@@ -22,7 +22,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
-
+use Illuminate\Support\Facades\Log as FacadesLog;
+use Laravel\Reverb\Loggers\Log;
 
 class   EditProposalAction extends Action
 {
@@ -51,7 +52,7 @@ class   EditProposalAction extends Action
 
         $this->modalWidth('lg');
 
-        $this->visible(fn($livewire) => $livewire->activeTab === 'proposals');
+        $this->visible(fn($livewire) => $livewire->activeTab === 'proposals' && Gate::allows('is_agency'));
 
         $this->schema([
 
@@ -61,13 +62,14 @@ class   EditProposalAction extends Action
                 ->maxLength(1000)
                 ->visible(fn() => Gate::allows('is_agency')),
 
-            Select::make('influencer_id')
-                ->label('Influenciador')
+            Select::make('influencer_ids')
+                ->label('Influenciadores')
+                ->multiple()
                 ->options(
                     fn() =>
                     Auth::user()
                         ->influencers()
-                        ->pluck('name', 'user_id')
+                        ->pluck('name', 'users.id')
                 )
                 ->searchable()
                 ->visible(fn() => Gate::allows('is_agency')),
@@ -80,34 +82,34 @@ class   EditProposalAction extends Action
                 ->visible(fn() => Gate::allows('is_agency')),
 
 
-            Select::make('company_approval')
-                ->label('Aprovação da Empresa')
-                ->options([
-                    'pending'  => 'Pendente',
-                    'approved' => 'Aprovado',
-                    'rejected' => 'Rejeitado',
-                ])
-                ->visible(fn() => Gate::allows('is_company')),
+            // Select::make('company_approval')
+            //     ->label('Aprovação da Empresa')
+            //     ->options([
+            //         'pending'  => 'Pendente',
+            //         'approved' => 'Aprovado',
+            //         'rejected' => 'Rejeitado',
+            //     ])
+            //     ->visible(fn() => Gate::allows('is_company')),
 
-            Select::make('agency_approval')
-                ->label('Aprovação da Agência')
-                ->options([
-                    'pending'  => 'Pendente',
-                    'approved' => 'Aprovado',
-                    'rejected' => 'Rejeitado',
-                ])
-                ->visible(fn() => Gate::allows('is_agency')),
+            // Select::make('agency_approval')
+            //     ->label('Aprovação da Agência')
+            //     ->options([
+            //         'pending'  => 'Pendente',
+            //         'approved' => 'Aprovado',
+            //         'rejected' => 'Rejeitado',
+            //     ])
+            //     ->visible(fn() => Gate::allows('is_agency')),
 
 
 
-            Select::make('influencer_approval')
-                ->label('Aprovação do Influenciador')
-                ->options([
-                    'pending'  => 'Pendente',
-                    'approved' => 'Aprovado',
-                    'rejected' => 'Rejeitado',
-                ])
-                ->visible(fn() => Gate::allows('is_influencer')),
+            // Select::make('influencer_approval')
+            //     ->label('Aprovação do Influenciador')
+            //     ->options([
+            //         'pending'  => 'Pendente',
+            //         'approved' => 'Aprovado',
+            //         'rejected' => 'Rejeitado',
+            //     ])
+            //     ->visible(fn() => Gate::allows('is_influencer')),
         ]);
 
 
@@ -144,6 +146,11 @@ class   EditProposalAction extends Action
                 $data = $this->evaluate($this->mutateRecordDataUsing, ['data' => $data]);
             }
 
+            $data['influencer_ids'] = $record
+                ->influencers()
+                ->pluck('users.id')
+                ->toArray();
+
             return $data;
         });
 
@@ -151,11 +158,11 @@ class   EditProposalAction extends Action
 
         $this->action(function ($record, array $data) {
             try {
-
                 $record->update($data);
             } catch (Exception $e) {
-                dd($e);
+                FacadesLog::error($e);
             } finally {
+                $record->influencers()->sync($data['influencer_ids'] ?? []);
 
                 Notification::make()
                     ->title('Proposta atualizada')
@@ -167,6 +174,8 @@ class   EditProposalAction extends Action
     public function mutateRecordDataUsing(?Closure $callback): static
     {
         $this->mutateRecordDataUsing = $callback;
+
+
 
         return $this;
     }

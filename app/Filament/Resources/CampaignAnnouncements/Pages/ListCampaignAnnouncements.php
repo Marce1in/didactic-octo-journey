@@ -35,7 +35,10 @@ class ListCampaignAnnouncements extends ListRecords
                         ->where(function ($query) {
                             $query->whereHas('announcement', fn($q) => $q->where('company_id', Auth::id()))
                                 ->orWhere('agency_id', Auth::id())
-                                ->orWhere('influencer_id', Auth::id());
+                                ->orWhereHas(
+                                    'influencers',
+                                    fn($q) => $q->where('users.id', Auth::id())
+                                );
                         })
                 ),
         ];

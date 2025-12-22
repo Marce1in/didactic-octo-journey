@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('chats', function (Blueprint $table) {
-            $table->foreignId('proposal_id')->nullable()->constrained()->nullOnDelete();
-            $table->unique(['proposal_id', 'created_by']);
+        Schema::create('proposal_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('proposal_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->timestamps();
         });
     }
 
@@ -22,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('chats', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('proposal_user');
     }
 };
