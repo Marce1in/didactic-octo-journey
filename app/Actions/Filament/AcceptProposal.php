@@ -2,7 +2,7 @@
 
 namespace App\Actions\Filament;
 
-use App\CampaignStatus;
+use App\ApprovalStatus;
 use App\Models\OngoingCampaign;
 use App\Models\Proposal;
 use Filament\Actions\Action;
@@ -56,8 +56,8 @@ class AcceptProposal extends Action
                     'budget' => $announcement->budget,
                     'agency_cut' => $announcement->agency_cut,
 
-                    'status_agency' => CampaignStatus::PENDING_APPROVAL,
-                    'status_influencer' => CampaignStatus::PENDING_APPROVAL,
+                    'status_agency' => ApprovalStatus::PENDING,
+                    'status_influencer' => ApprovalStatus::PENDING,
                 ]);
 
                 $record->delete();

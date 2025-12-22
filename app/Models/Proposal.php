@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Proposal extends Model
 {
-    protected $fillable = ['agency_id', 'campaign_announcement_id', 'message', 'proposed_agency_cut', 'influencer_id'];
+    protected $fillable = ['agency_id', 'campaign_announcement_id', 'message', 'proposed_agency_cut', 'influencer_id', 'influencer_approval'];
 
 
     protected $with = ['agency'];

@@ -2,6 +2,7 @@
 
 namespace App\Actions\Filament;
 
+use App\UserRoles;
 use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\ImageEntry;
@@ -68,7 +69,9 @@ class ViewProposal
                             ->hiddenLabel(),
                         TextEntry::make('agency.email')
                             ->hiddenLabel()->copyable()
-                    ])->columnSpan(4),
+                    ])->columnSpan(3),
+                    TextEntry::make('agency.role')->formatStateUsing(fn(UserRoles $state): string => __("roles.$state->value"))
+                        ->hiddenLabel()->badge(),
 
 
 
@@ -82,7 +85,10 @@ class ViewProposal
                             ->hiddenLabel(),
                         TextEntry::make('influencer.email')
                             ->hiddenLabel()->copyable()
-                    ])->columnSpan(4),
+                    ])->columnSpan(3),
+                    TextEntry::make('influencer.role')->formatStateUsing(fn(UserRoles $state): string => __("roles.$state->value"))
+                        ->hiddenLabel()->badge()
+
 
                 ])->columns(5),
 

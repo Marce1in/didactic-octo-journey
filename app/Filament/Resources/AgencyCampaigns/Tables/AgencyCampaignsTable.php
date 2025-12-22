@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\AgencyCampaigns\Tables;
 
-use App\CampaignStatus;
+use App\ApprovalStatus;
 use App\Models\OngoingCampaign;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -58,21 +58,21 @@ class AgencyCampaignsTable
                 ColumnGroup::make('Aprovação', [
                     TextColumn::make('status_agency')->label('Agência')
                         ->searchable()
-                        ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                            CampaignStatus::PENDING_APPROVAL => 'Pendente',
-                            CampaignStatus::APPROVED => 'Aprovada',
-                            CampaignStatus::FINISHED => 'Concluída',
-                            CampaignStatus::REJECTED => 'Rejeitada',
+                        ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                            ApprovalStatus::PENDING => 'Pendente',
+                            ApprovalStatus::APPROVED => 'Aprovada',
+
+                            ApprovalStatus::REJECTED => 'Rejeitada',
                             default => $state->value,
                         }),
 
                     TextColumn::make('status_influencer')->label('')
                         ->searchable()->label('Influenciador')
-                        ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                            CampaignStatus::PENDING_APPROVAL => 'Pendente',
-                            CampaignStatus::APPROVED => 'Aprovada',
-                            CampaignStatus::FINISHED => 'Concluída',
-                            CampaignStatus::REJECTED => 'Rejeitada',
+                        ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                            ApprovalStatus::PENDING => 'Pendente',
+                            ApprovalStatus::APPROVED => 'Aprovada',
+
+                            ApprovalStatus::REJECTED => 'Rejeitada',
                         }),
                 ]),
 
@@ -96,7 +96,7 @@ class AgencyCampaignsTable
                         ->color(Color::Green)
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->action(function (OngoingCampaign $record) {
-                            $record->status_agency = CampaignStatus::APPROVED;
+                            $record->status_agency = ApprovalStatus::APPROVED;
                             $record->save();
 
                             Notification::make()
@@ -119,7 +119,7 @@ class AgencyCampaignsTable
                         ->icon(Heroicon::OutlinedCheckCircle)
 
                         ->action(function (OngoingCampaign $record) {
-                            $record->status_agency = CampaignStatus::REJECTED;
+                            $record->status_agency = ApprovalStatus::REJECTED;
                             $record->save();
 
                             Notification::make()
@@ -134,7 +134,7 @@ class AgencyCampaignsTable
                             );
                         }),
                 ])->visible(
-                    fn(Model $record): bool => Gate::allows('is_agency') && $record->status_agency === CampaignStatus::PENDING_APPROVAL
+                    fn(Model $record): bool => Gate::allows('is_agency') && $record->status_agency === ApprovalStatus::PENDING
                 ),
             ])
             ->toolbarActions([

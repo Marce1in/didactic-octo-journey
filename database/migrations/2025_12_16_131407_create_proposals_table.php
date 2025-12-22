@@ -21,6 +21,11 @@ return new class extends Migration
             $table->foreignId('agency_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('influencer_id')->nullable()->constrained('users')->nullOnDelete();
 
+            $table->enum('influencer_approval', ['pending', 'approved', 'rejected'])->default('pending');
+
+            $table->enum('agency_approval', ['pending', 'approved', 'rejected'])->default('pending');
+
+            $table->enum('company_approval', ['pending', 'approved', 'rejected'])->default('pending');
 
             $table->timestamps();
         });

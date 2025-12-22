@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\InfluencerCampaigns\Tables;
 
-use App\CampaignStatus;
+use App\ApprovalStatus;
 use App\Models\OngoingCampaign;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -33,21 +33,19 @@ class InfluencerCampaignsTable
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Rejeitada',
+                    ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                        ApprovalStatus::PENDING => 'Aprovação Pendente',
+                        ApprovalStatus::APPROVED => 'Aprovada',
+                        ApprovalStatus::REJECTED => 'Rejeitada',
                         default => $state->value,
                     }),
 
                 TextColumn::make('status_influencer')->label('Aprovação do Influenciador')
                     ->searchable()
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Rejeitada',
+                    ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                        ApprovalStatus::PENDING => 'Pendente',
+                        ApprovalStatus::APPROVED => 'Aprovada',
+                        ApprovalStatus::REJECTED => 'Rejeitada',
                     }),
 
                 TextColumn::make('created_at')
@@ -71,7 +69,7 @@ class InfluencerCampaignsTable
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->action(function (OngoingCampaign $record) {
 
-                            $record->status_influencer = CampaignStatus::APPROVED;
+                            $record->status_influencer = ApprovalStatus::APPROVED;
                             $record->save();
 
 
@@ -92,7 +90,7 @@ class InfluencerCampaignsTable
                         ->color('danger')
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->action(function (OngoingCampaign $record) {
-                            $record->status_influencer = CampaignStatus::REJECTED;
+                            $record->status_influencer = ApprovalStatus::REJECTED;
                             $record->save();
 
                             Notification::make()
@@ -107,7 +105,7 @@ class InfluencerCampaignsTable
                             );
                         }),
                 ])->visible(
-                    fn(Model $record): bool => Gate::allows('is_influencer') && $record->status_influencer === CampaignStatus::PENDING_APPROVAL
+                    fn(Model $record): bool => Gate::allows('is_influencer') && $record->status_influencer === ApprovalStatus::PENDING
                 ),
             ])
             ->toolbarActions([

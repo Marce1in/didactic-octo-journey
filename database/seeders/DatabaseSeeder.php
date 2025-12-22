@@ -277,5 +277,54 @@ class DatabaseSeeder extends Seeder
                 'category_id' => $categories->random()->id,
             ]);
         }
+
+
+        // -------------------------------------------------------
+        // Proposals
+        // -------------------------------------------------------
+        $campaignAnnouncements = CampaignAnnouncement::all();
+
+        $campaignAnnouncements->each(function ($announcement) use ($agencies, $influencers) {
+            // Each announcement gets 2-5 proposals from different agencies
+            $numberOfProposals = rand(2, 5);
+            $selectedAgencies = $agencies->random(min($numberOfProposals, $agencies->count()));
+
+            $selectedAgencies->each(function ($agency) use ($announcement, $influencers) {
+                // Get influencers from this agency
+                $agencyInfluencers = $influencers->filter(function ($influencer) use ($agency) {
+                    return $influencer->influencer_info->agency_id === $agency->id
+                        && $influencer->influencer_info->association_status === 'approved';
+                });
+
+                \App\Models\Proposal::create([
+                    'message' => fake()->paragraph(2),
+                    'proposed_agency_cut' => rand(5, 35) + (rand(0, 99) / 100), // Random decimal between 5.00 and 35.99
+                    'campaign_announcement_id' => $announcement->id,
+                    'agency_id' => $agency->id,
+                    'influencer_id' => $agencyInfluencers->isNotEmpty()
+                        ? $agencyInfluencers->random()->id
+                        : null,
+                    'influencer_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+                    'agency_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+                    'company_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+                ]);
+            });
+        });
+
+        // Create specific proposals for test users
+        $testCampaigns = CampaignAnnouncement::where('company_id', $testCompany->id)->get();
+
+        $testCampaigns->each(function ($announcement) use ($agenciaA, $influencerA1) {
+            \App\Models\Proposal::create([
+                'message' => 'Proposta da agência 1 para esta campanha.',
+                'proposed_agency_cut' => 15.50,
+                'campaign_announcement_id' => $announcement->id,
+                'agency_id' => $agenciaA->id,
+                'influencer_id' => $influencerA1->id,
+                'influencer_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+                'agency_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+                'company_approval' => collect(['pending', 'approved', 'rejected'])->random(),
+            ]);
+        });
     }
 }

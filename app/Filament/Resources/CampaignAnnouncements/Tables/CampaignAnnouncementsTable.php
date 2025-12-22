@@ -4,6 +4,7 @@ namespace App\Filament\Resources\CampaignAnnouncements\Tables;
 
 use App\Actions\Filament\ProposeAction;
 use App\Actions\Filament\ViewProposal;
+use App\ApprovalStatus;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -19,19 +20,29 @@ use Illuminate\Support\Facades\Gate;
 
 class CampaignAnnouncementsTable
 {
+
     public static function configure(Table $table): Table
     {
+        $colorByStatus = fn(string $state) => match ($state) {
+            'approved' => 'success',
+            'pending'  => 'gray',    // neutral
+            'rejected' => 'danger',
+        };
+
         return $table
             ->columns([
                 // ANNOUNCEMENTS TAB
-                ImageColumn::make('company.avatar_url')->circular()->label(' ')
-                    ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
-                TextColumn::make('company.name')->label('Empresa')
-                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
-                TextColumn::make('product.name')->label('Produto')
-                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('name')->label('Campanha')
                     ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+
+                ImageColumn::make('company.avatar_url')->circular()->label(' ')
+                    ->visible(fn($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
+
+                TextColumn::make('company.name')->label('Empresa')
+                    ->searchable()->visible(fn($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
+                TextColumn::make('product.name')->label('Produto')
+                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+
                 TextColumn::make('description')->label("Descrição")->limit(40)->tooltip(fn($record) => $record->description)
                     ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('budget')->label('Orçamento')->money('BRL')
@@ -64,27 +75,27 @@ class CampaignAnnouncementsTable
                     ->searchable()
                     ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
 
-                ColumnGroup::make('Agência', [
-                    ImageColumn::make('agency.avatar_url')
-                        ->circular()
-                        ->label(' ')
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                // ColumnGroup::make('Agência', [
+                ImageColumn::make('agency.avatar_url')
+                    ->circular()
+                    ->label('Agência')
+                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
 
-                    TextColumn::make('agency.name')
-                        ->label('Nome')
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
-                ]),
+                TextColumn::make('agency.name')
+                    ->label(' ')
+                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                // ]),
 
-                ColumnGroup::make('Influenciador', [
-                    ImageColumn::make('influencer.avatar_url')
-                        ->circular()
-                        ->label(' ')
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                // ColumnGroup::make('Influenciador', [
+                ImageColumn::make('influencer.avatar_url')
+                    ->circular()
+                    ->label('Influenciador')
+                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
 
-                    TextColumn::make('influencer.name')
-                        ->label('Nome')
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
-                ]),
+                TextColumn::make('influencer.name')
+                    ->label(' ')
+                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                // ]),
 
                 TextColumn::make('message')
                     ->label('Mensagem')
@@ -98,11 +109,34 @@ class CampaignAnnouncementsTable
                     ->suffix('%')
                     ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
 
+
+                ColumnGroup::make('Aprovação')->columns([
+
+                    TextColumn::make('company_approval')
+                        ->label('company')
+                        ->badge()
+                        ->color($colorByStatus)
+                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals')->formatStateUsing(fn($state): string => __("approval_status.$state")),
+
+                    TextColumn::make('agency_approval')
+                        ->label('Agência')
+                        ->badge()
+                        ->color($colorByStatus)
+                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals')->formatStateUsing(fn($state): string => __("approval_status.$state")),
+
+                    TextColumn::make('influencer_approval')
+                        ->label('influencer')->badge()
+                        ->color($colorByStatus)
+                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals')->formatStateUsing(fn($state): string => __("approval_status.$state")),
+
+                ]),
+
+
             ])
             ->filters([
                 //
             ])
-            ->recordAction(ViewAction::class)
+            ->recordAction(fn($livewire) => $livewire->activeTab === 'announcements' ? 'view' : 'viewProposal')
             ->recordActions([
                 ViewAction::make()
                     ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),

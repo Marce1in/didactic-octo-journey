@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Campaigns\Tables;
 
-use App\CampaignStatus;
+use App\ApprovalStatus;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,19 +25,19 @@ class CampaignsTable
                     ->searchable(),
 
                 TextColumn::make('status_agency')->label('Aprovação da Agência')
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Cancelada',
+                    ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                        ApprovalStatus::PENDING => 'Aprovação Pendente',
+                        ApprovalStatus::APPROVED => 'Aprovada',
+
+                        ApprovalStatus::REJECTED => 'Cancelada',
                         default => $state->value,
                     }),
                 TextColumn::make('status_influencer')->label('Aprovação do Influenciador')
-                    ->formatStateUsing(fn(CampaignStatus $state): string => match ($state) {
-                        CampaignStatus::PENDING_APPROVAL => 'Aprovação Pendente',
-                        CampaignStatus::APPROVED => 'Aprovada',
-                        CampaignStatus::FINISHED => 'Concluída',
-                        CampaignStatus::REJECTED => 'Cancelada',
+                    ->formatStateUsing(fn(ApprovalStatus $state): string => match ($state) {
+                        ApprovalStatus::PENDING => 'Aprovação Pendente',
+                        ApprovalStatus::APPROVED => 'Aprovada',
+
+                        ApprovalStatus::REJECTED => 'Cancelada',
                         default => $state->value,
                     }),
 

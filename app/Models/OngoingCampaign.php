@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\CampaignStatus;
+use App\ApprovalStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -22,8 +22,8 @@ class OngoingCampaign extends Model
     ];
 
     protected $casts = [
-        'status_agency' => CampaignStatus::class,
-        'status_influencer' => CampaignStatus::class,
+        'status_agency' => ApprovalStatus::class,
+        'status_influencer' => ApprovalStatus::class,
     ];
 
     public function category(): BelongsTo
