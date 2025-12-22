@@ -25,6 +25,8 @@ class ChatAction extends Action
         parent::setUp();
 
 
+
+
         $this->icon(Heroicon::OutlinedChatBubbleLeftEllipsis);
         $this->label(__('Chat'));
         $this->defaultColor('secondary');
@@ -37,19 +39,22 @@ class ChatAction extends Action
         $this->modalWidth(Width::Large);
 
         $this->modalFooterActions(function (User $record) {
+
+
             return [
                 Action::make('newChat')
                     ->label('Iniciar Nova Conversa')
                     ->icon('heroicon-o-plus-circle')
-                    ->color('primary')
+
                     ->action(function ($record) {
                         $chat = ChatService::createChat([$record->id]);
 
                         if (is_array($chat) && isset($chat['error'])) {
-                            dd($chat['error']);
-
-                            Notification::make()->title('Erro')->body($chat['error'])->danger();
-
+                            Notification::make()
+                                ->title('Erro')
+                                ->body($chat['error'])
+                                ->danger()
+                                ->send();
                             return;
                         }
 
@@ -60,9 +65,7 @@ class ChatAction extends Action
                     ->label('Ver todas conversas')
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->color('gray')
-                    ->action(function () {
-                        return redirect()->route('chats.index');
-                    }),
+                    ->action(fn() => redirect()->route('chats.index')),
             ];
         });
 

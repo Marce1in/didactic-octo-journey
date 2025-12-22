@@ -4,6 +4,7 @@ namespace App\Actions\Filament;
 
 use App\UserRoles;
 use Closure;
+use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\View\ActionsIconAlias;
 use Filament\Forms\Components\Select;
@@ -23,7 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Arr;
 
 
-class EditProposalAction extends Action
+class   EditProposalAction extends Action
 {
 
     protected ?Closure $mutateRecordDataUsing = null;
@@ -85,7 +86,7 @@ class EditProposalAction extends Action
                     'pending'  => 'Pendente',
                     'approved' => 'Aprovado',
                     'rejected' => 'Rejeitado',
-                ])->default(fn($record) => $record->company_approval)
+                ])
                 ->visible(fn() => Gate::allows('is_company')),
 
             Select::make('agency_approval')
@@ -94,7 +95,7 @@ class EditProposalAction extends Action
                     'pending'  => 'Pendente',
                     'approved' => 'Aprovado',
                     'rejected' => 'Rejeitado',
-                ])->default(fn($record) => $record->agency_approval)
+                ])
                 ->visible(fn() => Gate::allows('is_agency')),
 
 
@@ -105,7 +106,7 @@ class EditProposalAction extends Action
                     'pending'  => 'Pendente',
                     'approved' => 'Aprovado',
                     'rejected' => 'Rejeitado',
-                ])->default(fn($record) => $record->influencer_approval)
+                ])
                 ->visible(fn() => Gate::allows('is_influencer')),
         ]);
 
@@ -149,12 +150,18 @@ class EditProposalAction extends Action
 
 
         $this->action(function ($record, array $data) {
-            $record->update($data);
+            try {
 
-            Notification::make()
-                ->title('Proposta atualizada')
-                ->success()
-                ->send();
+                $record->update($data);
+            } catch (Exception $e) {
+                dd($e);
+            } finally {
+
+                Notification::make()
+                    ->title('Proposta atualizada')
+                    ->success()
+                    ->send();
+            }
         });
     }
     public function mutateRecordDataUsing(?Closure $callback): static

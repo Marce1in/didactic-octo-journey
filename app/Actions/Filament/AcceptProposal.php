@@ -28,45 +28,38 @@ class AcceptProposal extends Action
         $this->icon('heroicon-o-check-circle');
         $this->button();
 
-        $this->modalHeading('Confirmar aceitação da Proposta');
-        $this->modalDescription('Tem certeza de que deseja aceitar esta proposta? Isto iniciará a Campanha.');
-        $this->modalSubmitActionLabel('Aceitar')->color('primary');
+        // $this->modalHeading('Confirmar aceitação da Proposta');
+        // $this->modalDescription('Tem certeza de que deseja aceitar esta proposta? Isto iniciará a Campanha.');
+        // $this->modalSubmitActionLabel('Aceitar')->color('primary');
 
         $this->action(function (Proposal $record) {
-            DB::beginTransaction();
 
-            $record->agency->notify(
-                Notification::make()
-                    ->title('Proposta de Campanha aceita por ' . Auth::user()->name)
-                    ->body('A campanha foi iniciada com sucesso e está aguardando sua aprovação.')
-                    ->toDatabase()
-            );
+
 
             try {
-                $announcement = $record->announcement;
 
-                OngoingCampaign::create([
-                    'name' => $announcement->name,
-                    'product_id' => $announcement->product_id,
-                    'company_id' => $announcement->company_id,
-                    'agency_id' => $record->agency_id,
-                    'influencer_id' => $record->influencer_id ?? null,
-                    'category_id' => $announcement->category_id,
 
-                    'budget' => $announcement->budget,
-                    'agency_cut' => $announcement->agency_cut,
+                // OngoingCampaign::create([
+                //     'name' => $announcement->name,
+                //     'product_id' => $announcement->product_id,
+                //     'company_id' => $announcement->company_id,
+                //     'agency_id' => $record->agency_id,
+                //     'influencer_id' => $record->influencer_id ?? null,
+                //     'category_id' => $announcement->category_id,
 
-                    'status_agency' => ApprovalStatus::PENDING,
-                    'status_influencer' => ApprovalStatus::PENDING,
-                ]);
+                //     'budget' => $announcement->budget,
+                //     'agency_cut' => $announcement->agency_cut,
 
-                $record->delete();
+                //     'status_agency' => ApprovalStatus::PENDING,
+                //     'status_influencer' => ApprovalStatus::PENDING,
+                // ]);
 
-                DB::commit();
+                $record->update(['company_approval' => 'approved']);
+
 
                 Notification::make()
                     ->title('Proposta Aceita')
-                    ->body('A campanha foi iniciada com sucesso e está aguardando aprovação. ')
+                    ->body('A proposta foi aprovada. ')
                     ->success()
                     ->send();
             } catch (\Exception $e) {
@@ -77,6 +70,13 @@ class AcceptProposal extends Action
                     ->body('Ocorreu um erro ao iniciar a campanha. Tente novamente.')
                     ->danger()
                     ->send();
+            } finally {
+                $record->agency->notify(
+                    Notification::make()
+                        ->title('Proposta de Campanha aceita por ' . Auth::user()->name)
+                        ->body('A sua proposta de campanha foi aceita.')
+                        ->toDatabase()
+                );
             }
         });
     }

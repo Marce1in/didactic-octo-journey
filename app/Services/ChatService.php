@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class ChatService
 {
-    public static function createChat(array $selectedUserIds): Chat|array
+    public static function createChat(array $selectedUserIds,  ?int $proposalId = null): Chat|array
     {
 
         $finalUserIds = self::processChatParticipants(Auth::user(), $selectedUserIds);
@@ -22,7 +22,7 @@ class ChatService
             return $finalUserIds;
         }
 
-        $chat = Chat::create([]);
+        $chat = Chat::create(['proposal_id' => $proposalId,]);
         $chat->users()->attach($finalUserIds);
         $chat->load('users');
 

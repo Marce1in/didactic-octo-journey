@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
-    protected $fillable = ['image','name', 'description'];
+    protected $fillable = ['image', 'name', 'description', 'proposal_id'];
 
     public function users()
     {

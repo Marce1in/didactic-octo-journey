@@ -164,7 +164,6 @@ class CampaignAnnouncementsTable
                 EditAction::make()
                     ->visible(fn($record, $livewire) => Auth::id() === $record->company_id &&  $livewire->activeTab === 'announcements'),
 
-                EditProposalAction::make(),
                 // EditAction::make()->label('Editar Proposta')
                 //     ->visible(fn($record, $livewire) => Auth::id() === $record->agency_id &&  $livewire->activeTab === 'proposals'),
 
