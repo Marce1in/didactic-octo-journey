@@ -53,18 +53,16 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: "cd /home/ubuntu/didactic-octo-journey && bash ./.github/scripts/pre-deploy.sh"
-
+        script: "cd /srv/hubinflu/ && bash ./.github/scripts/pre-deploy.sh"
     - name: "deploy files in ec2"
       uses: burnett01/rsync-deployments@5.2
       with:
         switches: -avzr --delete --exclude='.git' --exclude='tests' --exclude='node_modules' --exclude='.env' --exclude="storage/" --exclude='bootstrap/cache/'
-        remote_path: "/home/ubuntu/didactic-octo-journey/."
+        remote_path: "/srv/hubinflu/."
         remote_host: ${{ secrets.SSH_HOST }}
         remote_port: ${{ secrets.SSH_PORT }}
         remote_user: ${{ secrets.SSH_USER }}
         remote_key: ${{ secrets.SSH_KEY }}
-
     - name: "run post deploy script"
       uses: appleboy/ssh-action@v1
       with:
@@ -72,8 +70,7 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
-        script: "cd /home/ubuntu/didactic-octo-journey && bash ./.github/scripts/post-deploy.sh"
-
+        script: "cd /srv/hubinflu && bash ./.github/scripts/post-deploy.sh"
     - name: "Deploy failed, bring site back up"
       if: failure()
       uses: appleboy/ssh-action@v1
@@ -83,5 +80,5 @@ jobs:
         key: ${{ secrets.SSH_KEY }}
         port: ${{ secrets.SSH_PORT }}
         script: |
-          cd /home/ubuntu/didactic-octo-journey
+          cd /srv/hubinflu
           php artisan up
