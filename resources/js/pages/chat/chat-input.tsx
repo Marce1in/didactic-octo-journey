@@ -81,7 +81,7 @@ export function ChatInput({ chatId }: ChatInputProps) {
     return (
         <form
             onSubmit={handleSubmit}
-            className="border-t border-border bg-card p-4"
+            className="my-3 mr-3 rounded-lg border border-border bg-card p-4"
             onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -95,7 +95,7 @@ export function ChatInput({ chatId }: ChatInputProps) {
                     {attachments.map((attachment) => (
                         <div key={attachment.id} className="group relative">
                             {attachment.type === 'image' ? (
-                                <div className="relative h-20 w-20 overflow-hidden rounded-lg">
+                                <div className="relative aspect-auto h-20 overflow-hidden rounded-lg bg-white">
                                     <img
                                         src={
                                             attachment.url || '/placeholder.svg'
@@ -134,7 +134,7 @@ export function ChatInput({ chatId }: ChatInputProps) {
                     </button>
 
                     {showAttachMenu && (
-                        <div className="absolute bottom-full left-0 mb-2 w-40 rounded-sm border border-border bg-popover shadow-xl">
+                        <div className="absolute bottom-full -left-4 mb-7 w-40 rounded-sm border border-border bg-card shadow-xl">
                             <button
                                 type="button"
                                 onClick={() => imageInputRef.current?.click()}

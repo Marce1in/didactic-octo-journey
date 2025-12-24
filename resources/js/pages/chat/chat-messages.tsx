@@ -24,8 +24,6 @@ export function ChatMessages({
     users,
     messagesEndRef,
 }: ChatMessagesProps) {
-    console.log(users);
-
     const { auth } = usePage().props as any;
     const currentUserId = String(auth.user.id);
 

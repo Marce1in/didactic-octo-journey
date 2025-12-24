@@ -23,12 +23,12 @@ export function ChatSidebar({
     return (
         <aside
             className={cn(
-                'flex h-screen flex-col border-r border-sidebar-border bg-sidebar transition-all duration-300',
+                'm-3 flex flex-col rounded-lg border border-sidebar-border bg-sidebar transition-all duration-300',
                 isOpen ? 'w-96' : 'w-0 overflow-hidden',
             )}
         >
             {/* Header */}
-            <div className="flex items-center justify-between border-b p-4">
+            <div className="flex h-16 items-center justify-between border-b px-3">
                 <a href={'/dashboard'}>
                     <h1 className="text-xl font-semibold">HubInflu</h1>
                 </a>

@@ -29,6 +29,34 @@ class ChatService
         return $chat;
     }
 
+    public static function addUsersToChat(Chat $chat, array $newUserIds): Chat|array
+    {
+        $currentUser = Auth::user();
+
+        if (!$chat->users->contains($currentUser->id)) {
+            return ['error' => 'You are not a participant in this chat.'];
+        }
+
+        $existingUserIds = $chat->users->pluck('id')->toArray();
+
+        $processedUserIds = self::processChatParticipants($currentUser, $newUserIds);
+
+        if (isset($processedUserIds['error'])) {
+            return $processedUserIds;
+        }
+
+        $usersToAdd = array_diff($processedUserIds, $existingUserIds);
+
+        if (empty($usersToAdd)) {
+            return ['error' => 'All selected users are already in this chat.'];
+        }
+
+        $chat->users()->attach($usersToAdd);
+        $chat->load('users');
+
+        return $chat;
+    }
+
     public static function processChatParticipants(User $currentUser, array $selectedUserIds): array
     {
         $finalUserIds = [$currentUser->id];

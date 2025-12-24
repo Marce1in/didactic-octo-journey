@@ -18,6 +18,10 @@ Route::middleware('auth')
         Route::patch('/{chat}', [ChatController::class, 'update'])->name('chats.update');
         Route::delete('/{chat}/image', [ChatController::class, 'deleteImage'])->name('chats.delete-image');
         Route::post('/{chat}/messages', [MessageController::class, 'store'])->name('messages.store');
+
+        Route::get('/{chat}/search-users', [ChatController::class, 'searchUsersToAdd'])
+            ->name('chats.search-users');
+        Route::post('/{chat}/users', [ChatController::class, 'addUsers'])->name('chats.add-users');
     });
 // Route::middleware(['auth', 'verified'])->group(function () {
 //     Route::get('dashboard', function () {
@@ -25,4 +29,4 @@ Route::middleware('auth')
 //     })->name('dashboard');
 // });
 
-require __DIR__.'/settings.php';
+require __DIR__ . '/settings.php';

@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chat;
+use App\Models\User;
 use App\Services\ChatService;
+use App\UserRoles;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -58,6 +60,94 @@ class ChatController extends Controller
             ->get();
 
         return Inertia::render('chat/Chats', ['chat' => $chat, 'allChats' => $allChats]);
+    }
+
+    public function searchUsersToAdd(Request $request, Chat $chat)
+    {
+        abort_unless(
+            $chat->users->contains(Auth::id()),
+            403
+        );
+
+        $search = $request->input('search', '');
+        $currentUser = Auth::user();
+
+        // Get IDs of users already in the chat
+        $existingUserIds = $chat->users->pluck('id')->toArray();
+
+        // Query based on role with filtering
+        $query = User::query()
+            ->whereNotIn('id', $existingUserIds) // Exclude existing members
+            ->where('id', '!=', $currentUser->id) // Exclude current user
+            ->where('role', '!=', UserRoles::Admin->value); // Exclude admins
+
+        // Apply role-based filtering
+        switch ($currentUser->role) {
+            case UserRoles::Company:
+                $query->whereIn('role', [
+                    UserRoles::Agency->value,
+                    UserRoles::Influencer->value
+                ]);
+                break;
+
+            case UserRoles::Agency:
+                $query->where(function ($q) use ($currentUser) {
+                    $q->whereIn('role', [
+                        UserRoles::Company->value,
+                        UserRoles::Agency->value
+                    ])
+                        ->orWhere(function ($subQ) use ($currentUser) {
+                            $subQ->where('role', UserRoles::Influencer->value)
+                                ->whereHas('influencer_info', function ($infoQ) use ($currentUser) {
+                                    $infoQ->where('agency_id', $currentUser->id)
+                                        ->where('association_status', 'approved');
+                                });
+                        });
+                });
+                break;
+
+            case UserRoles::Influencer:
+                $query->whereIn('role', [
+                    UserRoles::Company->value,
+                    UserRoles::Agency->value
+                ]);
+                break;
+        }
+
+        // Apply search filter
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->select('id', 'name', 'email', 'avatar', 'role')
+            ->limit(15)
+            ->get();
+
+        return response()->json($users);
+    }
+
+    public function addUsers(Request $request, Chat $chat)
+    {
+        abort_unless(
+            $chat->users->contains(Auth::id()),
+            403
+        );
+
+        $request->validate([
+            'users' => 'required|array|min:1',
+            'users.*' => 'exists:users,id',
+        ]);
+
+        $result = ChatService::addUsersToChat($chat, $request->users);
+
+        if (is_array($result) && isset($result['error'])) {
+            return back()->with('error', $result['error']);
+        }
+
+        return back()->with('success', 'Users added to chat successfully');
     }
 
     public function update(Request $request, Chat $chat)

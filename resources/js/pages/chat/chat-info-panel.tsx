@@ -3,8 +3,18 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { getDefaultChatName, getTranslatedRole } from '@/lib/utils';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { Calendar, Check, Info, Pencil, Upload, Users, X } from 'lucide-react';
+import {
+    Calendar,
+    Check,
+    Info,
+    Pencil,
+    Upload,
+    UserPlus,
+    Users,
+    X,
+} from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import AddUsersDialog from './add-users-dialog';
 import { GroupDefaultImage } from './group-default-image';
 import type { ChatType } from './types';
 
@@ -41,6 +51,21 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
             setEditingName(false);
             setEditingDescription(false);
         }
+    };
+
+    const [showAddUsers, setShowAddUsers] = useState(false);
+    const addUsersForm = useForm({
+        users: [],
+    });
+
+    const handleAddUsers = () => {
+        addUsersForm.post(`/chats/${chat.id}/users`, {
+            preserveScroll: true,
+            onSuccess: () => {
+                setShowAddUsers(false);
+                addUsersForm.reset();
+            },
+        });
     };
 
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -263,13 +288,28 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
                     </div>
 
                     {/* Members Section */}
+
                     {chat && (
                         <div>
-                            <div className="mb-3 flex items-center gap-2">
-                                <Users className="h-4 w-4 text-muted-foreground" />
-                                <span className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
-                                    Members ({chat.users.length})
-                                </span>
+                            <div className="mb-4 flex justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Users className="h-4 w-4 text-muted-foreground" />
+
+                                    <span className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+                                        Members ({chat.users.length})
+                                    </span>
+                                </div>
+                                <AddUsersDialog
+                                    users={chat.users}
+                                    chatId={chat.id}
+                                >
+                                    <button
+                                        onClick={() => setShowAddUsers(true)}
+                                        className="h-8 w-8 rounded-full bg-secondary/10 pl-2 text-sm text-foreground transition-colors hover:bg-secondary/30"
+                                    >
+                                        <UserPlus className="h-5 w-5" />
+                                    </button>
+                                </AddUsersDialog>
                             </div>
                             <div className="space-y-1">
                                 {chat.users.map((member) => (
