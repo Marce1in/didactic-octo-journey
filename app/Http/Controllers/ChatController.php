@@ -157,15 +157,17 @@ class ChatController extends Controller
             403
         );
 
+
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'image' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
+
         ]);
 
-        // Handle image upload
+
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+
             if ($chat->image) {
                 Storage::disk('public')->delete($chat->image);
             }

@@ -28,7 +28,7 @@ export function ChatSidebar({
             )}
         >
             {/* Header */}
-            <div className="flex h-16 items-center justify-between border-b px-3">
+            <div className="flex h-16 items-center justify-between border-b border-border px-4">
                 <a href={'/dashboard'}>
                     <h1 className="text-xl font-semibold">HubInflu</h1>
                 </a>
@@ -64,9 +64,8 @@ export function ChatSidebar({
                                 {chat.image ? (
                                     <Avatar className="h-12 w-12">
                                         <AvatarImage
-                                            src={
-                                                chat.image || '/placeholder.svg'
-                                            }
+                                            className="object-cover"
+                                            src={'/storage/' + chat.image}
                                             alt={chat.name || ''}
                                         />
                                         <AvatarFallback>

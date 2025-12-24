@@ -15,7 +15,7 @@ Route::middleware('auth')
         Route::get('/', [ChatController::class, 'index'])->name('chats.index');
         Route::post('/', [ChatController::class, 'store'])->name('chats.store');
         Route::get('/{chat}', [ChatController::class, 'show'])->name('chats.show');
-        Route::patch('/{chat}', [ChatController::class, 'update'])->name('chats.update');
+        Route::post('/{chat}', [ChatController::class, 'update'])->name('chats.update');
         Route::delete('/{chat}/image', [ChatController::class, 'deleteImage'])->name('chats.delete-image');
         Route::post('/{chat}/messages', [MessageController::class, 'store'])->name('messages.store');
 

@@ -27,20 +27,26 @@ interface ChatInfoPanelProps {
 export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
     const [editingName, setEditingName] = useState(false);
     const [editingDescription, setEditingDescription] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const { auth } = usePage().props as any;
 
-    const form = useForm({
-        image: chat.image || '',
+    const form = useForm<{
+        image: File | null;
+        name: string;
+        description: string;
+    }>({
+        image: null,
         name: chat.name || '',
         description: chat.description || '',
     });
 
     useEffect(() => {
-        console.log(form.data.image);
+        console.log('IMAGE: ', form.data.image);
+        console.log(form.data.image instanceof File);
     }, [form.data]);
 
     const handleSaveNameAndDescription = () => {
@@ -53,34 +59,42 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
         }
     };
 
-    const [showAddUsers, setShowAddUsers] = useState(false);
     const addUsersForm = useForm({
         users: [],
     });
 
-    const handleAddUsers = () => {
-        addUsersForm.post(`/chats/${chat.id}/users`, {
+    const handleConfirmImageUpload = () => {
+        if (!form.data.image) return;
+
+        form.post(update({ chat: chat.id }), {
             preserveScroll: true,
-            onSuccess: () => {
-                setShowAddUsers(false);
-                addUsersForm.reset();
+            forceFormData: true,
+            onFinish: () => {
+                setImagePreview(null);
+                form.setData('image', null);
+
+                if (fileInputRef.current) {
+                    fileInputRef.current.value = '';
+                }
             },
         });
     };
 
+    const handleCancelImageUpload = () => {
+        setImagePreview(null);
+        form.setData('image', null);
+
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+    };
+
     const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-
-        form.setData('image', file);
-
         if (!file) return;
 
-        setIsUploading(true);
-        form.patch(update({ chat: chat.id }), {
-            preserveScroll: true,
-            onFinish: () => setIsUploading(false),
-            forceFormData: true,
-        });
+        form.setData('image', file);
+        setImagePreview(URL.createObjectURL(file));
     };
 
     const handleDeleteImage = () => {
@@ -123,11 +137,20 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
                     {/* Avatar and Name */}
                     <div className="mb-8 flex flex-col items-center">
                         <div className="group relative">
-                            {chat.image ? (
+                            {imagePreview ? (
+                                <Avatar className="h-32 w-32">
+                                    <AvatarImage
+                                        className="object-cover"
+                                        src={imagePreview}
+                                        alt="Preview"
+                                    />
+                                </Avatar>
+                            ) : chat.image ? (
                                 <Avatar className="h-32 w-32">
                                     <AvatarImage
                                         src={`/storage/${chat.image}`}
                                         alt={chat.name || ''}
+                                        className="object-cover"
                                     />
                                     <AvatarFallback>
                                         {chat.name || ''}
@@ -143,17 +166,44 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
                             {/* Image Upload Overlay */}
                             <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
                                 <div className="flex gap-2">
-                                    <button
-                                        onClick={() =>
-                                            fileInputRef.current?.click()
-                                        }
-                                        disabled={isUploading}
-                                        className="rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                                        title="Upload image"
-                                    >
-                                        <Upload className="h-5 w-5" />
-                                    </button>
-                                    {chat.image && (
+                                    {!imagePreview && (
+                                        <button
+                                            onClick={() =>
+                                                fileInputRef.current?.click()
+                                            }
+                                            disabled={isUploading}
+                                            className="rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                                            title="Upload image"
+                                        >
+                                            <Upload className="h-5 w-5" />
+                                        </button>
+                                    )}
+
+                                    {imagePreview && (
+                                        <>
+                                            <button
+                                                onClick={
+                                                    handleConfirmImageUpload
+                                                }
+                                                className="rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/90"
+                                                title="Confirm image"
+                                            >
+                                                <Check className="h-5 w-5" />
+                                            </button>
+
+                                            <button
+                                                onClick={
+                                                    handleCancelImageUpload
+                                                }
+                                                className="rounded-lg bg-secondary p-2 text-foreground transition-colors hover:bg-secondary/90"
+                                                title="Cancel"
+                                            >
+                                                <X className="h-5 w-5" />
+                                            </button>
+                                        </>
+                                    )}
+
+                                    {chat.image && !imagePreview && (
                                         <button
                                             onClick={handleDeleteImage}
                                             className="rounded-lg bg-destructive p-2 text-destructive-foreground transition-colors hover:bg-destructive/90"

@@ -193,7 +193,7 @@ export function ChatMessages({
                                                 : 'justify-start',
                                         )}
                                     >
-                                        {message.attachments.map(
+                                        {message.attachments?.map(
                                             renderAttachment,
                                         )}
                                     </div>
