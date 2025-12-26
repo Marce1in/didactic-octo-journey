@@ -48,10 +48,9 @@ export function ChatInput({ chatId, setMessages }: ChatInputProps) {
 
         submit(store(chatId), {
             forceFormData: true,
-            onSuccess: () => {
-                setData({ content: '', files: [] });
-            },
         });
+
+        setData({ content: '', files: [] });
     };
 
     const handleFileSelect = (
