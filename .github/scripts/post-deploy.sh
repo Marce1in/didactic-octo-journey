@@ -16,6 +16,9 @@ echo "::notice::Reset storage link just be sure..."
 php artisan storage:unlink
 php artisan storage:link
 
+echo "::notice::Starts Reverb"
+php artisan reverb:start
+
 echo "::endgroup::"
 
 echo "::notice::Post-deploy script was a success!"
