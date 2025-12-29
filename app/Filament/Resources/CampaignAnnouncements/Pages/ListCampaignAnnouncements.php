@@ -12,12 +12,14 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Livewire\Attributes\Url;
 
 class ListCampaignAnnouncements extends ListRecords
 {
     protected static string $resource = CampaignAnnouncementResource::class;
 
-    public ?string $activeTab = 'announcements';
+    #[Url]
+    public ?string $activeTab = null;
 
     public function getTabs(): array
     {
