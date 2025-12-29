@@ -35,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Mídia',
             ])
-            ->topbar(false)
+            ->topbar(false)->sidebarCollapsibleOnDesktop()
             ->colors(['primary' => 'oklch(0.3979 0.0632 231.2552)', 'secondary' => "oklch(0.6546 0.1119 207.9244)"])
             ->font('Figtree')
             ->path('dashboard')
@@ -52,8 +52,8 @@ class AdminPanelProvider extends PanelProvider
             ->profile(EditProfile::class)
             ->registration(Register::class)
             ->login()
-            // ->brandLogo(asset('assets/logo.png'))
-            // ->brandLogo(fn() => view('filament.logo'))->brandLogoHeight('18px')
+            ->brandLogo(asset('assets/hubinflu-logo.png'))->brandLogoHeight('28px')
+            // ->brandLogo(fn() => view('filament.logo'))
             ->brandName('HubInflu')
             ->passwordReset()
             // ->emailVerification()

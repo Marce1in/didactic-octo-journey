@@ -28,9 +28,13 @@ export function ChatSidebar({
             )}
         >
             {/* Header */}
-            <div className="flex h-16 items-center justify-between border-b border-border px-4">
+            <div className="flex h-16 items-center justify-between border-b border-border px-5">
                 <a href={'/dashboard'}>
-                    <h1 className="text-xl font-semibold">HubInflu</h1>
+                    <img
+                        src="/assets/hubinflu-logo.png"
+                        alt="Logo HubInflu"
+                        className="fi-logo h-7"
+                    />
                 </a>
                 <div className="flex items-center gap-2">
                     <button

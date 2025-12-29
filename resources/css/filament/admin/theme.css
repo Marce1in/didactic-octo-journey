@@ -1,4 +1,5 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap');
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -11,7 +12,7 @@
     --card-foreground: oklch(0.2101 0.0318 264.6645);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.2101 0.0318 264.6645);
-    --primary: oklch(0.3979 0.0632 231.2552);
+    --primary: oklch(39.787% 0.06326 231.288);
     --primary-foreground: oklch(1 0 0);
     --secondary: oklch(0.6546 0.1119 207.9244);
     --secondary-foreground: oklch(1 0 0);
@@ -37,7 +38,7 @@
     --sidebar-accent-foreground: oklch(0.2101 0.0318 264.6645);
     --sidebar-border: oklch(0.9276 0.0058 264.5313);
     --sidebar-ring: oklch(0.3979 0.0632 231.2552);
-    --font-sans: Figtree, ui-sans-serif, sans-serif, system-ui;
+    --font-sans: 'Figtree', ui-sans-serif, sans-serif, system-ui;
     --font-serif: Cardo, ui-serif, serif;
     --font-mono: JetBrains Mono, monospace;
     --radius: 1.1rem;
@@ -70,11 +71,11 @@
 }
 
 .dark {
-    --background: oklch(16.146% 0.00329 197.141);
+    --background: hsl(180, 2%, 6%);
     --foreground: oklch(0.8109 0 0);
-    --card: oklch(0.198 0.0031 196.9035);
+    --card: hsl(180, 0%, 8%);
     --card-foreground: oklch(0.8109 0 0);
-    --popover: oklch(0.1797 0.0043 308.1928);
+    --popover: hsl(270, 3%, 7%);
     --popover-foreground: oklch(0.8109 0 0);
     --primary: oklch(0.3301 0.0424 234.3965);
     --primary-foreground: oklch(0.9079 0.0069 325.6333);
@@ -94,15 +95,16 @@
     --chart-3: oklch(0.8721 0.0864 68.5474);
     --chart-4: oklch(0.6268 0 0);
     --chart-5: oklch(0.683 0 0);
-    --sidebar: oklch(0.1921 0.004 286.0181);
-    --sidebar-foreground: oklch(0.8109 0 0);
+    --sidebar: hsl(240, 0%, 8%);
+    --sidebar-foreground: oklch(81.093% 0.00009 271.152);
+
     --sidebar-primary: oklch(0.3301 0.0424 234.3965);
     --sidebar-primary-foreground: oklch(0.1797 0.0043 308.1928);
     --sidebar-accent: oklch(0.3211 0 0);
     --sidebar-accent-foreground: oklch(0.8109 0 0);
     --sidebar-border: oklch(0.252 0 0);
     --sidebar-ring: oklch(0.536 0.0488 231.193);
-    --font-sans: Figtree, ui-sans-serif, sans-serif, system-ui;
+    --font-sans: 'Figtree', ui-sans-serif, sans-serif, system-ui;
     --font-serif: Cardo, ui-serif, serif;
     --font-mono: JetBrains Mono, monospace;
     --radius: 1.1rem;
@@ -193,6 +195,7 @@
 }
 
 body {
+    font-family: var(--font-sans);
     letter-spacing: var(--tracking-normal);
 }
 
@@ -204,6 +207,7 @@ body {
 .fi-sidebar {
     background: var(--color-sidebar);
     color: var(--sidebar-foreground);
+    @apply border-sidebar-border;
 }
 
 .fi-card {
@@ -250,15 +254,15 @@ th {
 }
 
 .fi-modal-window {
-    @apply border-sidebar-border bg-background;
+    @apply border-sidebar-border bg-sidebar;
 }
 
 .fi-modal-header {
-    @apply border-sidebar-border bg-background;
+    @apply border-sidebar-border bg-sidebar;
 }
 
 .fi-modal-footer {
-    @apply border-sidebar-border bg-background;
+    @apply border-sidebar-border bg-sidebar;
 }
 
 .fi-tabs {
@@ -269,6 +273,26 @@ th {
     @apply rounded-t-[1.1rem] border border-border bg-card;
 }
 
-.fi-btn {
-    @apply text-primary-foreground;
+.fi-color-primary {
+    @apply bg-primary text-primary-foreground;
+}
+
+.fi-link {
+    @apply bg-primary/0 text-foreground;
+}
+
+.fi-sidebar-item-btn {
+    @apply hover:bg-foreground/10;
+}
+
+.dark .fi-logo {
+    filter: brightness(1.8);
+}
+
+.fi-sidebar-header {
+    @apply mt-5;
+}
+
+.fi-sidebar-nav {
+    @apply pt-2;
 }

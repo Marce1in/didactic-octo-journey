@@ -13,7 +13,7 @@ import {
     Users,
     X,
 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import AddUsersDialog from './add-users-dialog';
 import { GroupDefaultImage } from './group-default-image';
 import type { ChatType } from './types';
@@ -43,8 +43,6 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
         name: chat.name || '',
         description: chat.description || '',
     });
-
-
 
     const handleSaveNameAndDescription = () => {
         form.submit(update({ chat: chat.id }));
@@ -113,7 +111,7 @@ export function ChatInfoPanel({ chat, isOpen, onClose }: ChatInfoPanelProps) {
 
             {/* Panel */}
             <div
-                className={`fixed top-0 right-0 z-50 h-full w-full max-w-md transform border-l border-border bg-card transition-transform duration-300 ease-out ${
+                className={`fixed top-0 right-0 z-50 h-full w-full max-w-md transform border-l border-border bg-sidebar transition-transform duration-300 ease-out ${
                     isOpen ? 'translate-x-0' : 'translate-x-full'
                 }`}
             >

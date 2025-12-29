@@ -7,4 +7,11 @@ export default {
         './vendor/filament/**/*.blade.php',
         '../../vendor/wirechat/wirechat/resources/css/app.css',
     ],
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Figtree', 'ui-sans-serif', 'system-ui'],
+            },
+        },
+    },
 };

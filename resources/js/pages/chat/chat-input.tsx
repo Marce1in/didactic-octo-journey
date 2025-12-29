@@ -97,7 +97,7 @@ export function ChatInput({ chatId, setMessages }: ChatInputProps) {
     return (
         <form
             onSubmit={handleSubmit}
-            className="my-3 mr-3 rounded-lg border border-border bg-card p-4"
+            className="my-3 mr-3 rounded-lg border border-border bg-sidebar p-4"
             onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();

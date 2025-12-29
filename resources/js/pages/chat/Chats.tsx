@@ -24,7 +24,7 @@ export default function Chats({
     }, [localStorage.theme]);
 
     return (
-        <main className={`flex min-h-screen`}>
+        <main className={`flex min-h-screen font-sans`}>
             <ChatSidebar
                 isOpen={sidebarOpen}
                 allChats={allChats}

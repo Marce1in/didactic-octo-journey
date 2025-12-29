@@ -18,7 +18,7 @@ export function ChatHeader({
 }: ChatHeaderProps) {
     return (
         <header
-            className="my-3 mr-3 flex min-h-16 cursor-pointer items-center justify-between rounded-lg border border-border bg-card px-3 py-2 hover:bg-secondary/20"
+            className="my-3 mr-3 flex min-h-16 cursor-pointer items-center justify-between rounded-lg border border-border bg-sidebar px-3 py-2 hover:bg-secondary/5"
             onClick={onHeaderClick}
         >
             <div className="flex items-center gap-3">
