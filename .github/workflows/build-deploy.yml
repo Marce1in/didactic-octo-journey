@@ -39,10 +39,6 @@ jobs:
         composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
         npm ci
 
-    - name: "Restarts reverb"
-      run: |
-        php artisan reverb:restart
-
     - name: "Build front-end"
       uses: nick-fields/retry@v3
       with:
