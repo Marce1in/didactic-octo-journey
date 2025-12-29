@@ -32,26 +32,16 @@ class AgenciesTable
                     ->searchable(),
 
                 TextColumn::make('influencer_categories')
-                    ->label('Categorias')
+                    ->label('Categorias dos Influenciadores')
                     ->badge()
                     ->getStateUsing(function ($record) {
-
                         return $record->influencers
-                            ->flatMap(fn($inf) => $inf->subcategories)
+                            ->flatMap(fn ($inf) => $inf->subcategories)
                             ->pluck('title')
                             ->unique()
                             ->values()
                             ->toArray();
-                    })
-                    ->tooltip(
-                        fn($record) =>
-                        $record->influencers
-                            ->flatMap(fn($inf) => $inf->subcategories)
-                            ->pluck('title')
-                            ->unique()
-                            ->join(', ')
-                    ),
-
+                    })->limitList(2)->listWithLineBreaks()->expandableLimitedList(),
 
                 ColumnGroup::make('Seguidores')->columns([
                     TextColumn::make('igfollowers')
@@ -119,10 +109,10 @@ class AgenciesTable
                 Action::make('viewCampaigns')->hiddenLabel()
                     ->tooltip('Visualizar campanhas em comum')
                     ->icon('heroicon-o-presentation-chart-line')
-                    ->url(fn($record) => route('filament.admin.resources.campaigns.index', [
+                    ->url(fn ($record) => route('filament.admin.resources.campaigns.index', [
                         'search' => $record->name,
                     ]))->visible(
-                        fn(Model $record) => $record->campaigns()
+                        fn (Model $record) => $record->campaigns()
                             ->where('company_id', Auth::id())
                             ->exists()
                     ),

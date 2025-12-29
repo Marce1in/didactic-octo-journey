@@ -19,7 +19,7 @@ class Proposal extends Model
         'company_approval',
         'agency_approval',
 
-        'status'
+        'status',
     ];
 
     protected $with = ['agency'];
@@ -33,8 +33,6 @@ class Proposal extends Model
     {
         return $this->belongsTo(CampaignAnnouncement::class, 'campaign_announcement_id');
     }
-
-
 
     public function influencers(): BelongsToMany
     {

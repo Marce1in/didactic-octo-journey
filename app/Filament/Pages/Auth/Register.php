@@ -4,10 +4,8 @@ namespace App\Filament\Pages\Auth;
 
 use App\Models\Category;
 use App\Models\InfluencerInfo;
-use App\Models\Subcategory;
 use App\Models\User;
 use App\UserRoles;
-use Closure;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use Filament\Actions\Action;
@@ -129,7 +127,7 @@ class Register extends SimplePage
 
         if ($data['role'] === 'influencer' && isset($agency)) {
             $agency->notify(
-                Notification::make()->title('Convite de associação de ' . $user->name)->body('Revise o pedido na página de influenciadores.')->toDatabase()
+                Notification::make()->title('Convite de associação de '.$user->name)->body('Revise o pedido na página de influenciadores.')->toDatabase()
             );
         }
 
@@ -205,7 +203,7 @@ class Register extends SimplePage
     {
         return $schema->components([
             FileUpload::make('avatar')
-                ->label('Avatar')
+                ->label(' ')
                 ->disk('public')
                 ->directory('avatars')
                 ->alignCenter()
@@ -240,23 +238,13 @@ class Register extends SimplePage
                                     ->mapWithKeys(function ($category) {
                                         return [
                                             $category->title => $category->subcategories
-                                                ->filter(fn($subcategory) => $subcategory->title !== null)
+                                                ->filter(fn ($subcategory) => $subcategory->title !== null)
                                                 ->pluck('title', 'id')
                                                 ->toArray(),
                                         ];
                                     })
                                     ->toArray()
-                            )->rules([
-                                fn(): Closure => function (string $attribute, $value, Closure $fail) {
-                                    $categories = Subcategory::whereIn('id', $value)
-                                        ->distinct('category_id')
-                                        ->count('category_id');
-
-                                    if ($categories > 1) {
-                                        $fail('Selecione subcategorias de apenas uma categoria.');
-                                    }
-                                },
-                            ]),
+                            ),
 
                         Group::make()->columns(2)->dehydrated()->statePath('influencer_data')->schema([
                             Select::make('agency_id')
@@ -266,14 +254,14 @@ class Register extends SimplePage
                                 ->preload()
 
                                 ->getSearchResultsUsing(
-                                    fn(string $search): array => User::query()
+                                    fn (string $search): array => User::query()
                                         ->where('role', UserRoles::Agency)
                                         ->where('name', 'ilike', "%{$search}%")
                                         ->limit(50)
                                         ->pluck('name', 'id')
                                         ->toArray()
                                 )
-                                ->getOptionLabelUsing(fn($value): ?string => User::find($value)?->name),
+                                ->getOptionLabelUsing(fn ($value): ?string => User::find($value)?->name),
 
                             Select::make('state')
                                 ->label('Estado')
@@ -304,10 +292,10 @@ class Register extends SimplePage
                                     'SC' => 'SC',
                                     'SP' => 'SP',
                                     'SE' => 'SE',
-                                    'TO' => 'TO'
+                                    'TO' => 'TO',
                                 ])
                                 ->live()->placeholder('-')
-                                ->afterStateUpdated(fn(callable $set) => $set('city', null))
+                                ->afterStateUpdated(fn (callable $set) => $set('city', null))
                                 ->searchable()
                                 ->required(),
 
@@ -327,7 +315,7 @@ class Register extends SimplePage
                                 })
                                 ->searchable()
                                 ->required()
-                                ->disabled(fn(Get $get) => ! $get('state')),
+                                ->disabled(fn (Get $get) => ! $get('state')),
 
                             Group::make()->columns(2)->schema([
                                 TextEntry::make('handle_label')->label('@ do Perfil'),
@@ -350,30 +338,39 @@ class Register extends SimplePage
                                 TextInput::make('facebook_followers')->hiddenLabel()->numeric(),
                             ])->columnSpan(1),
 
-                            Group::make()
-                                ->schema([
-                                    Group::make()->columns(1)->schema([
-                                        TextInput::make('reels_price')
-                                            ->label('Preço de Reels')
-                                            ->numeric()
-                                            ->inputMode('decimal')
-                                            ->prefix('R$'),
+                            Group::make()->columns(1)->schema([
+                                TextInput::make('reels_price')
+                                    ->label('Preço de Reels')
+                                    ->numeric()
+                                    ->inputMode('decimal')
+                                    ->prefix('R$'),
 
-                                        TextInput::make('stories_price')
-                                            ->label('Preço de Stories')
-                                            ->numeric()->inputMode('decimal')
-                                            ->prefix('R$'),
+                                TextInput::make('stories_price')
+                                    ->label('Preço de Stories')
+                                    ->numeric()->inputMode('decimal')
+                                    ->prefix('R$'),
 
-                                        TextInput::make('carrousel_price')
-                                            ->label('Preço de Carrossel')
-                                            ->numeric()->inputMode('decimal')
-                                            ->prefix('R$'),
-                                    ]),
-                                ])->columnSpan(2),
+                                TextInput::make('carrousel_price')
+                                    ->label('Preço de Carrossel')
+                                    ->numeric()->inputMode('decimal')
+                                    ->prefix('R$'),
+
+                                TextInput::make('commission_cut')
+                                    ->label('Porcentagem da Comissão')
+                                    ->suffix('%')
+                                    ->numeric()
+                                    ->inputMode('decimal')
+                                    ->minValue(0)
+                                    ->maxValue(100),
+
+                            ])
+                                ->columnSpan(2),
                         ]),
                     ])
-                    ->visible(fn(Get $get): bool => $get('role') === 'influencer'),
+                    ->visible(fn (Get $get): bool => $get('role') === 'influencer'),
             ]),
+
+            TextInput::make('pix_address')->label('Endereço Pix'),
 
             $this->getEmailFormComponent(),
             $this->getPasswordFormComponent(),
@@ -415,7 +412,7 @@ class Register extends SimplePage
             ->required()
             ->rule(Password::default())
             ->showAllValidationMessages()
-            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'));
     }
@@ -504,7 +501,7 @@ class Register extends SimplePage
             return null;
         }
 
-        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before') . ' ' . $this->loginAction->toHtml());
+        return new HtmlString(__('filament-panels::auth/pages/register.actions.login.before').' '.$this->loginAction->toHtml());
     }
 
     public function content(Schema $schema): Schema

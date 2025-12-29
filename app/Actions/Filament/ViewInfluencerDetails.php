@@ -31,7 +31,7 @@ class ViewInfluencerDetails
                                 ->hiddenLabel()
                                 ->circular()
                                 ->imageSize(100)
-                                ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name)),
+                                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name)),
 
                             TextEntry::make('name')->weight(FontWeight::Bold)
                                 ->label('Nome'),
@@ -41,7 +41,6 @@ class ViewInfluencerDetails
                         TextEntry::make('role')->hiddenLabel()
                             ->badge()->alignRight()
                             ->color('success'),
-
 
                         TextEntry::make('bio')
                             ->label('Bio')
@@ -112,18 +111,13 @@ class ViewInfluencerDetails
                         TextEntry::make('influencer_info.agency.name')
                             ->label('Agência')
                             ->placeholder('Independente')
-                            ->icon(Heroicon::OutlinedBuildingStorefront)->columnSpan(2),
-
-                        Action::make('viewAgency')
-                            ->label('Ver Agência')
-                            ->button()
-                            ->icon('heroicon-o-building-storefront')
-                            ->color('primary')
-                            ->url(function ($record) {
-                                return route('filament.admin.resources.agencies.index', [
+                            ->icon(Heroicon::OutlinedBuildingStorefront)->columnSpan(2)->url(
+                                fn ($record) => route('filament.admin.resources.agencies.index', [
                                     'search' => $record->influencer_info->agency->name,
-                                ]);
-                            })->visible(Gate::allows('is_agency')),
+                                    'tableAction' => 'viewAgencyDetails',
+                                    'tableActionRecord' => $record->influencer_info->agency->getKey(),
+                                ])
+                            )->visible(Gate::denies('is_agency')),
 
                     ])
                     ->columns(3),
@@ -146,14 +140,14 @@ class ViewInfluencerDetails
                             ->placeholder('Não informado'),
                     ])
                     ->columns(3)
-                    ->visible(fn($record) => (bool) $record->influencer_info),
+                    ->visible(fn ($record) => (bool) $record->influencer_info),
 
                 Section::make('Redes Sociais')
                     ->schema([
                         TextEntry::make('influencer_info.instagram')
                             ->label('Instagram')
                             ->prefix('@')
-                            ->url(fn($state) => $state ? "https://instagram.com/{$state}" : null)
+                            ->url(fn ($state) => $state ? "https://instagram.com/{$state}" : null)
                             ->openUrlInNewTab()
                             ->placeholder('Não informado'),
 
@@ -165,7 +159,7 @@ class ViewInfluencerDetails
                         TextEntry::make('influencer_info.youtube')
                             ->label('YouTube')
                             ->prefix('@')
-                            ->url(fn($state) => $state ? "https://youtube.com/@{$state}" : null)
+                            ->url(fn ($state) => $state ? "https://youtube.com/@{$state}" : null)
                             ->openUrlInNewTab()
                             ->placeholder('Não informado'),
 
@@ -177,7 +171,7 @@ class ViewInfluencerDetails
                         TextEntry::make('influencer_info.tiktok')
                             ->label('TikTok')
                             ->prefix('@')
-                            ->url(fn($state) => $state ? "https://tiktok.com/@{$state}" : null)
+                            ->url(fn ($state) => $state ? "https://tiktok.com/@{$state}" : null)
                             ->openUrlInNewTab()
                             ->placeholder('Não informado'),
 
@@ -189,7 +183,7 @@ class ViewInfluencerDetails
                         TextEntry::make('influencer_info.twitter')
                             ->label('Twitter')
                             ->prefix('@')
-                            ->url(fn($state) => $state ? "https://twitter.com/{$state}" : null)
+                            ->url(fn ($state) => $state ? "https://twitter.com/{$state}" : null)
                             ->openUrlInNewTab()
                             ->placeholder('Não informado'),
 
@@ -201,7 +195,7 @@ class ViewInfluencerDetails
                         TextEntry::make('influencer_info.facebook')
                             ->label('Facebook')
                             ->prefix('@')
-                            ->url(fn($state) => $state ? "https://facebook.com/{$state}" : null)
+                            ->url(fn ($state) => $state ? "https://facebook.com/{$state}" : null)
                             ->openUrlInNewTab()
                             ->placeholder('Não informado'),
 

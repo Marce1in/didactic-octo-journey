@@ -86,7 +86,7 @@ class ChatController extends Controller
             case UserRoles::Company:
                 $query->whereIn('role', [
                     UserRoles::Agency->value,
-                    UserRoles::Influencer->value
+                    UserRoles::Influencer->value,
                 ]);
                 break;
 
@@ -94,7 +94,7 @@ class ChatController extends Controller
                 $query->where(function ($q) use ($currentUser) {
                     $q->whereIn('role', [
                         UserRoles::Company->value,
-                        UserRoles::Agency->value
+                        UserRoles::Agency->value,
                     ])
                         ->orWhere(function ($subQ) use ($currentUser) {
                             $subQ->where('role', UserRoles::Influencer->value)
@@ -109,12 +109,12 @@ class ChatController extends Controller
             case UserRoles::Influencer:
                 $query->whereIn('role', [
                     UserRoles::Company->value,
-                    UserRoles::Agency->value
+                    UserRoles::Agency->value,
                 ]);
                 break;
         }
 
-        if (!empty($search)) {
+        if (! empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
@@ -157,14 +157,12 @@ class ChatController extends Controller
             403
         );
 
-
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'description' => 'nullable|string|max:1000',
             'image' => 'nullable|file|mimetypes:image/jpeg,image/png,image/gif,image/webp|max:10240',
 
         ]);
-
 
         if ($request->hasFile('image')) {
 

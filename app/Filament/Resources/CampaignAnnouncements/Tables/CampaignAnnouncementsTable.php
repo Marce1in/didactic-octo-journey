@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\CampaignAnnouncements\Tables;
 
 use App\Actions\Filament\EditProposalAction;
-use App\Actions\Filament\ProposeAction;
 use App\Actions\Filament\ViewProposal;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -11,7 +10,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Support\Enums\IconPosition;
-use Filament\Support\Enums\IconSize;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\ImageColumn;
@@ -22,22 +20,23 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\HtmlString;
 
 class CampaignAnnouncementsTable
 {
     public static function configure(Table $table): Table
     {
-        $colorByStatus = fn(string $state) => match ($state) {
+        $colorByStatus = fn (string $state) => match ($state) {
             'approved' => 'success',
             'finished' => 'success',
-            'pending'  => 'gray',
+            'pending' => 'gray',
             'draft' => 'gray',
             'rejected' => 'danger',
             'cancelled' => 'danger',
         };
 
-        return $table
-            ->groups(groups: fn($livewire) => $livewire->activeTab === 'proposals' ? [
+        return $table->defaultSort('created_at', 'desc')
+            ->groups(groups: fn ($livewire) => $livewire->activeTab === 'proposals' ? [
                 // Group::make('company_approval')->label('Aprovação da Empresa')->collapsible(),
                 Group::make('status')->collapsible()->orderQueryUsing(function (Builder $query, string $direction) {
                     return $query->orderByRaw("
@@ -51,71 +50,68 @@ class CampaignAnnouncementsTable
             ");
                 })
                     ->getTitleFromRecordUsing(
-                        fn($record) => __("campaign_status.{$record->status}.label")
+                        fn ($record) => __("campaign_status.{$record->status}.label")
                     )
                     ->getDescriptionFromRecordUsing(
-                        fn($record) => __("campaign_status.{$record->status}.description")
+                        fn ($record) => __("campaign_status.{$record->status}.description")
                     ),
             ] : [])
-            ->defaultGroup(fn($livewire) => $livewire->activeTab === 'proposals' ?
+            ->defaultGroup(fn ($livewire) => $livewire->activeTab === 'proposals' ?
                 'status'
                 : null)->groupingDirectionSettingHidden()
             ->columns([
 
                 // ANNOUNCEMENTS TAB
                 TextColumn::make('name')->label('Campanha')
-                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements')->description(function ($record) {
+                    ->searchable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements')->description(function ($record) {
                         $count = $record->proposals->count();
 
-                        return $count === 1 ? $count . ' Proposta' : $count . ' Propostas';
+                        return $count === 1 ? $count.' Proposta' : $count.' Propostas';
                     }),
 
                 ImageColumn::make('company.avatar_url')->circular()->label(' ')->toggleable()
-                    ->visible(fn($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
+                    ->visible(fn ($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
 
                 TextColumn::make('company.name')->label('Empresa')->toggleable()
-                    ->searchable()->visible(fn($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
+                    ->searchable()->visible(fn ($livewire) => Gate::denies('is_company') && $livewire->activeTab === 'announcements'),
                 TextColumn::make('product.name')->label('Produto')->toggleable()
-                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+                    ->searchable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements'),
 
-                TextColumn::make('description')->label('Descrição')->limit(40)->tooltip(fn($record) => $record->description)->toggleable()->toggledHiddenByDefault()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+                TextColumn::make('description')->label('Descrição')->limit(40)->tooltip(fn ($record) => $record->description)->toggleable()->toggledHiddenByDefault()
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'announcements'),
                 TextColumn::make('budget')->label('Orçamento')->money('BRL')->toggleable()
-                    ->sortable()->visible(fn($livewire) => $livewire->activeTab === 'announcements')->description(fn($record) =>  '+' . rtrim(rtrim(number_format($record->agency_cut, 2, '.', ''), '0'), '.') . '% de Comissão'),
+                    ->sortable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements' && Gate::denies('is_influencer'))->description(fn ($record) => '+'.rtrim(rtrim(number_format($record->agency_cut, 2, '.', ''), '0'), '.').'% de Comissão'),
 
                 TextColumn::make('announcement_status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn(string $state) => match ($state) {
-                        'open'     => 'success',
-                        'paused'   => 'gray',
+                    ->color(fn (string $state) => match ($state) {
+                        'open' => 'success',
+                        'paused' => 'gray',
                         'finished' => 'info',
                     })
-                    ->formatStateUsing(fn(string $state) => __("campaign_announcement_status.$state.label"))
+                    ->formatStateUsing(fn (string $state) => __("campaign_announcement_status.$state.label"))
                     ->toggleable()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
-
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'announcements'),
 
                 TextColumn::make('category.title')->label('Categoria')->badge()->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable()->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+                    ->searchable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements'),
 
                 TextColumn::make('created_at')->label('Anunciada em')
                     ->dateTime()
-                    ->sortable()->visible(fn($livewire) => $livewire->activeTab === 'announcements')
+                    ->sortable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')->label('Atualizada em')
                     ->dateTime()
-                    ->sortable()->visible(fn($livewire) => $livewire->activeTab === 'announcements')
+                    ->sortable()->visible(fn ($livewire) => $livewire->activeTab === 'announcements')
                     ->toggleable(isToggledHiddenByDefault: true),
-
-
 
                 // --------------------------
                 // PROPOSALS TAB
                 TextColumn::make('announcement.name')->label('Campanha')
                     ->searchable()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals')->description(fn($record) => 'Produto: ' . $record->announcement->product->name),
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals')->description(fn ($record) => 'Produto: '.$record->announcement->product->name),
 
                 // TextColumn::make('announcement.product.name')->label('Produto')
                 //     ->searchable()
@@ -124,17 +120,17 @@ class CampaignAnnouncementsTable
                 TextColumn::make('announcement.category.title')->label('Categoria')
                     ->badge()
                     ->searchable()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals' && Gate::denies('is_company')),
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals' && Gate::denies('is_company')),
 
                 // ColumnGroup::make('Agência', [
                 ImageColumn::make('agency.avatar_url')
                     ->circular()
                     ->label('Agência')
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
 
                 TextColumn::make('agency.name')
                     ->label(' ')
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
                 // ]),
 
                 // ColumnGroup::make('Influenciador', [
@@ -144,28 +140,68 @@ class CampaignAnnouncementsTable
                     ->stacked()
                     ->limit(3)
                     ->tooltip('influencers.name')->tooltip(
-                        fn($record) => $record->influencers
+                        fn ($record) => $record->influencers
                             ->pluck('name')
                             ->join(', ')
 
-                    )->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                    )->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
                 // ]),
 
-
-
                 TextColumn::make('proposed_agency_cut')
-                    ->label('Valores Propostos')
-                    ->numeric()->placeholder('-')
-                    ->formatStateUsing(fn($state) => $state !== '0.00' ? 'Agência: ' . $state . '%' : 'Agência: -')
-                    ->description(
-                        function ($record) {
-                            $fmt = new \NumberFormatter('pt_BR', \NumberFormatter::CURRENCY);
+                    ->label('% da Agência Proposta')
+                    ->numeric()->placeholder('-')->suffix('%')
+                    ->description(function ($record) {
+                        $announcementCut = $record->announcement?->agency_cut;
+                        $proposedCut = $record->proposed_agency_cut;
 
-                            return 'Orçamento: ' . $fmt->formatCurrency($record->proposed_budget, 'BRL');
+                        if (! $announcementCut || ! $proposedCut) {
+                            return null;
                         }
-                    )
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
 
+                        $difference = $proposedCut - $announcementCut;
+
+                        if ($difference === 0) {
+                            return 'Sem variação';
+                        }
+
+                        $arrow = $difference > 0 ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-icon lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-icon lucide-arrow-down"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>';
+                        $color = $difference > 0 ? 'text-danger-600' : 'text-success-600';
+
+                        return new HtmlString(
+                            "<span class=\"{$color} text-xs flex items-end gap-1\">{$difference}% {$arrow}</span>"
+                        );
+                    })
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
+
+                TextColumn::make('proposed_budget')
+                    ->label('Orçamento Proposto')
+                    ->numeric()->placeholder('-')->money('BRL')
+                    ->placeholder('-')
+                    ->description(function ($record) {
+                        $announcementBudget = $record->announcement?->budget;
+                        $proposedBudget = $record->proposed_budget;
+
+                        if (! $announcementBudget || ! $proposedBudget) {
+                            return null;
+                        }
+
+                        $difference = $proposedBudget - $announcementBudget;
+
+                        if ($difference === 0) {
+                            return 'Sem variação';
+                        }
+
+                        $formatter = new \NumberFormatter('pt_BR', \NumberFormatter::CURRENCY);
+                        $formatted = $formatter->formatCurrency(abs($difference), 'BRL');
+
+                        $arrow = $difference > 0 ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-up-icon lucide-arrow-up"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-down-icon lucide-arrow-down"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>';
+                        $color = $difference > 0 ? 'text-danger-600' : 'text-success-600';
+
+                        return new HtmlString(
+                            "<span class=\"{$color} text-xs flex items-end gap-1\">{$formatted} {$arrow}</span>"
+                        );
+                    })
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
                 // TextColumn::make('proposed_budget')
                 //     ->label('Orçamento Proposto')
                 //     ->numeric()->placeholder('-')
@@ -180,10 +216,10 @@ class CampaignAnnouncementsTable
                         ->label('Empresa')
                         ->badge()
                         ->color($colorByStatus)
-                        ->icon(fn() => Gate::allows('is_company') ? Heroicon::OutlinedCursorArrowRays : null)->iconPosition(IconPosition::After)
+                        ->icon(fn () => Gate::allows('is_company') ? Heroicon::OutlinedCursorArrowRays : null)->iconPosition(IconPosition::After)
                         ->action(EditProposalAction::make()->disabled(Gate::denies('is_company')))
-                        ->formatStateUsing(fn($state): string => __("approval_status.$state"))
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                        ->formatStateUsing(fn ($state): string => __("approval_status.$state"))
+                        ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
 
                     // APROVAÇÃO DA AGÊNCIA
 
@@ -191,18 +227,17 @@ class CampaignAnnouncementsTable
                         ->label('Agência')
                         ->badge()
                         ->color($colorByStatus)
-                        ->icon(fn() => Gate::allows('is_agency') ? Heroicon::OutlinedCursorArrowRays : null)
+                        ->icon(fn () => Gate::allows('is_agency') ? Heroicon::OutlinedCursorArrowRays : null)
                         ->action(EditProposalAction::make()->disabled(Gate::denies('is_agency')))
-                        ->formatStateUsing(fn($state): string => __("approval_status.$state"))
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                        ->formatStateUsing(fn ($state): string => __("approval_status.$state"))
+                        ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
 
                     // Status
                     TextColumn::make('status')->label('Status Geral')
                         ->badge()
                         ->color($colorByStatus)
-                        ->formatStateUsing(fn($state): string => __("campaign_status.$state.label"))
-                        ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
-
+                        ->formatStateUsing(fn ($state): string => __("campaign_status.$state.label"))
+                        ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
 
                     // APROVAÇÃO DO INFLUENCIADOR
 
@@ -220,28 +255,27 @@ class CampaignAnnouncementsTable
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'draft'     => __('campaign_status.draft.label'),
-                        'approved'  => __('campaign_status.approved.label'),
-                        'ongoing'   => __('campaign_status.ongoing.label'),
-                        'finished'  => __('campaign_status.finished.label'),
+                        'draft' => __('campaign_status.draft.label'),
+                        'approved' => __('campaign_status.approved.label'),
+                        'ongoing' => __('campaign_status.ongoing.label'),
+                        'finished' => __('campaign_status.finished.label'),
                         'cancelled' => __('campaign_status.cancelled.label'),
-                        'rejected'  => __('campaign_status.rejected.label'),
-                    ])->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
+                        'rejected' => __('campaign_status.rejected.label'),
+                    ])->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
             ])
-            ->recordAction(fn($livewire) => $livewire->activeTab === 'announcements' ? 'view' : 'viewProposal')
+            ->recordAction(fn ($livewire) => $livewire->activeTab === 'announcements' ? 'view' : 'viewProposal')
             ->recordActions([
                 ViewAction::make()->hiddenLabel()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'announcements'),
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'announcements'),
 
                 EditAction::make()->hiddenLabel()
-                    ->visible(fn($record, $livewire) => Auth::id() === $record->company_id && $livewire->activeTab === 'announcements'),
+                    ->visible(fn ($record, $livewire) => Auth::id() === $record->company_id && $livewire->activeTab === 'announcements'),
 
                 // EditAction::make()->label('Editar Proposta')
                 //     ->visible(fn($record, $livewire) => Auth::id() === $record->agency_id &&  $livewire->activeTab === 'proposals'),
 
                 ViewProposal::make()
-                    ->visible(fn($livewire) => $livewire->activeTab === 'proposals'),
-
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'proposals'),
 
             ])
             ->toolbarActions([

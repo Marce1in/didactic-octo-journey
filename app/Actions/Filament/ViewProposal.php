@@ -17,6 +17,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\HtmlString;
 
 class ViewProposal
 {
@@ -27,7 +28,7 @@ class ViewProposal
             ->slideOver()
 
             ->modalWidth('xl')
-            ->schema(fn($record) => [
+            ->schema(fn ($record) => [
                 Section::make('Campanha')
                     ->schema([
                         TextEntry::make('announcement.name')
@@ -56,24 +57,87 @@ class ViewProposal
 
                             TextEntry::make('agency.name')->weight(FontWeight::Bold)
                                 ->hiddenLabel()->columnSpan(2)->alignStart(),
-                            TextEntry::make('agency.role')->formatStateUsing(fn(UserRoles $state): string => __("roles.$state->value"))
+                            TextEntry::make('agency.role')->formatStateUsing(fn (UserRoles $state): string => __("roles.$state->value"))
                                 ->hiddenLabel()->badge()->alignStart(),
 
                         ])->columns(5)->columnSpan(2),
 
                         TextEntry::make('message')
-                            ->label('Mensagem')->visible(fn($record) => isset($record->message))
+                            ->label('Mensagem')->visible(fn ($record) => isset($record->message))
                             ->columnSpanFull(),
 
                         TextEntry::make('proposed_agency_cut')
                             ->label('Porcentagem Proposta')
-                            ->suffix('%')->placeholder('-')
-                            ->weight(FontWeight::Bold),
+                            ->placeholder('-')
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(function ($state, $record) {
+                                $announcementCut = $record->announcement?->agency_cut;
+
+                                if (! $state || ! $announcementCut) {
+                                    return $state;
+                                }
+
+                                $difference = $state - $announcementCut;
+
+                                if ($difference === 0) {
+                                    return "{$state}% <span class='text-xs text-gray-500'>(sem variação)</span>";
+                                }
+
+                                $arrow = $difference > 0
+                                    ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>'
+                                    : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>';
+
+                                $color = $difference > 0 ? 'text-danger-600' : 'text-success-600';
+
+                                return new HtmlString(
+                                    " <span class='mr-2' >
+                                    {$state}%
+                                    </span>
+                                     <span class=\"{$color} text-xs inline-flex items-center  pl-4\">
+                                     {$difference}% {$arrow}
+                                    </span>"
+                                );
+                            }),
 
                         TextEntry::make('proposed_budget')
                             ->label('Orçamento Proposto')
                             ->money('BRL')
-                            ->weight(FontWeight::Bold),
+                            ->placeholder('-')
+                            ->weight(FontWeight::Bold)
+                            ->formatStateUsing(function ($state, $record) {
+                                $announcementBudget = $record->announcement?->budget;
+
+                                if (! $state || ! $announcementBudget) {
+                                    return $state;
+                                }
+
+                                $difference = $state - $announcementBudget;
+
+                                if ($difference === 0) {
+                                    return new HtmlString(
+                                        "{$state} <span class='text-xs text-gray-500'>(sem variação)</span>"
+                                    );
+                                }
+
+                                $formatter = new \NumberFormatter('pt_BR', \NumberFormatter::CURRENCY);
+                                $formattedDifference = $formatter->formatCurrency(abs($difference), 'BRL');
+                                $formattedProposedBudget = $formatter->formatCurrency(abs($state), 'BRL');
+
+                                $arrow = $difference > 0
+                                    ? '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7"/><path d="M12 19V5"/></svg>'
+                                    : '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>';
+
+                                $color = $difference > 0 ? 'text-danger-600' : 'text-success-600';
+
+                                return new HtmlString(
+                                    " <span class='mr-2' >
+                                    {$formattedProposedBudget}
+                                    </span>
+                                     <span class=\"{$color} text-xs inline-flex items-center  pl-4\">
+                                     {$formattedDifference} {$arrow}
+                                    </span>"
+                                );
+                            }),
 
                         TextEntry::make('created_at')
                             ->label('Enviada em')
@@ -83,14 +147,14 @@ class ViewProposal
                             ->label('Conversar')
                             ->icon(Heroicon::OutlinedChatBubbleLeftEllipsis)
                             ->color('secondary')
-                            ->visible(fn($record) => $record->agency_id !== Auth::id())
+                            ->visible(fn ($record) => $record->agency_id !== Auth::id())
                             ->action(function ($record) {
 
                                 $proposalId = $record->id;
 
                                 $chat = \App\Models\Chat::query()
                                     ->where('proposal_id', $proposalId)
-                                    ->whereHas('users', fn($q) => $q->where('users.id', Auth::id()))
+                                    ->whereHas('users', fn ($q) => $q->where('users.id', Auth::id()))
                                     ->first();
 
                                 if (! $chat) {
@@ -118,13 +182,12 @@ class ViewProposal
                     ])
                     ->columns(2),
 
-                Section::make('Influenciadores')
+                Section::make('Influenciadores')->visible(Gate::denies('is_influencer'))
                     ->schema([
                         RepeatableEntry::make('influencers')
                             ->hiddenLabel()
                             ->schema([
 
-                                // ── Header (avatar + basic info)
                                 ImageEntry::make('avatar_url')
                                     ->hiddenLabel()
                                     ->circular()
@@ -138,13 +201,17 @@ class ViewProposal
 
                                         TextEntry::make('role')
                                             ->formatStateUsing(
-                                                fn(UserRoles $state): string => __("roles.$state->value")
+                                                fn (UserRoles $state): string => __("roles.$state->value")
                                             )
                                             ->hiddenLabel()
                                             ->badge(),
 
                                     ])
                                     ->columnSpan(3),
+
+                                TextEntry::make('bio')
+                                    ->weight(FontWeight::SemiBold)
+                                    ->hiddenLabel()->columnSpan(5),
 
                                 // ── Prices
                                 Group::make()
@@ -241,8 +308,7 @@ class ViewProposal
                                                 ->placeholder('-'),
                                         ]),
                                     ])
-                                    ->columnSpanFull()
-
+                                    ->columnSpanFull(),
 
                             ])
                             ->columns(5),
@@ -273,12 +339,12 @@ class ViewProposal
                     Action::make('remove_proposal')
                         ->label('Remover Interesse')
                         ->color('danger')->visible(
-                            fn($record, $livewire) => Gate::allows('is_agency')
+                            fn ($record, $livewire) => Gate::allows('is_agency')
                                 && $record
-                                ->exists()
+                                    ->exists()
                         )->button()
                         ->action(
-                            fn($record) => $record->delete()
+                            fn ($record) => $record->delete()
                         ),
                 ]),
 

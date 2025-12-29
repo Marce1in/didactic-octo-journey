@@ -25,10 +25,9 @@ class ViewAgencyDetails
                 Section::make('Detalhes da Agência')
                     ->schema([
                         Group::make()->columns(2)->schema([
-                            ImageEntry::make('avatar_url')
-                                ->label('Avatar')
+                            ImageEntry::make('avatar_url')->hiddenLabel()
                                 ->circular()
-                                ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->name))
+                                ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->name))
                                 ->columnSpanFull(),
                             TextEntry::make('name')
                                 ->label('Nome')->columnSpan(2),

@@ -39,7 +39,6 @@ class CampaignAnnouncementInfolist
                             ->columnSpanFull()
                             ->placeholder('Sem descrição'),
 
-
                         TextEntry::make('product.name')
                             ->label('Produto')
                             ->weight(FontWeight::SemiBold),
@@ -52,7 +51,6 @@ class CampaignAnnouncementInfolist
                         TextEntry::make('product.description')
                             ->label(' ')
                             ->columnSpan(2),
-
 
                         TextEntry::make('created_at')
                             ->label('Criada em')
@@ -68,7 +66,6 @@ class CampaignAnnouncementInfolist
                             ->color('gray'),
 
                     ]),
-
 
                 Group::make()->schema([
 
@@ -117,11 +114,10 @@ class CampaignAnnouncementInfolist
                                 Action::make('viewCompany')
                                     ->label('Ver Empresa')
                                     ->icon('heroicon-o-building-office')
-                                    ->url(fn($record) => route('filament.admin.resources.companies.index', [
+                                    ->url(fn ($record) => route('filament.admin.resources.companies.index', [
                                         'search' => $record->company->name,
                                     ])),
                             ])->columnSpan(2),
-
 
                             Section::make('Informações Financeiras')
                                 ->columns(5)
@@ -152,17 +148,16 @@ class CampaignAnnouncementInfolist
                             ->label('Remover Interesse')
                             ->color('danger')
                             ->visible(
-                                fn($record) =>
-                                Gate::allows('is_agency')
+                                fn ($record) => Gate::allows('is_agency')
                                     && $record->proposals()
-                                    ->where('agency_id', Auth::id())
-                                    ->exists()
+                                        ->where('agency_id', Auth::id())
+                                        ->exists()
                             )
                             ->action(
-                                fn($record) => $record->proposals()->where('agency_id', Auth::id())->delete()
+                                fn ($record) => $record->proposals()->where('agency_id', Auth::id())->delete()
                             ),
                     ]),
-                ])
+                ]),
             ]);
     }
 }

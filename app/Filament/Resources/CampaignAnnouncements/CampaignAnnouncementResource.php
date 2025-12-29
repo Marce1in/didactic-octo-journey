@@ -19,7 +19,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use UnitEnum;
 
 class CampaignAnnouncementResource extends Resource
 {
@@ -30,7 +29,6 @@ class CampaignAnnouncementResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPresentationChartLine;
 
     protected static ?int $navigationSort = 1;
-
 
     public static function getEloquentQuery(): Builder
     {

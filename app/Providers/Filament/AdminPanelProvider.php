@@ -10,7 +10,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationGroup;
 use Filament\Navigation\NavigationItem;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
@@ -36,18 +35,20 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Mídia',
             ])
+            ->topbar(false)
+            ->colors(['primary' => 'oklch(0.3979 0.0632 231.2552)', 'secondary' => "oklch(0.6546 0.1119 207.9244)"])
+            ->font('Figtree')
             ->path('dashboard')
-            ->databaseNotifications()->databaseNotificationsPolling('45s')
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('45s')
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationItems([
                 NavigationItem::make('Chat')
                     ->url('/chats')
                     ->icon('heroicon-o-chat-bubble-left-ellipsis')
                     ->sort(2),
             ])
-            ->colors([
-                'primary' => '#d87943',
-                'secondary' => '#5f8787',
-            ])
+
             ->profile(EditProfile::class)
             ->registration(Register::class)
             ->login()
@@ -91,7 +92,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])->viteTheme('resources/css/filament/admin/theme.css')
+            ])
             ->plugins([
                 FilamentSocialitePlugin::make()
                     ->providers([

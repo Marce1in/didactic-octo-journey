@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Storage;
 
 class MessageController extends Controller
 {
-
     public function store(Request $request, Chat $chat)
     {
 
@@ -29,7 +28,7 @@ class MessageController extends Controller
         // Must have at least text or files
         if (
             blank($validated['content'] ?? null) &&
-            !$request->hasFile('files')
+            ! $request->hasFile('files')
         ) {
             abort(422, 'Message must contain text or files.');
         }

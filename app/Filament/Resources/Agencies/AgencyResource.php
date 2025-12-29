@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Agencies;
 
-use App\Filament\Resources\Agencies\Pages\CreateAgency;
 use App\Filament\Resources\Agencies\Pages\EditAgency;
 use App\Filament\Resources\Agencies\Pages\ListAgencies;
 use App\Filament\Resources\Agencies\Schemas\AgencyForm;
+use App\Filament\Resources\Agencies\Schemas\AgencyInfolist;
 use App\Filament\Resources\Agencies\Tables\AgenciesTable;
 use App\Models\User;
 use App\UserRoles;
@@ -40,6 +40,11 @@ class AgencyResource extends Resource
         return AgencyForm::configure($schema);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return AgencyInfolist::configure($schema);
+    }
+
     public static function canViewAny(): bool
     {
         return Auth::user()?->role === UserRoles::Company ?? false;
@@ -61,7 +66,7 @@ class AgencyResource extends Resource
     {
         return [
             'index' => ListAgencies::route('/'),
-            // 'create' => CreateAgency::route('/create'),
+
             // 'edit' => EditAgency::route('/{record}/edit'),
         ];
     }

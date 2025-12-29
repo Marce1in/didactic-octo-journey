@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Influencers\Pages;
 
 use App\Filament\Resources\Influencers\InfluencerResource;
 use App\UserRoles;
-use Asmit\ResizedColumn\HasResizableColumn;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;

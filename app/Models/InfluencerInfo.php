@@ -14,7 +14,6 @@ class InfluencerInfo extends Model
         'agency_id',
         'association_status',
 
-
         'state',
         'city',
 
@@ -33,6 +32,7 @@ class InfluencerInfo extends Model
         'reels_price',
         'stories_price',
         'carrousel_price',
+        'commission_cut',
 
     ];
 

@@ -4,14 +4,11 @@ namespace App\Filament\Resources\Companies\Tables;
 
 use App\Actions\Filament\ChatAction;
 use App\Actions\Filament\ViewCompanyDetails;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 
 class CompaniesTable
 {

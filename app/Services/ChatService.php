@@ -33,7 +33,7 @@ class ChatService
     {
         $currentUser = Auth::user();
 
-        if (!$chat->users->contains($currentUser->id)) {
+        if (! $chat->users->contains($currentUser->id)) {
             return ['error' => 'You are not a participant in this chat.'];
         }
 

@@ -18,7 +18,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification as FilamentNotification;
 use Filament\Pages\Concerns;
 use Filament\Panel;
@@ -38,7 +37,6 @@ use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Notification;
@@ -138,7 +136,7 @@ class EditProfile extends BaseEditProfile
         if (filled(static::getCluster())) {
             Route::name(static::prependClusterRouteBaseName($panel, ''))
                 ->prefix(static::prependClusterSlug($panel, ''))
-                ->group(fn() => static::routes($panel));
+                ->group(fn () => static::routes($panel));
 
             return;
         }
@@ -150,7 +148,7 @@ class EditProfile extends BaseEditProfile
     {
         $panel ??= Filament::getCurrentOrDefaultPanel();
 
-        return $panel->generateRouteName('auth.' . static::getRelativeRouteName($panel));
+        return $panel->generateRouteName('auth.'.static::getRelativeRouteName($panel));
     }
 
     /**
@@ -220,7 +218,7 @@ class EditProfile extends BaseEditProfile
 
         if (request()->hasSession() && array_key_exists('password', $data)) {
             request()->session()->put([
-                'password_hash_' . Filament::getAuthGuard() => $data['password'],
+                'password_hash_'.Filament::getAuthGuard() => $data['password'],
             ]);
         }
 
@@ -343,8 +341,8 @@ class EditProfile extends BaseEditProfile
             ->rule(Password::default())
             ->showAllValidationMessages()
             ->autocomplete('new-password')
-            ->dehydrated(fn($state): bool => filled($state))
-            ->dehydrateStateUsing(fn($state): string => Hash::make($state))
+            ->dehydrated(fn ($state): bool => filled($state))
+            ->dehydrateStateUsing(fn ($state): string => Hash::make($state))
             ->live(debounce: 500)
             ->same('passwordConfirmation');
     }
@@ -358,7 +356,7 @@ class EditProfile extends BaseEditProfile
             ->autocomplete('new-password')
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->visible(fn(Get $get): bool => filled($get('password')))
+            ->visible(fn (Get $get): bool => filled($get('password')))
             ->dehydrated(false);
     }
 
@@ -373,7 +371,7 @@ class EditProfile extends BaseEditProfile
             ->currentPassword(guard: Filament::getAuthGuard())
             ->revealable(filament()->arePasswordsRevealable())
             ->required()
-            ->visible(fn(Get $get): bool => filled($get('password')) || ($get('email') !== $this->getUser()->getAttributeValue('email')))
+            ->visible(fn (Get $get): bool => filled($get('password')) || ($get('email') !== $this->getUser()->getAttributeValue('email')))
             ->dehydrated(false);
     }
 
@@ -408,16 +406,15 @@ class EditProfile extends BaseEditProfile
                     ->label('Categoria')
                     ->options(
                         Category::with('subcategories')->get()
-                            ->mapWithKeys(fn($category) => [
-                                $category->title =>
-                                $category->subcategories
+                            ->mapWithKeys(fn ($category) => [
+                                $category->title => $category->subcategories
                                     ->pluck('title', 'id')
                                     ->toArray(),
                             ])
                             ->toArray()
                     )
                     ->rules([
-                        fn(): Closure => function (string $attribute, $value, Closure $fail) {
+                        fn (): Closure => function (string $attribute, $value, Closure $fail) {
                             $categories = Subcategory::whereIn('id', $value)
                                 ->distinct('category_id')
                                 ->count('category_id');
@@ -427,10 +424,9 @@ class EditProfile extends BaseEditProfile
                             }
                         },
                     ])
-                    ->visible(fn(Get $get) => $get('role') === 'influencer'),
+                    ->visible(fn (Get $get) => $get('role') === 'influencer'),
             ]);
     }
-
 
     protected function getInfluencerColumn(): Group
     {
@@ -446,17 +442,15 @@ class EditProfile extends BaseEditProfile
                             ->searchable()
                             ->preload()
                             ->getSearchResultsUsing(
-                                fn(string $search): array =>
-                                User::where('role', UserRoles::Agency)
+                                fn (string $search): array => User::where('role', UserRoles::Agency)
                                     ->where('name', 'ilike', "%{$search}%")
                                     ->limit(50)
                                     ->pluck('name', 'id')
                                     ->toArray()
                             )
                             ->getOptionLabelUsing(
-                                fn($value) => User::find($value)?->name
+                                fn ($value) => User::find($value)?->name
                             ),
-
 
                         Group::make()->columns(2)->schema([
 
@@ -489,10 +483,10 @@ class EditProfile extends BaseEditProfile
                                     'SC' => 'SC',
                                     'SP' => 'SP',
                                     'SE' => 'SE',
-                                    'TO' => 'TO'
+                                    'TO' => 'TO',
                                 ])
                                 ->live()->placeholder('-')
-                                ->afterStateUpdated(fn(callable $set) => $set('city', null))
+                                ->afterStateUpdated(fn (callable $set) => $set('city', null))
                                 ->searchable()
                                 ->required(),
 
@@ -511,7 +505,7 @@ class EditProfile extends BaseEditProfile
                                 })
                                 ->searchable()
                                 ->required()
-                                ->disabled(fn(Get $get) => ! $get('state')),
+                                ->disabled(fn (Get $get) => ! $get('state')),
                         ]),
 
                         Section::make('Redes Sociais')->collapsed()->collapsible()
@@ -552,11 +546,19 @@ class EditProfile extends BaseEditProfile
                                         ->label('Carrossel')
                                         ->numeric()->inputMode('decimal')
                                         ->prefix('R$'),
+
+                                    TextInput::make('commission_cut')
+                                        ->label('Comissão')
+                                        ->suffix('%')
+                                        ->numeric()
+                                        ->inputMode('decimal')
+                                        ->minValue(0)
+                                        ->maxValue(100),
                                 ]),
                             ]),
                     ]),
             ])
-            ->visible(fn(Get $get) => $get('role') === 'influencer');
+            ->visible(fn (Get $get) => $get('role') === 'influencer');
     }
 
     public function getMaxContentWidth(): Width
@@ -566,7 +568,6 @@ class EditProfile extends BaseEditProfile
             : Width::Medium;
     }
 
-
     public function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -574,7 +575,7 @@ class EditProfile extends BaseEditProfile
             Group::make()->schema([
 
                 FileUpload::make('avatar')
-                    ->label('Avatar')
+                    ->hiddenLabel()
                     ->disk('public')
                     ->directory('avatars')
                     ->alignCenter()
@@ -582,25 +583,22 @@ class EditProfile extends BaseEditProfile
                     ->avatar()
                     ->circleCropper(),
 
-
-
                 $this->getBaseInfoColumn(),
-
-
 
                 $this->getEmailFormComponent(),
                 $this->getPasswordFormComponent(),
                 $this->getPasswordConfirmationFormComponent(),
+
             ]),
+            Group::make()->schema([
+                TextInput::make('pix_address')->label('Endereço Pix'),
 
-
-            $this->getInfluencerColumn()
-        ])->columns(fn() => ($this->data['role'] ?? null) === 'influencer'
+                $this->getInfluencerColumn(),
+            ]),
+        ])->columns(fn () => ($this->data['role'] ?? null) === 'influencer'
             ? 2
             : 1);
     }
-
-
 
     // -----------------------------------------------------------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
@@ -667,8 +665,8 @@ class EditProfile extends BaseEditProfile
             ->label(__('filament-panels::auth/pages/edit-profile.actions.cancel.label'))
             ->alpineClickHandler(
                 FilamentView::hasSpaMode($url)
-                    ? 'document.referrer ? window.history.back() : Livewire.navigate(' . Js::from($url) . ')'
-                    : 'document.referrer ? window.history.back() : (window.location.href = ' . Js::from($url) . ')',
+                    ? 'document.referrer ? window.history.back() : Livewire.navigate('.Js::from($url).')'
+                    : 'document.referrer ? window.history.back() : (window.location.href = '.Js::from($url).')',
             )
             ->color('gray');
     }
@@ -719,8 +717,8 @@ class EditProfile extends BaseEditProfile
             ->divided()
             ->secondary()
             ->schema(collect(Filament::getMultiFactorAuthenticationProviders())
-                ->sort(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
-                ->map(fn(MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
+                ->sort(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): int => $multiFactorAuthenticationProvider->isEnabled($user) ? 0 : 1)
+                ->map(fn (MultiFactorAuthenticationProvider $multiFactorAuthenticationProvider): Component => Group::make($multiFactorAuthenticationProvider->getManagementSchemaComponents())
                     ->statePath($multiFactorAuthenticationProvider->getId()))
                 ->all());
     }

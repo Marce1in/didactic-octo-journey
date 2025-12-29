@@ -47,7 +47,7 @@ return new class extends Migration
                 'SC',
                 'SP',
                 'SE',
-                'TO'
+                'TO',
             ]);
 
             $table->string('city');

@@ -56,8 +56,7 @@ class InfluencersTable
                         return $record->subcategories->pluck('title')->toArray();
                     })
                     ->tooltip(
-                        fn(Model $record) =>
-                        $record->subcategories->pluck('title')->join(', ')
+                        fn (Model $record) => $record->subcategories->pluck('title')->join(', ')
                     )
                     ->sortable(false)
                     ->wrap(),
@@ -83,9 +82,7 @@ class InfluencersTable
                 TextColumn::make('influencer_info.city')
                     ->label('Cidade / UF')
                     ->placeholder('-')
-                    ->searchable()->description(fn($record) => $record->influencer_info->state),
-
-
+                    ->searchable()->description(fn ($record) => $record->influencer_info->state),
 
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -106,7 +103,7 @@ class InfluencersTable
             ->recordActions([
                 Action::make('Aprovar Vínculo')
                     ->label('Aprovar')
-                    ->visible(fn($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
+                    ->visible(fn ($livewire): bool => $livewire->activeTab === 'Pedidos de Vínculo')
                     ->action(function ($record) {
                         $record->influencer_info->update(['association_status' => 'approved']);
                     })

@@ -31,6 +31,7 @@ class User extends Authenticatable implements HasAvatar
         'role',
         'avatar',
         'bio',
+        'pix_address',
     ];
 
     protected $with = ['subcategories'];
@@ -90,12 +91,11 @@ class User extends Authenticatable implements HasAvatar
     //  Filament Stuff
     // --------------------------
 
-
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar
-            ? asset('storage/' . $this->avatar)
-            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name);
+            ? asset('storage/'.$this->avatar)
+            : 'https://ui-avatars.com/api/?name='.urlencode($this->name);
     }
 
     public function getAvatarUrlAttribute(): ?string
@@ -104,7 +104,7 @@ class User extends Authenticatable implements HasAvatar
             return null;
         }
 
-        return asset('storage/' . $this->avatar);
+        return asset('storage/'.$this->avatar);
     }
 
     /**

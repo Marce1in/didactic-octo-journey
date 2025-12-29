@@ -3,7 +3,6 @@
 namespace App\Actions\Filament;
 
 use Filament\Actions\Action;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -31,15 +30,14 @@ class ProposeAction extends Action
         $this->button();
 
         $this->visible(
-            fn($record) =>
-            Gate::allows('is_agency')
+            fn ($record) => Gate::allows('is_agency')
                 && ! $record->proposals()
                     ->where('agency_id', Auth::id())
                     ->exists()
         );
 
         $this->modalHeading('Enviar Proposta');
-        $this->modalDescription(fn($record) => "Envie sua proposta para a campanha: {$record->name}");
+        $this->modalDescription(fn ($record) => "Envie sua proposta para a campanha: {$record->name}");
         $this->modalSubmitActionLabel('Enviar Proposta');
         $this->modalWidth('lg');
 
@@ -54,12 +52,12 @@ class ProposeAction extends Action
                 ->label('Influenciadores')
                 ->multiple()
                 ->options(
-                    fn() => Auth::user()
+                    fn () => Auth::user()
                         ->influencers()->where('association_status', 'approved')
                         ->pluck('name', 'users.id')
                 )
                 ->searchable()->reactive()
-                ->visible(fn() => Gate::allows('is_agency')),
+                ->visible(fn () => Gate::allows('is_agency')),
 
             TextEntry::make('influencer_pricing')
                 ->hiddenLabel()
@@ -78,38 +76,38 @@ class ProposeAction extends Action
                     $content .= "<div class='p-3 gap-3 grid grid-cols-2 rounded-lg bg-gray-100 dark:bg-gray-800'>";
                     foreach ($influencers as $influencer) {
                         $info = $influencer->influencer_info;
-                        $content .= "<div>";
+                        $content .= '<div>';
                         $content .= "<strong>{$influencer->name}</strong><br>";
-                        $content .= "Reels: R$ " . number_format($info->reels_price ?? 0, 2, ',', '.') . "<br>";
-                        $content .= "Stories: R$ " . number_format($info->stories_price ?? 0, 2, ',', '.') . "<br>";
-                        $content .= "Carrousel: R$ " . number_format($info->carrousel_price ?? 0, 2, ',', '.');
-                        $content .= "</div>";
+                        $content .= 'Reels: R$ '.number_format($info->reels_price ?? 0, 2, ',', '.').'<br>';
+                        $content .= 'Stories: R$ '.number_format($info->stories_price ?? 0, 2, ',', '.').'<br>';
+                        $content .= 'Carrousel: R$ '.number_format($info->carrousel_price ?? 0, 2, ',', '.').'<br>';
+                        $content .= 'Comissão: '.number_format($info->commission_cut, 2, ',', '.').'%';
+                        $content .= '</div>';
                     }
-                    $content .= "</div>";
+                    $content .= '</div>';
 
                     return new \Illuminate\Support\HtmlString($content);
                 })
-                ->visible(fn() => Gate::allows('is_agency')),
-
+                ->visible(fn () => Gate::allows('is_agency')),
 
             TextInput::make('proposed_agency_cut')
                 ->label('Proposta de Parcela da Agência')
                 ->suffix('%')
                 ->numeric()
                 ->inputMode('decimal')
-                ->minValue(0)->placeholder(fn($record) => "{$record->agency_cut}")
+                ->minValue(0)->placeholder(fn ($record) => "{$record->agency_cut}")
                 ->maxValue(100)
-                ->default(fn($record) => $record->agency_cut)
-                ->helperText(fn($record) => "Parcela original: {$record->agency_cut}%"),
+                ->default(fn ($record) => $record->agency_cut)
+                ->helperText(fn ($record) => "Parcela original: {$record->agency_cut}%"),
 
             TextInput::make('proposed_budget')
                 ->label('Orçamento Proposto')
-                ->numeric()->placeholder(fn($record) => "{$record->budget}")
+                ->numeric()->placeholder(fn ($record) => "{$record->budget}")
                 ->inputMode('decimal')
                 ->minValue(0)
                 ->prefix('R$')
-                ->default(fn($record) => $record->budget)
-                ->helperText(fn($record) => "Orçamento original: R$ {$record->budget}"),
+                ->default(fn ($record) => $record->budget)
+                ->helperText(fn ($record) => "Orçamento original: R$ {$record->budget}"),
         ]);
 
         $this->action(function ($record, array $data) {
@@ -131,8 +129,8 @@ class ProposeAction extends Action
 
                 $record->company->notify(
                     Notification::make()
-                        ->title('Proposta recebida para a campanha ' . $record->name)
-                        ->body('A agência ' . Auth::user()->name . ' demonstrou interesse em sua campanha')
+                        ->title('Proposta recebida para a campanha '.$record->name)
+                        ->body('A agência '.Auth::user()->name.' demonstrou interesse em sua campanha')
                         ->toDatabase()
                 );
 
@@ -142,7 +140,7 @@ class ProposeAction extends Action
                     ->success()
                     ->send();
             } catch (\Exception $e) {
-                Log::error('Erro ao enviar proposta: ' . $e->getMessage());
+                Log::error('Erro ao enviar proposta: '.$e->getMessage());
 
                 Notification::make()
                     ->title('Erro ao enviar Proposta')

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Products\Tables;
 
-use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -19,28 +18,28 @@ class ProductsTable
         return
             $table->modifyQueryUsing(function (Builder $query) {
                 $query->where('company_id', Auth::user()->id);
-            })
-            ->columns([
-                TextColumn::make('name')->label('Nome')
-                    ->searchable(),
-                TextColumn::make('price')->label('Valor')
-                    ->money('BRL')
-                    ->sortable(),
-                TextColumn::make('description')->label('Descrição')
-                    ->limit(30),
+            })->defaultSort('created_at', 'desc')
+                ->columns([
+                    TextColumn::make('name')->label('Nome')
+                        ->searchable(),
+                    TextColumn::make('price')->label('Valor')
+                        ->money('BRL')
+                        ->sortable(),
+                    TextColumn::make('description')->label('Descrição')
+                        ->limit(30),
 
-            ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                EditAction::make()->hiddenLabel(),
-                DeleteAction::make()->hiddenLabel(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+                ])
+                ->filters([
+                    //
+                ])
+                ->recordActions([
+                    EditAction::make()->hiddenLabel(),
+                    DeleteAction::make()->hiddenLabel(),
+                ])
+                ->toolbarActions([
+                    BulkActionGroup::make([
+                        DeleteBulkAction::make(),
+                    ]),
+                ]);
     }
 }
