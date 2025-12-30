@@ -241,6 +241,10 @@ body {
     @apply border-border;
 }
 
+tr {
+    @apply bg-background;
+}
+
 th {
     @apply bg-card;
 }

@@ -18,11 +18,16 @@ class CampaignAnnouncement extends Model
         'announcement_status',
     ];
 
-    protected $with = ['proposals'];
+    protected $with = ['proposals', 'attribute_values'];
 
     public function proposals()
     {
         return $this->hasMany(Proposal::class);
+    }
+
+    public function attribute_values()
+    {
+        return $this->belongsToMany(AttributeValue::class);
     }
 
     public function category(): BelongsTo
