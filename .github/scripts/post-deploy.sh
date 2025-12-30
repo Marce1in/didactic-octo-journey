@@ -18,7 +18,8 @@ php artisan storage:unlink
 php artisan storage:link
 
 echo "::notice::Starts Reverb"
-php artisan reverb:start
+pkill -f "artisan reverb:start" || true
+nohup php artisan reverb:start > storage/logs/reverb.log 2>&1 &
 
 echo "::endgroup::"
 
