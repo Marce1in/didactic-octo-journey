@@ -22,7 +22,7 @@ jobs:
         
     - name: Check SSH reachability
       run: |
-        echo ${{ secrets.SSH_HOST }}
+        nc -vz ${{ secrets.SSH_HOST }} 22
 
 
     - name: Setup php
