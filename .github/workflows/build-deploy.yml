@@ -48,8 +48,14 @@ jobs:
       with:
         timeout_minutes: 3
         max_attempts: 5
-        command: VITE_APP_NAME=HubInlu npm run build
-
+        command: |
+          VITE_APP_NAME=HubInflu \
+          VITE_REVERB_APP_KEY=${{ secrets.REVERB_APP_KEY }} \
+          VITE_REVERB_HOST=${{ secrets.REVERB_HOST }} \
+          VITE_REVERB_PORT=${{ secrets.REVERB_PORT }} \
+          VITE_REVERB_SCHEME=${{ secrets.REVERB_SCHEME }} \
+          npm run build
+      
     - name: "run pre deploy script"
       uses: appleboy/ssh-action@v1
       with:
