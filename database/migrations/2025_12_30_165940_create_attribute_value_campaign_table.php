@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('attribute_value_id')->constrained()->cascadeOnDelete();
             $table->foreignId('campaign_announcement_id')->constrained()->cascadeOnDelete();
-            $table->string('title');
+            $table->string('title')->nullable();
             $table->timestamps();
         });
     }

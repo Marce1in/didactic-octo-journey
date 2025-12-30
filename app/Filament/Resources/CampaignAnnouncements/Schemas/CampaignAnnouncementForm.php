@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\CampaignAnnouncements\Schemas;
 
+use App\Models\Attribute;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
@@ -15,9 +16,14 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Khsing\World\Models\City;
+use Khsing\World\Models\Country;
+use Khsing\World\Models\Division;
 
 class CampaignAnnouncementForm
 {
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -89,10 +95,9 @@ class CampaignAnnouncementForm
                 ]),
 
                 Repeater::make('attribute_values')
-                    ->relationship()
-                    ->label('Atributos Gerais')
+                    ->label('Atributos Gerais')->addable(false)->deletable(false)->reorderable(false)
                     ->default(function () {
-                        return \App\Models\Attribute::with('values')->get()->map(function ($attribute) {
+                        return Attribute::with('values')->get()->map(function ($attribute) {
                             return [
                                 'attribute_id' => $attribute->id,
                                 'attribute' => $attribute,
@@ -101,7 +106,7 @@ class CampaignAnnouncementForm
                     })
                     ->table([
                         TableColumn::make('Atributo'),
-                        TableColumn::make('Valor')->hiddenHeaderLabel(),
+                        TableColumn::make('Valor')
                     ])
                     ->compact()
                     ->schema([
@@ -110,86 +115,105 @@ class CampaignAnnouncementForm
                         TextEntry::make('attribute.title')
                             ->label('Atributo'),
 
-                        // Campo condicional: Select ou TextInput
-                        Grid::make(2)
-                            ->schema([
-                                Select::make('id')
-                                    ->hiddenLabel()
-                                    ->options(
-                                        fn(Get $get) =>
-                                        \App\Models\Attribute::find($get('attribute_id'))
-                                            ?->values()
-                                            ->pluck('title', 'id') ?? []
-                                    )
-                                    ->searchable()
-                                    ->preload()
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, callable $set) {
-                                        // Limpa o title quando muda a seleção
-                                        if ($state) {
-                                            $value = \App\Models\AttributeValue::find($state);
-                                            if ($value && !in_array(strtolower($value->title), ['outro', 'outra', 'outros', 'outras'])) {
-                                                $set('title', null);
-                                            }
-                                        }
-                                    })
-                                    ->visible(
-                                        fn(Get $get) =>
-                                        \App\Models\Attribute::find($get('attribute_id'))
-                                            ?->values()
-                                            ->exists() ?? false
-                                    )->columnSpan(function (Get $get) {
-                                        $attributeId = $get('attribute_id');
 
-                                        $selectedId = $get('id');
-                                        if ($selectedId) {
-                                            $value = \App\Models\AttributeValue::find($selectedId);
-                                            if ($value && in_array(strtolower($value->title), ['outro', 'outra', 'outros', 'outras'])) {
-                                                return 1;
-                                            }
-                                        }
+                        Select::make('attribute_value_id')->columnSpan(1)
+                            ->label('Valor')
+                            ->options(
+                                fn(Get $get) =>
+                                \App\Models\Attribute::find($get('attribute_id'))
+                                    ?->values()
+                                    ->pluck('title', 'id') ?? []
+                            )
+                            ->preload(),
 
-                                        return 2;
-                                    }),
 
-                                TextInput::make('title')
-                                    ->hiddenLabel()
-                                    ->placeholder('Especifique...')
-                                    ->visible(function (Get $get) {
-                                        $attributeId = $get('attribute_id');
-                                        $attribute = \App\Models\Attribute::find($attributeId);
-
-                                        // Se não tem valores pré-definidos, sempre mostra
-                                        if (!$attribute || !$attribute->values()->exists()) {
-                                            return true;
-                                        }
-
-                                        // Se tem valor selecionado, verifica se é "Outro/Outra"
-                                        $selectedId = $get('id');
-                                        if ($selectedId) {
-                                            $value = \App\Models\AttributeValue::find($selectedId);
-                                            if ($value && in_array(strtolower($value->title), ['outro', 'outra', 'outros', 'outras'])) {
-                                                return true;
-                                            }
-                                        }
-
-                                        return false;
-                                    })->columnSpan(function (Get $get) {
-                                        $attributeId = $get('attribute_id');
-                                        $attribute = \App\Models\Attribute::find($attributeId);
-
-                                        if (!$attribute || !$attribute->values()->exists()) {
-                                            return 2;
-                                        }
-
-                                        return 1;
-                                    }),
-                            ]),
                     ])
-                    ->columnSpan(2)
-                    ->addable(false)
+                    ->columnSpan(2),
+
+
+                Repeater::make('location')
+                    ->label('Localização')->addable(false)
+                    ->table([
+                        TableColumn::make('País'),
+                        TableColumn::make('Estado'),
+                        TableColumn::make('Cidade')
+                    ])
                     ->deletable(false)
-                    ->reorderable(false),
+                    ->schema([
+                        Hidden::make('location_attribute_value_id')
+                            ->default(function () {
+                                // Get or create the "Location" attribute value
+                                $locationAttr = \App\Models\Attribute::firstOrCreate(
+                                    ['title' => 'Localização'],
+                                    ['multiple_values' => false]
+                                );
+                                return \App\Models\AttributeValue::firstOrCreate(
+                                    ['attribute_id' => $locationAttr->id, 'title' => 'location'],
+                                    ['editable' => true]
+                                )->id;
+                            }),
+
+                        Select::make('country')->columnSpan(1)
+                            ->label('País')
+                            ->placeholder('Selecione um país')
+                            ->options([
+                                'BR' => 'Brasil',
+                                'US' => 'Estados Unidos',
+                                'AR' => 'Argentina',
+                                'UY' => 'Uruguai',
+                                'PY' => 'Paraguai',
+                                // Add more countries
+                            ])
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set) {
+                                $set('state', null);
+                                $set('city', null);
+                            })
+                            ->required(),
+
+                        Select::make('state')->columnSpan(1)
+                            ->label('Estado')
+                            ->placeholder('Selecione um estado')
+                            ->options(function () {
+                                return Http::get('https://servicodados.ibge.gov.br/api/v1/localidades/estados')
+                                    ->collect()
+                                    ->sortBy('nome')
+                                    ->pluck('nome', 'sigla')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->reactive()
+                            ->afterStateUpdated(function (callable $set) {
+                                $set('city', null);
+                            })
+                            ->disabled(fn(Get $get) => $get('country') !== 'BR')
+                            ->required(fn(Get $get) => $get('country') === 'BR'),
+
+                        Select::make('city')->columnSpan(1)
+                            ->label('Cidade')
+                            ->placeholder('Selecione uma cidade')
+                            ->options(function (Get $get) {
+                                $state = $get('state');
+                                if (!$state) {
+                                    return [];
+                                }
+
+                                return Http::get("https://servicodados.ibge.gov.br/api/v1/localidades/estados/{$state}/municipios")
+                                    ->collect()
+                                    ->pluck('nome', 'nome')
+                                    ->toArray();
+                            })
+                            ->searchable()
+                            ->disabled(fn(Get $get) => $get('country') !== 'BR')
+                            ->required(fn(Get $get) => $get('country') === 'BR' && $get('state'))
+                            ->disabled(fn(Get $get) => !$get('state')),
+                    ])->compact()
+                    ->columnSpan(2),
+
+
+
+
 
                 MarkdownEditor::make('description')->label('Descrição')->columnSpan(2),
             ]);

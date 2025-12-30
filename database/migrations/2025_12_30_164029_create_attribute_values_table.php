@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->boolean('editable')->default(false);
             $table->foreignId('attribute_id')->constrained()->cascadeOnDelete();
+
             $table->timestamps();
         });
     }

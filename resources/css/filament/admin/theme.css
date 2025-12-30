@@ -41,7 +41,7 @@
     --font-sans: 'Figtree', ui-sans-serif, sans-serif, system-ui;
     --font-serif: Cardo, ui-serif, serif;
     --font-mono: JetBrains Mono, monospace;
-    --radius: 1.1rem;
+    --radius: 1rem;
     --shadow-x: 0px;
     --shadow-y: 1px;
     --shadow-blur: 4px;
@@ -241,8 +241,12 @@ body {
     @apply border-border;
 }
 
-tr {
-    @apply bg-background;
+td {
+    background: var(--color-background);
+}
+
+.fi-ta-table {
+    @apply rounded-2xl;
 }
 
 th {
@@ -258,15 +262,15 @@ th {
 }
 
 .fi-modal-window {
-    @apply border-sidebar-border bg-sidebar;
+    @apply rounded-3xl border-sidebar-border bg-sidebar;
 }
 
 .fi-modal-header {
-    @apply border-sidebar-border bg-sidebar;
+    @apply rounded-t-2xl border-sidebar-border bg-sidebar;
 }
 
 .fi-modal-footer {
-    @apply border-sidebar-border bg-sidebar;
+    @apply rounded-b-2xl border-sidebar-border bg-sidebar;
 }
 
 .fi-tabs {
