@@ -19,7 +19,7 @@ php artisan storage:link
 
 echo "::notice::Starts Reverb"
 pkill -f "artisan reverb:start" || true
-nohup php artisan reverb:start > storage/logs/reverb.log 2>&1 &
+nohup php artisan reverb:start --debug > storage/logs/reverb.log 2>&1 &
 
 echo "::endgroup::"
 
