@@ -24,6 +24,25 @@ use Khsing\World\Models\Division;
 class CampaignAnnouncementForm
 {
 
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (! empty($data['location_data'])) {
+            $loc = $data['location_data'][0] ?? [];
+
+            $data['location_string'] = implode('|', [
+                $loc['country'] ?? '',
+                $loc['state'] ?? '',
+                $loc['city'] ?? '',
+            ]);
+
+            unset($data['location_data']); // IMPORTANT
+        }
+
+        return $data;
+    }
+
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -87,12 +106,18 @@ class CampaignAnnouncementForm
 
                     TextInput::make('budget')
                         ->label('Orçamento')
-                        ->numeric()
+                        ->numeric()->required()
                         ->inputMode('decimal')
                         ->prefix('R$')
                         ->placeholder('0,00'),
 
                 ]),
+
+                Group::make()->columns(3)->schema([
+                    TextInput::make('n_stories')->default(0)->numeric()->label("Stories"),
+                    TextInput::make('n_reels')->default(0)->numeric()->label("Reels"),
+                    TextInput::make('n_carrousels')->default(0)->numeric()->label("Carrosséis"),
+                ])->columnSpan(2),
 
                 Repeater::make('attribute_values')
                     ->label('Atributos Gerais')->addable(false)->deletable(false)->reorderable(false)
@@ -131,7 +156,7 @@ class CampaignAnnouncementForm
                     ->columnSpan(2),
 
 
-                Repeater::make('location')
+                Repeater::make('location_data')
                     ->label('Localização')->addable(false)
                     ->table([
                         TableColumn::make('País'),
@@ -140,18 +165,6 @@ class CampaignAnnouncementForm
                     ])
                     ->deletable(false)
                     ->schema([
-                        Hidden::make('location_attribute_value_id')
-                            ->default(function () {
-                                // Get or create the "Location" attribute value
-                                $locationAttr = \App\Models\Attribute::firstOrCreate(
-                                    ['title' => 'Localização'],
-                                    ['multiple_values' => false]
-                                );
-                                return \App\Models\AttributeValue::firstOrCreate(
-                                    ['attribute_id' => $locationAttr->id, 'title' => 'location'],
-                                    ['editable' => true]
-                                )->id;
-                            }),
 
                         Select::make('country')->columnSpan(1)
                             ->label('País')

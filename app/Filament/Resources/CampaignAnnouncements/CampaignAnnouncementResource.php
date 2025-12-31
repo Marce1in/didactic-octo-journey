@@ -78,6 +78,10 @@ class CampaignAnnouncementResource extends Resource
         return Gate::allows('is_company') && $record->company_id === Auth::id();
     }
 
+
+
+
+
     public static function getPages(): array
     {
 

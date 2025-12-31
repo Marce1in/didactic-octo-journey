@@ -16,6 +16,10 @@ class CampaignAnnouncement extends Model
         'agency_cut',
         'category_id',
         'announcement_status',
+        'n_reels',
+        'n_carrousels',
+        'n_stories',
+        'location'
     ];
 
     protected $with = ['proposals', 'attribute_values'];

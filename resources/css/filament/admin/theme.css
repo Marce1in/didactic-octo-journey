@@ -210,6 +210,45 @@ body {
     @apply border-sidebar-border;
 }
 
+.fi-dropdown-panel {
+    @apply bg-card;
+}
+
+.fi-input {
+    @apply rounded-2xl bg-card;
+}
+
+.fi-input-wrp {
+    @apply border-border bg-card;
+}
+
+.fi-input-wrp-content-ctn {
+    @apply rounded-2xl bg-card;
+}
+.fi-select-input {
+    @apply overflow-hidden rounded-2xl bg-card;
+}
+
+td .fi-select-input {
+    @apply overflow-visible rounded-2xl bg-background;
+}
+
+td {
+    @apply rounded-b-2xl;
+}
+
+table {
+    @apply rounded-2xl bg-background;
+}
+
+.fi-input-wrp-prefix {
+    @apply rounded-l-2xl bg-card;
+}
+
+.fi-input-wrp-suffix {
+    @apply rounded-r-2xl bg-card;
+}
+
 .fi-card {
     background-color: var(--color-card);
     color: var(--color-card-foreground);
