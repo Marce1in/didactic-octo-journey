@@ -23,56 +23,49 @@ class AcceptProposal extends Action
     {
         parent::setUp();
 
-        $this->label('Aceitar Proposta');
+        $this->label('Aprovar Proposta');
         $this->color(Color::Green);
         $this->icon('heroicon-o-check-circle');
         $this->button();
 
-        // $this->modalHeading('Confirmar aceitação da Proposta');
-        // $this->modalDescription('Tem certeza de que deseja aceitar esta proposta? Isto iniciará a Campanha.');
-        // $this->modalSubmitActionLabel('Aceitar')->color('primary');
+        // $this->modalHeading('Confirmar aprovação da Proposta');
+        // $this->modalDescription('Tem certeza de que deseja aprovar esta proposta? Isto iniciará a Campanha.');
+        // $this->modalSubmitActionLabel('Aprovar')->color('primary');
 
         $this->action(function (Proposal $record) {
 
             try {
-
-                // OngoingCampaign::create([
-                //     'name' => $announcement->name,
-                //     'product_id' => $announcement->product_id,
-                //     'company_id' => $announcement->company_id,
-                //     'agency_id' => $record->agency_id,
-                //     'influencer_id' => $record->influencer_id ?? null,
-                //     'category_id' => $announcement->category_id,
-
-                //     'budget' => $announcement->budget,
-                //     'agency_cut' => $announcement->agency_cut,
-
-                //     'status_agency' => ApprovalStatus::PENDING,
-                //     'status_influencer' => ApprovalStatus::PENDING,
-                // ]);
-
                 $record->update(['company_approval' => 'approved']);
 
                 Notification::make()
-                    ->title('Proposta Aceita')
+                    ->title('Proposta Aprova')
                     ->body('A proposta foi aprovada. ')
                     ->success()
                     ->send();
             } catch (\Exception $e) {
                 DB::rollBack();
-                Log::error('Erro ao aceitar proposta: '.$e->getMessage());
+                Log::error('Erro ao aprovar proposta: ' . $e->getMessage());
                 Notification::make()
-                    ->title('Erro ao Aceitar Proposta')
+                    ->title('Erro ao Aprovar Proposta')
                     ->body('Ocorreu um erro ao iniciar a campanha. Tente novamente.')
                     ->danger()
                     ->send();
             } finally {
                 $record->agency->notify(
                     Notification::make()
-                        ->title('Proposta de Campanha aceita por '.Auth::user()->name)
-                        ->body('A sua proposta de campanha foi aceita.')
+                        ->title('Empresa aprovou proposta')->success()
+                        ->body(Auth::user()->name . ' aprovou a proposta para ' . $record->announcement->name)
                         ->toDatabase()
                 );
+
+                $record->influencers->each(function ($influencer) use ($record) {
+                    $influencer->notify(
+                        Notification::make()
+                            ->title('Empresa aprovou proposta')->success()
+                            ->body(Auth::user()->name . ' aprovou a proposta para ' . $record->announcement->name)
+                            ->toDatabase()
+                    );
+                });
             }
         });
     }

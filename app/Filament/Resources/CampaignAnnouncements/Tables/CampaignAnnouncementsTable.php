@@ -10,6 +10,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ColumnGroup;
@@ -19,6 +20,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\HtmlString;
@@ -233,7 +236,7 @@ class CampaignAnnouncementsTable
                         ->label('Empresa')
                         ->badge()
                         ->color($colorByStatus)
-                        ->icon(fn() => Gate::allows('is_company') ? Heroicon::OutlinedCursorArrowRays : null)->iconPosition(IconPosition::After)
+
                         ->action(EditProposalAction::make()->disabled(Gate::denies('is_company')))
                         ->formatStateUsing(fn($state): string => __("approval_status.$state"))
                         ->visible(fn($livewire) => self::prTab($livewire)),
@@ -244,7 +247,7 @@ class CampaignAnnouncementsTable
                         ->label('Agência')
                         ->badge()
                         ->color($colorByStatus)
-                        ->icon(fn() => Gate::allows('is_agency') ? Heroicon::OutlinedCursorArrowRays : null)
+
                         ->action(EditProposalAction::make()->disabled(Gate::denies('is_agency')))
                         ->formatStateUsing(fn($state): string => __("approval_status.$state"))
                         ->visible(fn($livewire) => self::prTab($livewire)),
@@ -288,9 +291,74 @@ class CampaignAnnouncementsTable
                 EditAction::make()->hiddenLabel()
                     ->visible(fn($record, $livewire) => Gate::allows('is_company') && self::anTab($livewire)),
 
-                ViewProposal::make()
+                ViewProposal::make()->hiddenLabel()
                     ->visible(fn($livewire) => self::prTab($livewire)),
 
+                Action::make('influencerApprove')->icon(Heroicon::Check)->hiddenLabel()->tooltip('Aprovar')
+                    ->visible(fn($livewire) => self::prTab($livewire) && Gate::allows('is_influencer'))
+                    ->action(function ($record) {
+                        $record->influencers()->updateExistingPivot(Auth::id(), ['approved' => true]);
+
+                        $record->announcement->company->notify(
+                            Notification::make()
+                                ->title('Influenciador aprovou proposta')
+                                ->body(Auth::user()->name . ' aprovou a proposta para ' . $record->announcement->name)
+                                ->success()
+                                ->toDatabase()
+                        );
+
+                        $record->agency->notify(
+                            Notification::make()
+                                ->title('Influenciador aprovou proposta')
+                                ->body(Auth::user()->name . ' aprovou sua proposta para ' . $record->announcement->name)
+                                ->success()
+                                ->toDatabase()
+                        );
+
+                        Notification::make()
+                            ->title('Proposta aprovada')
+                            ->success()
+                            ->send();
+                    })->visible(
+                        fn($livewire, $record) =>
+
+                        self::prTab($livewire)
+                            && Gate::allows('is_influencer')
+                            &&        !DB::table('proposal_user')->where(['proposal_id' => $record->id, 'user_id' => Auth::id()])->value('approved')
+                    ),
+
+                Action::make('influencerReject')->icon(Heroicon::XMark)->hiddenLabel()->tooltip('Rejeitar')
+                    ->visible(fn($livewire) => self::prTab($livewire) && Gate::allows('is_influencer'))
+                    ->color('danger')
+                    ->action(function ($record) {
+                        $record->influencers()->updateExistingPivot(Auth::id(), ['approved' => false]);
+
+                        $record->announcement->company->notify(
+                            Notification::make()
+                                ->title('Influenciador rejeitou proposta')
+                                ->body(Auth::user()->name . ' rejeitou a proposta para ' . $record->announcement->name)
+                                ->danger()
+                                ->toDatabase()
+                        );
+
+                        $record->agency->notify(
+                            Notification::make()
+                                ->title('Influenciador rejeitou proposta')
+                                ->body(Auth::user()->name . ' rejeitou sua proposta para ' . $record->announcement->name)
+                                ->danger()
+                                ->toDatabase()
+                        );
+
+                        Notification::make()
+                            ->title('Proposta rejeitada')
+                            ->danger()
+                            ->send();
+                    })->visible(
+                        fn($livewire, $record) =>
+                        self::prTab($livewire)
+                            && Gate::allows('is_influencer')
+                            && DB::table('proposal_user')->where(['proposal_id' => $record->id, 'user_id' => Auth::id()])->value('approved')
+                    ),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

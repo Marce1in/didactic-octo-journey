@@ -39,9 +39,9 @@ return [
                 'border' => '#e8eaec',
             ],
             'dark' => [
-                'text' => '#f3f4f6',
-                'background' => '#1f2937',
-                'border' => '#374151',
+                'text' => '#ffffff',
+                'background' => '#141414',
+                'border' => '#e8eaec',
             ],
         ],
     ],

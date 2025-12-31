@@ -14,7 +14,6 @@ class Proposal extends Model
         'message',
 
         'proposed_agency_cut',
-        'proposed_budget',
 
         'company_approval',
         'agency_approval',

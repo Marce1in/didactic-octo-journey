@@ -27,9 +27,9 @@ class RejectProposal extends Action
 
         $this->button();
         $this->visible(
-            fn ($record, $livewire) => Gate::allows('is_company')
+            fn($record, $livewire) => Gate::allows('is_company')
                 && $record
-                    ->exists()
+                ->exists()
         );
 
         $this->action(function (Proposal $record) {
@@ -43,7 +43,7 @@ class RejectProposal extends Action
                     ->send();
             } catch (\Exception $e) {
                 DB::rollBack();
-                Log::error('Erro ao rejeitar proposta: '.$e->getMessage());
+                Log::error('Erro ao rejeitar proposta: ' . $e->getMessage());
                 Notification::make()
                     ->title('Erro ao rejeitarr Proposta')
                     ->body('Ocorreu um erro ao iniciar a campanha. Tente novamente.')
@@ -52,10 +52,19 @@ class RejectProposal extends Action
             } finally {
                 $record->agency->notify(
                     Notification::make()
-                        ->title('Proposta de Campanha rejeitada por '.Auth::user()->name)
-                        ->body('A sua proposta de campanha foi rejeitada.')
+                        ->title('Empresa rejeitou proposta')->danger()
+                        ->body(Auth::user()->name . ' rejeitou a proposta para ' . $record->announcement->name)
                         ->toDatabase()
                 );
+
+                $record->influencers->each(function ($influencer) use ($record) {
+                    $influencer->notify(
+                        Notification::make()
+                            ->title('Empresa rejeitou proposta')->danger()
+                            ->body(Auth::user()->name . ' rejeitou a proposta para ' . $record->announcement->name)
+                            ->toDatabase()
+                    );
+                });
             }
         });
     }
